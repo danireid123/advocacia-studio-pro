@@ -654,6 +654,7 @@ function configurarAutoUpdater() {
     try {
         autoUpdater.autoDownload = true;
         autoUpdater.autoInstallOnAppQuit = true;
+        autoUpdater.forceDevUpdateConfig = true;
         
         try {
             autoUpdater.setFeedURL({
@@ -665,6 +666,9 @@ function configurarAutoUpdater() {
 
         autoUpdater.on('checking-for-update', () => {
             console.log('[AUTO-UPDATER] Verificando atualizações no GitHub...');
+            if (mainWindow && !mainWindow.isDestroyed()) {
+                mainWindow.webContents.send('bot-update-status', { status: 'checking' });
+            }
         });
 
         autoUpdater.on('update-available', (info) => {
@@ -672,6 +676,16 @@ function configurarAutoUpdater() {
             if (mainWindow && !mainWindow.isDestroyed()) {
                 mainWindow.webContents.send('bot-update-status', {
                     status: 'downloading',
+                    versao: info ? info.version : ''
+                });
+            }
+        });
+
+        autoUpdater.on('update-not-available', (info) => {
+            console.log('[AUTO-UPDATER] Nenhuma atualização pendente:', info ? info.version : '');
+            if (mainWindow && !mainWindow.isDestroyed()) {
+                mainWindow.webContents.send('bot-update-status', {
+                    status: 'latest',
                     versao: info ? info.version : ''
                 });
             }
@@ -689,15 +703,21 @@ function configurarAutoUpdater() {
 
         autoUpdater.on('error', (err) => {
             console.error('[AUTO-UPDATER ERRO]:', err ? (err.message || err) : 'Erro desconhecido');
+            if (mainWindow && !mainWindow.isDestroyed()) {
+                mainWindow.webContents.send('bot-update-status', {
+                    status: 'error',
+                    erro: err ? (err.message || String(err)) : 'Erro ao buscar atualização'
+                });
+            }
         });
 
-        if (app.isPackaged) {
-            setTimeout(() => {
+        setTimeout(() => {
+            try {
                 autoUpdater.checkForUpdatesAndNotify().catch(e => {
                     console.error('[AUTO-UPDATER FALHA AO BUSCAR]:', e.message);
                 });
-            }, 2500);
-        }
+            } catch (errCheck) {}
+        }, 3000);
     } catch (e) {
         console.error('[AUTO-UPDATER EXCEPTION]:', e);
     }
@@ -874,6 +894,18 @@ ipcMain.handle('instalar-atualizacao-agora', () => {
         autoUpdater.quitAndInstall();
     }
     return true;
+});
+
+ipcMain.handle('verificar-atualizacao', async () => {
+    if (!autoUpdater) return { sucesso: false, erro: 'Módulo de atualização não disponível' };
+    try {
+        console.log('[AUTO-UPDATER] Disparo manual de verificação pelo usuário...');
+        const res = await autoUpdater.checkForUpdates();
+        return { sucesso: true, versao: res && res.updateInfo ? res.updateInfo.version : null };
+    } catch (e) {
+        console.error('[AUTO-UPDATER ERRO CHECAGEM MANUAL]:', e.message);
+        return { sucesso: false, erro: e.message };
+    }
 });
 
 ipcMain.handle('obter-pausados', () => contatosPausados);

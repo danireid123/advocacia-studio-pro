@@ -575,6 +575,10 @@
         <svg class="w-3.5 h-3.5 text-[#e5c158]"><use href="#icon-refresh"/></svg>
         <span>Reconectar</span>
       </button>
+      <button id="btn-check-update" class="flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-900/90 hover:bg-slate-800 border border-slate-800 text-xs font-medium rounded-xl transition text-slate-300 hover:text-[#f3e5ab]" title="Verificar atualizações no GitHub">
+        <svg class="w-3.5 h-3.5 text-[#e5c158]"><use href="#icon-refresh"/></svg>
+        <span>Atualizações</span>
+      </button>
       <button id="btn-logout" class="flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-rose-950/40 border border-slate-800 text-xs font-medium rounded-xl transition text-slate-400 hover:text-rose-300">
         <svg class="w-3.5 h-3.5"><use href="#icon-logout"/></svg>
         <span>Trocar Conta</span>
@@ -2145,6 +2149,16 @@
       if (window.api && window.api.reiniciarBot) await window.api.reiniciarBot();
     });
 
+    document.getElementById('btn-check-update').addEventListener('click', async () => {
+      mostrarToast('Verificando atualizações no GitHub...');
+      if (window.api && window.api.verificarAtualizacao) {
+        const res = await window.api.verificarAtualizacao();
+        if (res && !res.sucesso && res.erro) {
+          mostrarToast(`Aviso: ${res.erro}`);
+        }
+      }
+    });
+
     const dispararInstalacaoUpdate = () => {
       mostrarToast('Reiniciando aplicativo para aplicar a nova versão...');
       if (window.api && window.api.instalarAtualizacaoAgora) {
@@ -2242,7 +2256,11 @@
             const btnHeader = document.getElementById('btn-header-update');
             const txtUpdate = document.getElementById('texto-update-app');
 
-            if (dados.status === 'downloading') {
+            if (dados.status === 'checking') {
+              mostrarToast('Consultando atualizações no GitHub...');
+            } else if (dados.status === 'latest') {
+              mostrarToast('Seu aplicativo já está na versão mais recente!');
+            } else if (dados.status === 'downloading') {
               banner.classList.remove('hidden');
               banner.classList.add('flex');
               txtUpdate.innerText = `Baixando nova atualização v${dados.versao || ''} em segundo plano...`;
@@ -2256,6 +2274,11 @@
               btnHeader.classList.remove('hidden');
               btnHeader.classList.add('flex');
               mostrarToast('Atualização concluída! Clique no botão para atualizar o sistema.');
+            } else if (dados.status === 'error') {
+              console.warn('[UPDATE WARNING]:', dados.erro);
+              if (dados.erro && !dados.erro.includes('net::ERR_INTERNET_DISCONNECTED')) {
+                mostrarToast(`Aviso de Atualização: ${dados.erro}`);
+              }
             }
           });
         }

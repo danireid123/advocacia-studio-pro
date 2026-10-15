@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('api', {
     removerPausa: (numero) => ipcRenderer.invoke('remover-pausa', numero),
     forcarVarreduraNaoLidas: () => ipcRenderer.invoke('forcar-varredura-nao-lidas'),
     instalarAtualizacaoAgora: () => ipcRenderer.invoke('instalar-atualizacao-agora'),
+    verificarAtualizacao: () => ipcRenderer.invoke('verificar-atualizacao'),
     aoReceberQR: (callback) => ipcRenderer.on('bot-qr', (e, url) => callback(url)),
     aoMudarStatus: (callback) => ipcRenderer.on('bot-status', (e, status) => callback(status)),
     aoReceberLog: (callback) => ipcRenderer.on('bot-log', (e, log) => callback(log)),
