@@ -26,7 +26,8 @@
       "index.html",
       "package.json",
       "icon.png",
-      "icon.ico"
+      "icon.ico",
+      "dev-app-update.yml"
     ],
     "win": {
       "target": "nsis",

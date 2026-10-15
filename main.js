@@ -1,8 +1,9 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode');
 const fs = require('fs');
+const https = require('https');
 
 let autoUpdater = null;
 try {
@@ -648,7 +649,98 @@ async function processarMensagemEntrada(msg, veioDaVarredura = false) {
     }
 }
 
+let ultimaInfoUpdate = null;
+
+function checarAtualizacaoGitHubDireta(disparoManual = false) {
+    try {
+        const versaoAtual = app.getVersion ? app.getVersion() : require('./package.json').version;
+        if (disparoManual && mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('bot-update-status', { status: 'checking' });
+        }
+
+        const options = {
+            hostname: 'api.github.com',
+            path: '/repos/danireid123/advocacia-studio-pro/releases/latest',
+            headers: {
+                'User-Agent': 'AdvocaciaStudioPro-App'
+            }
+        };
+
+        https.get(options, (res) => {
+            let data = '';
+            res.on('data', chunk => { data += chunk; });
+            res.on('end', () => {
+                try {
+                    if (res.statusCode !== 200) {
+                        if (disparoManual && mainWindow && !mainWindow.isDestroyed()) {
+                            mainWindow.webContents.send('bot-update-status', {
+                                status: 'error',
+                                erro: `GitHub retornou status ${res.statusCode}`
+                            });
+                        }
+                        return;
+                    }
+                    const json = JSON.parse(data);
+                    const tag = json.tag_name ? json.tag_name.replace(/^v/, '') : '';
+                    if (!tag) return;
+
+                    const vAtualNums = String(versaoAtual).split('.').map(n => parseInt(n) || 0);
+                    const vNovaNums = String(tag).split('.').map(n => parseInt(n) || 0);
+
+                    let temNova = false;
+                    for (let i = 0; i < 3; i++) {
+                        const nova = vNovaNums[i] || 0;
+                        const atual = vAtualNums[i] || 0;
+                        if (nova > atual) { temNova = true; break; }
+                        if (nova < atual) break;
+                    }
+
+                    if (temNova) {
+                        console.log(`[ATUALIZACAO] Nova versão v${tag} encontrada! Versão instalada: v${versaoAtual}`);
+                        ultimaInfoUpdate = {
+                            versao: tag,
+                            url: json.html_url || 'https://github.com/danireid123/advocacia-studio-pro/releases/latest'
+                        };
+                        if (mainWindow && !mainWindow.isDestroyed()) {
+                            mainWindow.webContents.send('bot-update-status', {
+                                status: 'ready',
+                                versao: tag,
+                                url: ultimaInfoUpdate.url
+                            });
+                        }
+                    } else {
+                        console.log(`[ATUALIZACAO] App na versão mais recente (v${versaoAtual})`);
+                        if (disparoManual && mainWindow && !mainWindow.isDestroyed()) {
+                            mainWindow.webContents.send('bot-update-status', {
+                                status: 'latest',
+                                versao: versaoAtual
+                            });
+                        }
+                    }
+                } catch (errJson) {
+                    console.error('[ERRO PARSE GITHUB RELEASE]:', errJson.message);
+                }
+            });
+        }).on('error', (errReq) => {
+            console.error('[ERRO REQUISICAO GITHUB]:', errReq.message);
+            if (disparoManual && mainWindow && !mainWindow.isDestroyed()) {
+                mainWindow.webContents.send('bot-update-status', {
+                    status: 'error',
+                    erro: 'Não foi possível conectar ao GitHub'
+                });
+            }
+        });
+    } catch (errGeral) {
+        console.error('[ERRO CHECAGEM GITHUB]:', errGeral.message);
+    }
+}
+
 function configurarAutoUpdater() {
+    // 1. Checagem direta rápida via GitHub API (garante 100% de detecção em qualquer modo)
+    setTimeout(() => {
+        checarAtualizacaoGitHubDireta(false);
+    }, 2000);
+
     if (!autoUpdater) return;
 
     try {
@@ -666,9 +758,6 @@ function configurarAutoUpdater() {
 
         autoUpdater.on('checking-for-update', () => {
             console.log('[AUTO-UPDATER] Verificando atualizações no GitHub...');
-            if (mainWindow && !mainWindow.isDestroyed()) {
-                mainWindow.webContents.send('bot-update-status', { status: 'checking' });
-            }
         });
 
         autoUpdater.on('update-available', (info) => {
@@ -683,12 +772,6 @@ function configurarAutoUpdater() {
 
         autoUpdater.on('update-not-available', (info) => {
             console.log('[AUTO-UPDATER] Nenhuma atualização pendente:', info ? info.version : '');
-            if (mainWindow && !mainWindow.isDestroyed()) {
-                mainWindow.webContents.send('bot-update-status', {
-                    status: 'latest',
-                    versao: info ? info.version : ''
-                });
-            }
         });
 
         autoUpdater.on('update-downloaded', (info) => {
@@ -703,12 +786,6 @@ function configurarAutoUpdater() {
 
         autoUpdater.on('error', (err) => {
             console.error('[AUTO-UPDATER ERRO]:', err ? (err.message || err) : 'Erro desconhecido');
-            if (mainWindow && !mainWindow.isDestroyed()) {
-                mainWindow.webContents.send('bot-update-status', {
-                    status: 'error',
-                    erro: err ? (err.message || String(err)) : 'Erro ao buscar atualização'
-                });
-            }
         });
 
         setTimeout(() => {
@@ -891,22 +968,26 @@ ipcMain.handle('forcar-varredura-nao-lidas', async () => {
 });
 
 ipcMain.handle('instalar-atualizacao-agora', () => {
+    let executou = false;
     if (autoUpdater) {
-        autoUpdater.quitAndInstall();
+        try {
+            autoUpdater.quitAndInstall();
+            executou = true;
+        } catch (e) {}
+    }
+    if (!executou && ultimaInfoUpdate && ultimaInfoUpdate.url) {
+        shell.openExternal(ultimaInfoUpdate.url);
     }
     return true;
 });
 
 ipcMain.handle('verificar-atualizacao', async () => {
-    if (!autoUpdater) return { sucesso: false, erro: 'Módulo de atualização não disponível' };
-    try {
-        console.log('[AUTO-UPDATER] Disparo manual de verificação pelo usuário...');
-        const res = await autoUpdater.checkForUpdates();
-        return { sucesso: true, versao: res && res.updateInfo ? res.updateInfo.version : null };
-    } catch (e) {
-        console.error('[AUTO-UPDATER ERRO CHECAGEM MANUAL]:', e.message);
-        return { sucesso: false, erro: e.message };
+    console.log('[AUTO-UPDATER] Disparo manual de verificação pelo usuário...');
+    checarAtualizacaoGitHubDireta(true);
+    if (autoUpdater) {
+        try { autoUpdater.checkForUpdates().catch(() => {}); } catch (e) {}
     }
+    return { sucesso: true };
 });
 
 ipcMain.handle('obter-pausados', () => contatosPausados);
