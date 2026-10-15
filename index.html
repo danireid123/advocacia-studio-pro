@@ -1,0 +1,2317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Advocacia Studio Pro • Executive Suite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    
+    :root {
+      --bg-deep: #0b0f17;
+      --bg-surface: #111827;
+      --bg-elevated: #1e293b;
+      --gold-champagne: #d4af37;
+      --gold-light: #f3e5ab;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --card-bg: rgba(17, 24, 39, 0.88);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(11, 15, 23, 0.9);
+      --inner-box-bg: #0b0f17;
+    }
+
+    body.theme-dark {
+      --bg-deep: #0b0f17;
+      --bg-surface: #111827;
+      --bg-elevated: #1e293b;
+      --gold-champagne: #d4af37;
+      --gold-light: #f3e5ab;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --card-bg: rgba(17, 24, 39, 0.88);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(11, 15, 23, 0.9);
+      --inner-box-bg: #0b0f17;
+      background-color: var(--bg-deep);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(212, 175, 55, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(30, 58, 138, 0.12) 0px, transparent 50%);
+      color: var(--text-main);
+    }
+
+    body.theme-light {
+      --bg-deep: #e2e8f0;
+      --bg-surface: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --gold-champagne: #b8860b;
+      --gold-light: #854d0e;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --card-bg: #ffffff;
+      --border-color: #cbd5e1;
+      --input-bg: #f8fafc;
+      --inner-box-bg: #f1f5f9;
+      background-color: #e2e8f0 !important;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(184, 134, 11, 0.08) 0px, transparent 40%),
+        radial-gradient(at 100% 100%, rgba(148, 163, 184, 0.15) 0px, transparent 40%) !important;
+      color: #0f172a !important;
+    }
+
+    body { 
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; 
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    body.theme-light .exec-card {
+      background: #ffffff !important;
+      border-color: #cbd5e1 !important;
+      box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.06) !important;
+    }
+    body.theme-light .exec-card:hover {
+      border-color: rgba(184, 134, 11, 0.45) !important;
+    }
+    body.theme-light .exec-input {
+      background: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+    }
+    body.theme-light .exec-input:focus {
+      background: #ffffff !important;
+      border-color: #b8860b !important;
+      box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.18) !important;
+    }
+
+    body.theme-light .text-white { color: #0f172a !important; }
+    body.theme-light .text-slate-200,
+    body.theme-light .text-slate-300 { color: #1e293b !important; }
+    body.theme-light .text-slate-400 { color: #475569 !important; }
+    body.theme-light .text-slate-500 { color: #64748b !important; }
+    body.theme-light .text-\[\#f3e5ab\] { color: #854d0e !important; }
+    body.theme-light .text-\[\#e5c158\] { color: #996515 !important; }
+
+    body.theme-light .bg-\[\#0b0f17\],
+    body.theme-light .bg-\[\#111827\],
+    body.theme-light .bg-\[\#090d16\],
+    body.theme-light .bg-\[\#080b12\],
+    body.theme-light .bg-black\/20 {
+      background-color: #f1f5f9 !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    body.theme-light .border-slate-800,
+    body.theme-light .border-slate-800\/80,
+    body.theme-light .border-slate-800\/90,
+    body.theme-light .border-slate-700,
+    body.theme-light .border-white\/5 {
+      border-color: #cbd5e1 !important;
+    }
+
+    body.theme-light .bg-slate-900,
+    body.theme-light .bg-slate-900\/90,
+    body.theme-light .bg-slate-800,
+    body.theme-light .bg-slate-800\/70,
+    body.theme-light .bg-slate-800\/80,
+    body.theme-light .bg-slate-800\/90 {
+      background-color: #e2e8f0 !important;
+      color: #1e293b !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    body.theme-light .champagne-gradient {
+      background: linear-gradient(135deg, #d4af37 0%, #a16207 100%) !important;
+      color: #ffffff !important;
+    }
+    body.theme-light .champagne-gradient * {
+      color: #ffffff !important;
+    }
+    body.theme-light #qr-box {
+      background-color: #ffffff !important;
+      border-color: #cbd5e1 !important;
+    }
+    body.theme-light .proc-list-item-active {
+      background: rgba(184, 134, 11, 0.12) !important;
+      border-color: #b8860b !important;
+    }
+
+    input, textarea, select {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      cursor: text;
+    }
+
+    .font-serif-legal {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+    
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.65); }
+    
+    .exec-card { 
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .exec-card:hover {
+      border-color: rgba(212, 175, 55, 0.35);
+    }
+    
+    .champagne-gradient { 
+      background: linear-gradient(135deg, #e5c158 0%, #c59b27 50%, #9e7812 100%); 
+      color: #090d16;
+    }
+    .champagne-gradient:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 8px 25px -5px rgba(212, 175, 55, 0.4);
+    }
+
+    .exec-input {
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .exec-input:focus {
+      outline: none;
+      border-color: #d4af37;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.18);
+    }
+
+    .proc-list-item-active {
+      background: rgba(212, 175, 55, 0.14) !important;
+      border-color: #d4af37 !important;
+      box-shadow: 0 4px 20px -4px rgba(212, 175, 55, 0.25);
+    }
+
+    @keyframes floatMascot {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(1.5deg); }
+    }
+    @keyframes blinkEye {
+      0%, 92%, 100% { transform: scaleY(1); }
+      96% { transform: scaleY(0.1); }
+    }
+    @keyframes pulseAura {
+      0%, 100% { filter: drop-shadow(0 6px 14px rgba(212, 175, 55, 0.25)); }
+      50% { filter: drop-shadow(0 8px 22px rgba(212, 175, 55, 0.55)); }
+    }
+    @keyframes entryCenter {
+      0% { opacity: 0; transform: scale(0.8) translateY(25px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .mascot-float { animation: floatMascot 3.5s ease-in-out infinite, pulseAura 4s ease-in-out infinite; }
+    .mascot-eye { transform-origin: center; animation: blinkEye 4.2s infinite; }
+    .mascot-center-entry { animation: entryCenter 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+    #lexbot-wrapper {
+      position: fixed;
+      z-index: 1000;
+      transition: top 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
+                  left 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
+                  bottom 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
+                  right 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    #tour-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 9, 16, 0.75);
+      backdrop-filter: blur(5px);
+      z-index: 850;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    #tour-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .tour-focus-target {
+      position: relative !important;
+      z-index: 920 !important;
+      filter: none !important;
+      backdrop-filter: none !important;
+      box-shadow: 0 0 0 3px #d4af37, 0 0 45px rgba(212, 175, 55, 0.55) !important;
+      border-radius: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .format-drawer {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, margin 0.25s ease;
+    }
+    .format-drawer.open {
+      max-height: 75px;
+      opacity: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .unsaved-glow {
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.45);
+    }
+  </style>
+</head>
+<body class="h-screen flex flex-col relative theme-dark">
+
+  <!-- SPRITES SVG -->
+  <svg xmlns="http://www.w3.org/2000/svg" class="hidden">
+    <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+    </symbol>
+    <symbol id="icon-scales" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>
+    </symbol>
+    <symbol id="icon-flow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/>
+    </symbol>
+    <symbol id="icon-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/>
+    </symbol>
+    <symbol id="icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>
+    </symbol>
+    <symbol id="icon-coffee" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" x2="6" y1="1" y2="4"/><line x1="10" x2="10" y1="1" y2="4"/><line x1="14" x2="14" y1="1" y2="4"/>
+    </symbol>
+    <symbol id="icon-moon-msg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/><path d="M8 9h.01"/><path d="M12 9h.01"/><path d="M16 9h.01"/>
+    </symbol>
+    <symbol id="icon-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+    </symbol>
+    <symbol id="icon-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>
+    </symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14"/><path d="M12 5v14"/>
+    </symbol>
+    <symbol id="icon-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+    </symbol>
+    <symbol id="icon-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+    </symbol>
+    <symbol id="icon-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>
+    </symbol>
+    <symbol id="icon-user-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><circle cx="19" cy="16" r="3"/><path d="M19 14.5V16l1 1"/>
+    </symbol>
+    <symbol id="icon-qr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/>
+    </symbol>
+    <symbol id="icon-database" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>
+    </symbol>
+    <symbol id="icon-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+    </symbol>
+    <symbol id="icon-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>
+    </symbol>
+    <symbol id="icon-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>
+    </symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+    </symbol>
+    <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </symbol>
+    <symbol id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5"/><line x1="12" x2="12" y1="1" y2="3"/><line x1="12" x2="12" y1="21" y2="23"/><line x1="4.22" x2="5.64" y1="4.22" y2="5.64"/><line x1="18.36" x2="19.78" y1="18.36" y2="19.78"/><line x1="1" x2="3" y1="12" y2="12"/><line x1="21" x2="23" y1="12" y2="12"/><line x1="4.22" x2="5.64" y1="19.78" y2="18.36"/><line x1="18.36" x2="19.78" y1="5.64" y2="4.22"/>
+    </symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </symbol>
+  </svg>
+
+  <!-- 1. SPLASH SCREEN -->
+  <div id="splash-screen" class="fixed inset-0 bg-[#080b12] z-[1200] flex flex-col items-center justify-center transition-opacity duration-700">
+    <div class="relative mb-7">
+      <div class="w-24 h-24 rounded-3xl champagne-gradient flex items-center justify-center text-slate-950 shadow-2xl">
+        <svg class="w-12 h-12"><use href="#icon-scales"/></svg>
+      </div>
+      <div class="absolute -inset-2 rounded-3xl border border-[#d4af37]/30 animate-ping opacity-30"></div>
+    </div>
+    <h1 class="font-serif-legal text-2xl font-bold tracking-wider text-white">
+      Advocacia <span class="text-[#e5c158]">Studio Pro</span>
+    </h1>
+    <p id="splash-status" class="text-xs text-slate-400 mt-2.5 font-medium tracking-wide">Inicializando ambiente seguro...</p>
+    
+    <div class="w-72 h-1.5 bg-slate-900 rounded-full overflow-hidden mt-6 border border-slate-800/80">
+      <div id="splash-bar" class="h-full champagne-gradient w-0 transition-all duration-700 rounded-full"></div>
+    </div>
+    <span class="text-[10px] text-slate-600 mt-4 tracking-widest uppercase font-semibold">Executive Edition • Versão Final</span>
+  </div>
+
+  <!-- 2. TELA DE LOGIN EXECUTIVA -->
+  <div id="auth-screen" class="fixed inset-0 bg-[#080b12]/95 backdrop-blur-2xl z-[1100] hidden items-center justify-center p-4">
+    <div class="exec-card w-full max-w-md rounded-3xl p-8 border border-slate-800/90 space-y-6">
+      <div class="flex flex-col items-center text-center">
+        <div class="w-14 h-14 rounded-2xl champagne-gradient flex items-center justify-center text-slate-950 shadow-lg mb-3.5">
+          <svg class="w-7 h-7"><use href="#icon-scales"/></svg>
+        </div>
+        <h2 id="auth-title" class="font-serif-legal text-xl font-bold">Portal do Escritório</h2>
+        <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Acesse com as credenciais ou entre como convidado para testar.</p>
+      </div>
+
+      <div class="p-1 rounded-2xl bg-gradient-to-r from-[#d4af37]/30 via-[#d4af37]/60 to-[#d4af37]/30">
+        <button id="btn-guest-login" class="w-full py-3.5 px-4 bg-[#111827] hover:bg-[#1a253a] text-[#f3e5ab] rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition shadow-md">
+          <svg class="w-4 h-4 text-[#e5c158]"><use href="#icon-scales"/></svg>
+          <span>Entrar como Convidado (Modo Teste)</span>
+        </button>
+      </div>
+
+      <div class="relative flex py-1 items-center">
+        <div class="flex-grow border-t border-slate-800"></div>
+        <span class="flex-shrink mx-3 text-[10px] uppercase tracking-widest text-slate-500 font-semibold">ou acesso com senha</span>
+        <div class="flex-grow border-t border-slate-800"></div>
+      </div>
+
+      <div class="space-y-3.5">
+        <div id="campo-escritorio-box" class="hidden">
+          <label class="text-xs font-semibold text-slate-300 block mb-1.5">Nome do Escritório</label>
+          <input type="text" id="auth-office" placeholder="Ex: Silva & Associados" class="exec-input w-full rounded-xl px-4 py-2.5 text-xs">
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-300 block mb-1.5">Usuário</label>
+          <input type="text" id="auth-user" placeholder="Digite seu usuário" class="exec-input w-full rounded-xl px-4 py-2.5 text-xs">
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-300 block mb-1.5">Senha</label>
+          <input type="password" id="auth-pass" placeholder="••••••••" class="exec-input w-full rounded-xl px-4 py-2.5 text-xs">
+        </div>
+        <div id="campo-chave-recuperacao" class="hidden">
+          <label class="text-xs font-semibold text-slate-300 block mb-1.5">Chave de Recuperação</label>
+          <input type="text" id="auth-recovery" placeholder="Para recuperar se esquecer" class="exec-input w-full rounded-xl px-4 py-2.5 text-xs">
+        </div>
+        <p id="auth-error" class="text-xs text-rose-400 font-medium text-center hidden"></p>
+        <button id="btn-auth-submit" class="w-full py-3 champagne-gradient font-bold rounded-xl text-xs uppercase tracking-wider shadow-lg transition">Acessar Painel</button>
+      </div>
+
+      <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+        <button id="btn-esqueci-senha" class="hover:text-white transition">Redefinir acesso</button>
+        <button id="btn-restaurar-login" class="text-[#e5c158] hover:underline font-semibold flex items-center space-x-1">
+          <svg class="w-3.5 h-3.5"><use href="#icon-upload"/></svg>
+          <span>Importar Backup</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE RECUPERAÇÃO DE SENHA -->
+  <div id="modal-recuperar-senha" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1150] hidden items-center justify-center p-4">
+    <div class="exec-card w-96 rounded-2xl p-6 border border-slate-700 space-y-4">
+      <h3 class="text-sm font-bold text-[#e5c158]">Redefinir Credenciais</h3>
+      <p class="text-xs text-slate-300">Digite sua chave ou a palavra <code class="text-[#e5c158] font-bold">RESETAR</code>:</p>
+      <input type="text" id="input-chave-reset" placeholder="Chave ou RESETAR" class="exec-input w-full rounded-xl px-3.5 py-2.5 text-xs">
+      <div class="flex justify-end space-x-2">
+        <button id="btn-cancelar-reset" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl">Cancelar</button>
+        <button id="btn-confirmar-reset" class="px-4 py-2 champagne-gradient text-xs font-bold rounded-xl">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. ENTRADA DO LEXBOT -->
+  <div id="lexbot-center-modal" class="fixed inset-0 bg-[#060911]/90 backdrop-blur-md z-[9999] hidden items-center justify-center p-4">
+    <div class="exec-card w-full max-w-md rounded-3xl p-8 border border-[#d4af37]/40 text-center space-y-5 mascot-center-entry">
+      <div class="w-24 h-24 mx-auto mascot-float flex items-center justify-center">
+        <svg viewBox="0 0 120 120" class="w-full h-full">
+          <line x1="60" y1="12" x2="60" y2="26" stroke="#e5c158" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="60" cy="10" r="5" fill="#e5c158"/>
+          <rect x="26" y="26" width="68" height="58" rx="18" fill="#131c2e" stroke="#e5c158" stroke-width="3"/>
+          <rect x="34" y="36" width="52" height="30" rx="10" fill="#090d16" stroke="#334155" stroke-width="1.5"/>
+          <g class="mascot-eye">
+            <circle cx="48" cy="51" r="5.5" fill="#e5c158"/><circle cx="72" cy="51" r="5.5" fill="#e5c158"/>
+            <circle cx="49.5" cy="49.5" r="1.8" fill="#ffffff"/><circle cx="73.5" cy="49.5" r="1.8" fill="#ffffff"/>
+          </g>
+          <path d="M 52 60 Q 60 67 68 60" fill="none" stroke="#e5c158" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M 45 84 L 75 84 L 82 108 L 38 108 Z" fill="#1e293b" stroke="#e5c158" stroke-width="2"/>
+          <polygon points="57,84 63,84 65,102 60,106 55,102" fill="#d4af37"/>
+        </svg>
+      </div>
+      <div class="space-y-2">
+        <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#d4af37]/15 text-[#f3e5ab] border border-[#d4af37]/30">Assistente LexBot</span>
+        <h3 class="font-serif-legal text-xl font-bold">Bem-vindo(a) ao seu Escritório Digital!</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">Gostaria de fazer um tour rápido de 1 minuto para conhecer o painel, a consulta de processos por CPF/CNJ e os horários de expediente?</p>
+      </div>
+      <div class="flex space-x-3 pt-2">
+        <button id="btn-centro-nao" class="flex-1 py-3 bg-slate-800/90 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition">Explorar sozinho</button>
+        <button id="btn-centro-sim" class="flex-1 py-3 champagne-gradient font-bold text-xs rounded-xl shadow-lg transition">Iniciar Tour Rápido ➔</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tour-backdrop"></div>
+
+  <!-- 4. LEXBOT VIAJANTE -->
+  <div id="lexbot-wrapper" style="bottom: 24px; right: 24px;" class="flex items-center pointer-events-none">
+    <div id="lexbot-bubble" class="pointer-events-auto mr-3 w-88 max-w-[380px] exec-card border border-[#d4af37]/40 rounded-2xl p-5 hidden relative">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-2.5">
+        <div class="flex items-center space-x-2">
+          <span class="w-2 h-2 rounded-full bg-[#e5c158] animate-ping"></span>
+          <span id="lexbot-title" class="text-xs font-bold text-[#f3e5ab]">Guia LexBot</span>
+        </div>
+        <button id="btn-close-bubble" class="text-slate-400 hover:text-white text-xs font-bold px-1.5" title="Fechar">✕</button>
+      </div>
+      <p id="lexbot-text" class="text-xs text-slate-200 leading-relaxed min-h-[80px]"></p>
+      <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-800/80">
+        <span id="lexbot-step-counter" class="text-[11px] font-medium text-slate-400">1 de 8</span>
+        <div class="flex space-x-2">
+          <button id="btn-lexbot-prev" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-[11px] font-semibold transition">Voltar</button>
+          <button id="btn-lexbot-next" class="px-3.5 py-1.5 champagne-gradient rounded-lg text-[11px] font-bold shadow transition">Próximo ➔</button>
+        </div>
+      </div>
+    </div>
+
+    <button id="btn-lexbot-avatar" class="pointer-events-auto group relative focus:outline-none" title="Abrir Tour LexBot">
+      <div class="w-16 h-16 mascot-float flex items-center justify-center transition-transform group-hover:scale-105">
+        <svg viewBox="0 0 120 120" class="w-full h-full">
+          <line x1="60" y1="12" x2="60" y2="26" stroke="#e5c158" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="60" cy="10" r="5" fill="#e5c158"/>
+          <rect x="26" y="26" width="68" height="58" rx="18" fill="#131c2e" stroke="#e5c158" stroke-width="3.5"/>
+          <rect x="34" y="36" width="52" height="30" rx="10" fill="#090d16" stroke="#334155" stroke-width="1.5"/>
+          <g class="mascot-eye">
+            <circle cx="48" cy="51" r="5.5" fill="#e5c158"/><circle cx="72" cy="51" r="5.5" fill="#e5c158"/>
+            <circle cx="49.5" cy="49.5" r="1.8" fill="#ffffff"/><circle cx="73.5" cy="49.5" r="1.8" fill="#ffffff"/>
+          </g>
+          <path d="M 52 60 Q 60 66 68 60" fill="none" stroke="#e5c158" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M 45 84 L 75 84 L 82 108 L 38 108 Z" fill="#1e293b" stroke="#e5c158" stroke-width="2"/>
+          <polygon points="57,84 63,84 65,102 60,106 55,102" fill="#d4af37"/>
+        </svg>
+      </div>
+    </button>
+  </div>
+
+  <!-- MODAL CRIAR SUBMENU -->
+  <div id="modal-submenu" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden items-center justify-center">
+    <div class="exec-card w-96 rounded-2xl p-6 border border-slate-700/80 space-y-4">
+      <div class="flex items-center space-x-2.5 text-[#e5c158]">
+        <svg class="w-5 h-5"><use href="#icon-flow"/></svg>
+        <h3 class="text-sm font-bold">Novo Submenu de Atendimento</h3>
+      </div>
+      <p class="text-xs text-slate-300">Qual o nome da especialidade ou setor? (Ex: Direito de Família)</p>
+      <input type="text" id="input-nome-submenu" placeholder="Ex: Direito de Família" class="exec-input w-full rounded-xl px-3.5 py-2.5 text-xs">
+      <div class="flex justify-end space-x-2 pt-2">
+        <button id="btn-cancelar-modal" class="px-4 py-2 bg-slate-800 text-slate-300 text-xs font-semibold rounded-xl">Cancelar</button>
+        <button id="btn-confirmar-modal" class="px-4 py-2 champagne-gradient text-xs font-bold rounded-xl">Criar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST SUTIL -->
+  <div id="toast-msg" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#131c2e] border border-[#d4af37]/60 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-semibold hidden items-center space-x-2.5 z-[110]">
+    <svg class="w-4 h-4 text-[#e5c158]"><use href="#icon-check"/></svg>
+    <span id="toast-texto">Configurações salvas com sucesso!</span>
+  </div>
+
+  <!-- BANNER EXECUTIVO DE ATUALIZAÇÃO DISPONÍVEL -->
+  <div id="banner-update-app" class="hidden w-full bg-gradient-to-r from-amber-600 via-[#d4af37] to-amber-600 text-slate-950 px-6 py-2.5 items-center justify-between font-semibold text-xs shadow-xl z-30 transition-all duration-300">
+    <div class="flex items-center space-x-2.5">
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-950 animate-ping"></span>
+      <span id="texto-update-app">Nova versão disponível!</span>
+    </div>
+    <div class="flex items-center space-x-3">
+      <button id="btn-instalar-update" class="px-4 py-1.5 bg-slate-950 hover:bg-slate-900 text-[#f3e5ab] font-bold text-xs rounded-xl shadow transition flex items-center space-x-1.5">
+        <svg class="w-3.5 h-3.5 text-[#e5c158]"><use href="#icon-refresh"/></svg>
+        <span>Reiniciar e Atualizar Agora</span>
+      </button>
+      <button id="btn-fechar-banner-update" class="text-slate-950 hover:text-white font-bold text-sm px-1.5">✕</button>
+    </div>
+  </div>
+
+  <!-- HEADER EXECUTIVO -->
+  <header id="main-header" class="h-16 exec-card border-b border-white/5 px-6 flex items-center justify-between z-20">
+    <div class="flex items-center space-x-3.5">
+      <div class="w-10 h-10 rounded-xl champagne-gradient flex items-center justify-center text-slate-950 shadow-md">
+        <svg class="w-5 h-5"><use href="#icon-scales"/></svg>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2.5">
+          <span class="font-serif-legal font-bold tracking-wide text-base">Advocacia <span class="text-[#e5c158]">Studio Pro</span></span>
+          <span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center">
+            <svg class="w-3 h-3 mr-1"><use href="#icon-shield"/></svg> Anti-Grupos Ativo
+          </span>
+          <span id="badge-autosave" class="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-slate-800/80 text-slate-400">✓ Salvo</span>
+        </div>
+        <p id="header-user-info" class="text-[11px] text-slate-400">Ambiente Corporativo</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-3">
+      <!-- BOTÃO DE ATUALIZAÇÃO NO HEADER -->
+      <button id="btn-header-update" class="hidden items-center space-x-1.5 px-3.5 py-1.5 champagne-gradient text-xs font-extrabold rounded-xl shadow-lg animate-bounce transition" title="Instalar nova atualização disponível agora">
+        <svg class="w-3.5 h-3.5"><use href="#icon-refresh"/></svg>
+        <span>Atualizar App</span>
+      </button>
+
+      <!-- MENU / CONTROLE DE VARREDURA DE MENSAGENS NÃO LIDAS -->
+      <div class="flex items-center space-x-2 bg-slate-900/90 border border-slate-800 rounded-xl px-2.5 py-1">
+        <label class="flex items-center space-x-1.5 cursor-pointer text-[11px] text-slate-300 select-none" title="Se ativado, ao conectar no WhatsApp o robô responde sozinho as mensagens não lidas que o humano ainda não respondeu">
+          <input type="checkbox" id="check-varredura-auto" class="accent-[#d4af37] rounded w-3.5 h-3.5 cursor-pointer">
+          <span class="font-medium">Auto-Varredura</span>
+        </label>
+        <span class="text-slate-700">|</span>
+        <button id="btn-varrer-nao-lidas" class="text-xs font-bold text-[#e5c158] hover:text-[#f3e5ab] transition flex items-center space-x-1" title="Verificar e responder agora mensagens não lidas pendentes">
+          <svg class="w-3.5 h-3.5"><use href="#icon-check"/></svg>
+          <span>Ler Agora</span>
+        </button>
+      </div>
+
+      <!-- BOTÃO ALTERNÂNCIA TEMA (SOL / LUA) -->
+      <button id="btn-toggle-theme" class="p-2 rounded-xl bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700 text-[#e5c158] transition" title="Alternar entre Modo Escuro e Modo Claro">
+        <svg id="theme-icon-sun" class="w-4 h-4 hidden"><use href="#icon-sun"/></svg>
+        <svg id="theme-icon-moon" class="w-4 h-4"><use href="#icon-moon"/></svg>
+      </button>
+
+      <div id="status-pill" class="flex items-center space-x-2 px-3.5 py-1.5 bg-slate-900/90 border border-slate-800 rounded-full text-xs font-medium text-slate-300">
+        <span id="status-dot" class="w-2 h-2 rounded-full bg-[#e5c158] animate-pulse"></span>
+        <span id="status-text">Iniciando...</span>
+      </div>
+      <button id="btn-reconnect" class="flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-800/70 hover:bg-slate-800 border border-slate-700/70 text-xs font-medium rounded-xl transition text-slate-200">
+        <svg class="w-3.5 h-3.5 text-[#e5c158]"><use href="#icon-refresh"/></svg>
+        <span>Reconectar</span>
+      </button>
+      <button id="btn-logout" class="flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-rose-950/40 border border-slate-800 text-xs font-medium rounded-xl transition text-slate-400 hover:text-rose-300">
+        <svg class="w-3.5 h-3.5"><use href="#icon-logout"/></svg>
+        <span>Trocar Conta</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- CORPO PRINCIPAL -->
+  <div class="flex flex-1 overflow-hidden">
+    
+    <!-- SIDEBAR -->
+    <aside id="main-sidebar" class="w-64 exec-card border-r border-white/5 p-4 flex flex-col justify-between">
+      <div class="space-y-5">
+        <div>
+          <span class="px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">Módulos</span>
+          <nav id="sidebar-nav" class="mt-2 space-y-1">
+            <button id="nav-btn-inicio" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold champagne-gradient flex items-center justify-between shadow-sm transition">
+              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-home"/></svg><span>Visão Geral</span></div>
+            </button>
+            <button id="nav-btn-processos" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
+              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-folder"/></svg><span>Consultar Processo (CPF / CNJ)</span></div>
+              <span id="badge-processos" class="px-2 py-0.5 text-[10px] rounded-full bg-slate-800 text-[#f3e5ab] font-bold">0</span>
+            </button>
+            <button id="nav-btn-fluxo" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
+              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-flow"/></svg><span>Menu Automático do WhatsApp</span></div>
+            </button>
+            <button id="nav-btn-agenda" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
+              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-calendar"/></svg><span>Horários de Atendimento & Almoço</span></div>
+            </button>
+            <button id="nav-btn-pausados" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
+              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-user-clock"/></svg><span>Atendimento Humano em Espera</span></div>
+              <span id="badge-pausados" class="px-2 py-0.5 text-[10px] rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+            </button>
+            <button id="nav-btn-terminal" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
+              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-activity"/></svg><span>Histórico de Mensagens</span></div>
+            </button>
+            <button id="nav-btn-backup" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
+              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-database"/></svg><span>Cópia de Segurança (.JSON)</span></div>
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Card QR Code WhatsApp -->
+      <div id="tour-qr-card" class="exec-card p-3.5 rounded-2xl flex flex-col items-center text-center">
+        <div class="flex items-center space-x-1.5 mb-2">
+          <svg class="w-3.5 h-3.5 text-[#e5c158]"><use href="#icon-qr"/></svg>
+          <span class="text-[11px] font-bold">Conexão WhatsApp</span>
+        </div>
+        <div id="qr-box" class="w-32 h-32 bg-[#080b12] border border-slate-800 rounded-xl flex items-center justify-center p-2">
+          <span class="text-[11px] text-slate-500 text-center leading-tight">Sincronizando...</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main id="main-content-area" class="flex-1 p-6 overflow-y-auto pb-24">
+      <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- FAIXA SUPERIOR DE PRODUTIVIDADE (DADOS REAIS) -->
+        <div id="tour-metrics-bar" class="exec-card px-6 py-4 rounded-2xl grid grid-cols-4 divide-x divide-slate-800/60">
+          <div class="pr-4 flex items-center justify-between">
+            <div>
+              <span class="text-[11px] font-medium text-slate-400 block">Contatos Únicos Atendidos</span>
+              <span id="metric-clientes-reais" class="text-xl font-bold mt-0.5 block">0</span>
+            </div>
+            <span class="text-[10px] px-2 py-1 rounded-lg bg-[#d4af37]/10 text-[#e5c158] font-semibold">Clientes</span>
+          </div>
+          <div class="px-6 flex items-center justify-between">
+            <div>
+              <span class="text-[11px] font-medium text-slate-400 block">Mensagens pelo Robô</span>
+              <span id="metric-mensagens-reais" class="text-xl font-bold text-emerald-400 mt-0.5 block">0</span>
+            </div>
+            <span class="text-[10px] px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 font-semibold">Respostas</span>
+          </div>
+          <div class="px-6 flex items-center justify-between">
+            <div>
+              <span class="text-[11px] font-medium text-slate-400 block">Aguardando Advogado</span>
+              <span id="metric-fila-humana" class="text-xl font-bold text-amber-300 mt-0.5 block">0</span>
+            </div>
+            <span class="text-[10px] px-2 py-1 rounded-lg bg-amber-500/10 text-amber-300 font-semibold">Humano</span>
+          </div>
+          <div class="pl-6 flex items-center justify-between">
+            <div>
+              <span class="text-[11px] font-medium text-slate-400 block">Horas Poupadas (Reais)</span>
+              <span id="metric-horas-reais" class="text-xl font-bold text-sky-400 mt-0.5 block">0.0 h</span>
+            </div>
+            <span class="text-[10px] px-2 py-1 rounded-lg bg-sky-500/10 text-sky-400 font-semibold">2 min/msg</span>
+          </div>
+        </div>
+
+        <!-- ================= ABA 0: TELA INICIAL (VISÃO GERAL) ================= -->
+        <div id="aba-inicio" class="space-y-6">
+          <div id="tour-home-banner" class="exec-card p-6 rounded-2xl border border-[#d4af37]/30 flex items-center justify-between">
+            <div class="space-y-1.5">
+              <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-[#d4af37]/15 text-[#e5c158]">Painel Executivo</span>
+              <h2 id="home-welcome-title" class="font-serif-legal text-2xl font-bold">Olá! Bem-vindo ao seu Escritório Digital.</h2>
+              <p class="text-xs text-slate-400">Resumo operacional das atividades, horários de expediente e consultas processuais.</p>
+            </div>
+            <div class="flex space-x-3">
+              <button onclick="irParaNovoProcessoDireto()" class="px-4 py-2.5 champagne-gradient rounded-xl text-xs font-bold shadow-lg flex items-center space-x-2 transition">
+                <svg class="w-4 h-4"><use href="#icon-plus"/></svg>
+                <span>Cadastrar Processo</span>
+              </button>
+              <button onclick="iniciarTourGuiado()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-[#e5c158] border border-slate-700 rounded-xl text-xs font-semibold transition flex items-center space-x-2">
+                <svg class="w-4 h-4"><use href="#icon-scales"/></svg>
+                <span>Tour LexBot</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-5">
+            <div class="exec-card p-5 rounded-2xl border-l-4 border-[#d4af37] flex items-center justify-between shadow-lg">
+              <div>
+                <span class="text-xs font-semibold text-slate-400 block">Processos Cadastrados</span>
+                <span id="home-card-processos" class="text-3xl font-extrabold text-[#e5c158] mt-1 block">0</span>
+                <span class="text-[11px] text-slate-400 mt-1 block">Prontos para consulta via CPF/Processo</span>
+              </div>
+              <div class="w-12 h-12 rounded-2xl bg-[#d4af37]/15 flex items-center justify-center text-[#e5c158]">
+                <svg class="w-6 h-6"><use href="#icon-folder"/></svg>
+              </div>
+            </div>
+
+            <div class="exec-card p-5 rounded-2xl border-l-4 border-emerald-500 flex items-center justify-between shadow-lg">
+              <div>
+                <span class="text-xs font-semibold text-slate-400 block">Status do Atendimento Hoje</span>
+                <span id="home-card-expediente" class="text-lg font-extrabold text-emerald-400 mt-1 block">Verificando...</span>
+                <span id="home-card-horario-detalhe" class="text-[11px] text-slate-400 mt-1 block">Conforme agenda semanal</span>
+              </div>
+              <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 flex items-center justify-center text-emerald-400">
+                <svg class="w-6 h-6"><use href="#icon-calendar"/></svg>
+              </div>
+            </div>
+
+            <div class="exec-card p-5 rounded-2xl border-l-4 border-sky-500 flex items-center justify-between shadow-lg cursor-pointer" onclick="ativarAba('fluxo')">
+              <div>
+                <span class="text-xs font-semibold text-slate-400 block">Menus Configurados</span>
+                <span id="home-card-menus" class="text-3xl font-extrabold text-sky-400 mt-1 block">2</span>
+                <span class="text-[11px] text-slate-400 mt-1 block">Boas-Vindas + Submenus</span>
+              </div>
+              <div class="w-12 h-12 rounded-2xl bg-sky-500/15 flex items-center justify-center text-sky-400">
+                <svg class="w-6 h-6"><use href="#icon-flow"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-12 gap-6">
+            <div class="col-span-6 exec-card p-5 rounded-2xl flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-3">
+                  <h3 class="text-xs font-bold uppercase tracking-wider text-[#e5c158]">Últimas Pastas Atualizadas</h3>
+                  <button onclick="ativarAba('processos')" class="text-[11px] text-[#e5c158] hover:underline font-semibold">Ver todas ➔</button>
+                </div>
+                <div id="home-ultimos-processos" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+              </div>
+            </div>
+
+            <div class="col-span-6 exec-card p-5 rounded-2xl flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-3">
+                  <h3 class="text-xs font-bold uppercase tracking-wider text-[#e5c158]">Atividade Recente</h3>
+                  <button onclick="ativarAba('terminal')" class="text-[11px] text-[#e5c158] hover:underline font-semibold">Abrir Histórico ➔</button>
+                </div>
+                <div id="home-ultimos-logs" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  <div class="text-xs text-slate-500 text-center py-10">Aguardando novas mensagens...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= ABA 1: CONSULTAR PROCESSO (CPF / CNJ) ================= -->
+        <div id="aba-processos" class="hidden space-y-5">
+          <div id="tour-processos-card" class="exec-card p-6 rounded-2xl space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+              <div>
+                <div class="flex items-center space-x-2.5">
+                  <h2 class="font-serif-legal text-lg font-bold">Consultar Processo (CPF / CNJ)</h2>
+                  <span class="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-[#d4af37]/15 text-[#e5c158] border border-[#d4af37]/30">
+                    Busca Estrita por Números
+                  </span>
+                </div>
+                <p class="text-xs text-slate-400 mt-1">O robô identifica a pasta exclusivamente pelo CPF ou pelo Número do Processo (o nome serve apenas para saudação).</p>
+              </div>
+              <button id="btn-toggle-msg-processos" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-[#e5c158] border border-slate-700 rounded-xl text-xs font-bold transition flex items-center space-x-2">
+                <svg class="w-3.5 h-3.5"><use href="#icon-settings"/></svg>
+                <span>Configurar Respostas do Robô</span>
+              </button>
+            </div>
+
+            <!-- Gaveta de Customização das Mensagens -->
+            <div id="painel-msg-processos" class="hidden bg-[#090d16] border border-[#d4af37]/40 rounded-2xl p-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-[#e5c158]">Modelos de Resposta de Processo</span>
+                <span class="text-[11px] text-slate-400">Tags: <code class="text-[#e5c158]">{nome}</code> <code class="text-[#e5c158]">{cpf}</code> <code class="text-[#e5c158]">{processo}</code> <code class="text-[#e5c158]">{resumo}</code> <code class="text-[#e5c158]">{data}</code></span>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="text-[11px] font-semibold text-emerald-400 block mb-1">1. Quando há nova atualização:</label>
+                  <textarea id="tpl-msg-com-atualizacao" rows="4" class="exec-input w-full rounded-xl p-3 text-xs resize-none"></textarea>
+                </div>
+                <div>
+                  <label class="text-[11px] font-semibold text-sky-400 block mb-1">2. Quando já consultou e nada mudou:</label>
+                  <textarea id="tpl-msg-ja-visto" rows="4" class="exec-input w-full rounded-xl p-3 text-xs resize-none"></textarea>
+                </div>
+                <div>
+                  <label class="text-[11px] font-semibold text-amber-300 block mb-1">3. Sem movimentação:</label>
+                  <textarea id="tpl-msg-sem-atualizacao" rows="3" class="exec-input w-full rounded-xl p-3 text-xs resize-none"></textarea>
+                </div>
+                <div>
+                  <label class="text-[11px] font-semibold text-rose-400 block mb-1">4. Quando CPF ou Processo não foi achado:</label>
+                  <textarea id="tpl-msg-nao-encontrado" rows="3" class="exec-input w-full rounded-xl p-3 text-xs resize-none"></textarea>
+                </div>
+              </div>
+              <div class="flex justify-end">
+                <button id="btn-salvar-tpl-processos" class="px-5 py-2 champagne-gradient text-xs font-bold rounded-xl shadow">Salvar Modelos</button>
+              </div>
+            </div>
+
+            <!-- Master-Detail: Lista à esquerda + Ficha à direita -->
+            <div class="grid grid-cols-12 gap-6 pt-1">
+              <div class="col-span-5 exec-card rounded-2xl p-4 flex flex-col h-[500px]">
+                <div class="flex items-center space-x-2 mb-3.5">
+                  <div class="relative flex-1">
+                    <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"><use href="#icon-search"/></svg>
+                    <input type="text" id="busca-processos" placeholder="Buscar CPF, Nº ou Nome..." class="exec-input w-full rounded-xl pl-9 pr-3 py-2 text-xs">
+                  </div>
+                  <button type="button" id="btn-limpar-form-proc" class="px-3.5 py-2 champagne-gradient rounded-xl text-xs font-bold flex items-center space-x-1 shadow flex-shrink-0 transition">
+                    <svg class="w-3.5 h-3.5"><use href="#icon-plus"/></svg>
+                    <span>Novo</span>
+                  </button>
+                </div>
+                <div id="lista-processos-box" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+              </div>
+
+              <div id="box-form-processo" class="col-span-7 exec-card rounded-2xl p-6 flex flex-col justify-between h-[500px]">
+                <div class="space-y-4">
+                  <div class="flex items-center justify-between border-b border-slate-800 pb-3.5">
+                    <div class="flex items-center space-x-3">
+                      <div id="avatar-ficha-proc" class="w-10 h-10 rounded-xl champagne-gradient flex items-center justify-center text-slate-950 font-extrabold text-xs shadow">
+                        NP
+                      </div>
+                      <div>
+                        <span id="form-proc-titulo" class="text-sm font-bold text-[#e5c158] block">Nova Pasta de Processo</span>
+                        <span id="subtitulo-status-ficha" class="text-[11px] text-slate-400">Preencha o CPF ou Processo e digite o resumo</span>
+                      </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                      <button type="button" id="btn-resetar-visto-ficha" class="hidden px-3 py-1.5 bg-sky-950/70 hover:bg-sky-900 text-sky-300 border border-sky-700/50 rounded-xl text-[11px] font-bold transition flex items-center space-x-1" title="Permitir que o cliente receba novamente o resumo ao consultar">
+                        <svg class="w-3.5 h-3.5"><use href="#icon-refresh"/></svg>
+                        <span>Liberar Reenvio</span>
+                      </button>
+                      <button type="button" id="btn-excluir-proc-ficha" class="hidden p-2 bg-rose-950/50 hover:bg-rose-900/70 text-rose-400 border border-rose-800/40 rounded-xl transition" title="Excluir Pasta">
+                        <svg class="w-4 h-4"><use href="#icon-trash"/></svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <input type="hidden" id="proc-id-edit" value="">
+
+                  <div class="grid grid-cols-12 gap-3 p-3.5 rounded-xl bg-black/20 border border-[#d4af37]/30">
+                    <div class="col-span-4">
+                      <label class="text-[11px] font-bold text-[#e5c158] block mb-1">CPF do Cliente (Busca) *</label>
+                      <input type="text" id="proc-cpf" placeholder="000.000.000-00" class="exec-input w-full rounded-xl px-3 py-2 text-xs font-mono">
+                    </div>
+                    <div class="col-span-4">
+                      <label class="text-[11px] font-bold text-[#e5c158] block mb-1">Nº do Processo (Busca) *</label>
+                      <input type="text" id="proc-numero" placeholder="0000000-00.2026..." class="exec-input w-full rounded-xl px-3 py-2 text-xs font-mono">
+                    </div>
+                    <div class="col-span-4">
+                      <label class="text-[11px] font-semibold text-slate-400 block mb-1">Nome do Cliente</label>
+                      <input type="text" id="proc-nome" placeholder="Ex: Roberto Silva" class="exec-input w-full rounded-xl px-3 py-2 text-xs">
+                    </div>
+                  </div>
+
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                      <label class="text-xs font-bold text-slate-300">Resumo do Andamento (Enviado pelo Robô)</label>
+                      <label class="flex items-center space-x-1.5 cursor-pointer text-[11px] text-emerald-400 font-semibold">
+                        <input type="checkbox" id="proc-tem-atualizacao" checked class="accent-[#d4af37] rounded cursor-pointer">
+                        <span>Notificar cliente</span>
+                      </label>
+                    </div>
+                    <textarea id="proc-resumo" rows="6" placeholder="Escreva aqui o resumo do andamento que será enviado ao cliente no WhatsApp..." class="exec-input w-full rounded-xl p-3.5 text-xs resize-none leading-relaxed"></textarea>
+                  </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
+                  <span class="text-[11px] text-slate-400">O robô busca exclusivamente pelos números do CPF ou do Processo.</span>
+                  <button type="button" id="btn-salvar-processo" class="px-6 py-3 champagne-gradient font-bold text-xs rounded-xl shadow-lg transition flex items-center space-x-2">
+                    <svg class="w-4 h-4"><use href="#icon-save"/></svg>
+                    <span>Salvar Pasta do Processo</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= ABA 2: MENU AUTOMÁTICO DO WHATSAPP ================= -->
+        <div id="aba-fluxo" class="hidden space-y-5">
+          <div id="tour-fluxo-header" class="flex items-center justify-between exec-card px-6 py-4 rounded-2xl">
+            <div>
+              <h2 class="font-serif-legal text-base font-bold">Menu Automático do WhatsApp</h2>
+              <p class="text-xs text-slate-400 mt-0.5">Defina as opções de triagem recebidas pelos clientes.</p>
+            </div>
+            <div class="flex space-x-2.5">
+              <button id="btn-nova-etapa" class="flex items-center space-x-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-semibold rounded-xl border border-slate-700 transition">
+                <svg class="w-4 h-4 text-[#e5c158]"><use href="#icon-plus"/></svg>
+                <span>Novo Submenu</span>
+              </button>
+              <button id="btn-salvar-fluxo" class="flex items-center space-x-1.5 px-5 py-2 champagne-gradient text-xs font-bold rounded-xl shadow-md transition">
+                <svg class="w-4 h-4"><use href="#icon-save"/></svg>
+                <span id="label-btn-salvar">Salvar Menu</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-12 gap-6">
+            <div class="col-span-7 space-y-5">
+              <div id="tour-seletor-etapa" class="exec-card p-4 rounded-2xl flex items-center justify-between">
+                <div class="flex items-center space-x-3 flex-1">
+                  <span class="text-xs font-semibold text-slate-300">Menu em Edição:</span>
+                  <select id="select-etapa" class="flex-1 exec-input rounded-xl px-3.5 py-2 text-xs text-[#e5c158] font-bold">
+                    <option value="raiz">Menu Principal (Boas-Vindas)</option>
+                  </select>
+                </div>
+                <button id="btn-excluir-etapa" class="hidden ml-3 items-center space-x-1 text-xs text-rose-400 hover:text-rose-300 font-semibold px-3 py-2 bg-rose-950/30 border border-rose-800/40 rounded-xl transition">
+                  <svg class="w-4 h-4"><use href="#icon-trash"/></svg>
+                  <span>Remover</span>
+                </button>
+              </div>
+
+              <div id="tour-editor-card" class="exec-card p-5 rounded-2xl space-y-2">
+                <div class="flex items-center justify-between mb-1">
+                  <label class="text-xs font-bold">Texto de Atendimento</label>
+                  <button type="button" id="btn-toggle-format" class="text-[11px] font-semibold text-[#e5c158] hover:underline flex items-center space-x-1">
+                    <svg class="w-3.5 h-3.5"><use href="#icon-settings"/></svg>
+                    <span>Formatação WhatsApp</span>
+                  </button>
+                </div>
+
+                <div id="format-drawer" class="format-drawer">
+                  <div class="flex flex-wrap items-center gap-1.5 bg-black/20 p-2 rounded-xl border border-slate-800">
+                    <button type="button" onclick="formatarTexto('bold')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-lg text-xs font-bold text-[#e5c158] transition">B *Negrito*</button>
+                    <button type="button" onclick="formatarTexto('italic')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-lg text-xs italic text-slate-200 transition">I _Itálico_</button>
+                    <button type="button" onclick="formatarTexto('strike')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-lg text-xs line-through text-slate-400 transition">S ~Tachado~</button>
+                    <div class="h-4 w-px bg-slate-800 mx-1"></div>
+                    <button type="button" onclick="inserirSnippet('• ')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-lg text-[11px] text-slate-300 transition">+ Tópico</button>
+                  </div>
+                </div>
+
+                <textarea id="input-etapa-msg" rows="4" placeholder="Mensagem enviada pelo robô..." class="exec-input w-full rounded-xl p-3.5 text-xs resize-none leading-relaxed"></textarea>
+              </div>
+
+              <div id="tour-options-card" class="exec-card p-5 rounded-2xl space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                  <div>
+                    <span class="text-xs font-bold">Opções de Escolha do Cliente</span>
+                    <p class="text-[11px] text-slate-400">O que acontece quando o cliente digita cada número:</p>
+                  </div>
+                  <button id="btn-add-opcao" class="flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-[#e5c158] border border-slate-700 text-xs font-semibold rounded-xl transition">
+                    <svg class="w-3.5 h-3.5"><use href="#icon-plus"/></svg>
+                    <span>Nova Opção</span>
+                  </button>
+                </div>
+                <div id="lista-opcoes" class="space-y-3"></div>
+              </div>
+            </div>
+
+            <div class="col-span-5">
+              <div id="tour-visual-map" class="exec-card p-5 rounded-2xl space-y-4 sticky top-0">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div class="flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-[#e5c158]"><use href="#icon-flow"/></svg>
+                    <h3 class="text-xs font-bold">Mapa do Menu</h3>
+                  </div>
+                  <span class="text-[10px] text-slate-400 bg-slate-900 px-2.5 py-0.5 rounded-full border border-slate-800">Clique para editar</span>
+                </div>
+                <div id="mapa-visual-container" class="space-y-3 max-h-[520px] overflow-y-auto pr-1"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= ABA 3: HORÁRIOS & INTERVALO DE ALMOÇO ================= -->
+        <div id="aba-agenda" class="hidden space-y-5">
+          <div id="tour-agenda-card" class="exec-card p-6 rounded-2xl space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+              <div>
+                <h2 class="font-serif-legal text-lg font-bold">Horários de Atendimento & Intervalo de Almoço</h2>
+                <p class="text-xs text-slate-400 mt-1">Fora do horário ou no almoço, o robô apenas altera o início da mensagem com o aviso abaixo e segue o atendimento normal.</p>
+              </div>
+              <button id="btn-salvar-agenda" class="flex items-center space-x-1.5 px-5 py-2.5 champagne-gradient text-xs font-bold rounded-xl shadow-md transition">
+                <svg class="w-4 h-4"><use href="#icon-save"/></svg>
+                <span>Salvar Horários</span>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-12 gap-4">
+              <div class="col-span-7 p-5 rounded-2xl bg-black/20 border border-[#d4af37]/30 space-y-3.5">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-[#d4af37]/15 flex items-center justify-center text-[#e5c158]">
+                      <svg class="w-4 h-4"><use href="#icon-coffee"/></svg>
+                    </div>
+                    <div>
+                      <span class="text-xs font-bold block">Pausa de Almoço Automática</span>
+                      <span class="text-[11px] text-slate-400">Adiciona aviso de almoço no início da resposta</span>
+                    </div>
+                  </div>
+                  <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="checkbox" id="agenda-almoco-ativo" class="accent-[#d4af37] w-4 h-4 rounded">
+                    <span class="text-xs font-bold text-[#e5c158]">Ativar Intervalo</span>
+                  </label>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-xs text-slate-400">Início:</span>
+                    <input type="time" id="agenda-almoco-inicio" class="exec-input flex-1 rounded-xl px-3 py-1.5 text-xs">
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-xs text-slate-400">Término:</span>
+                    <input type="time" id="agenda-almoco-fim" class="exec-input flex-1 rounded-xl px-3 py-1.5 text-xs">
+                  </div>
+                </div>
+                <div>
+                  <label class="text-[11px] text-slate-400 block mb-1">Início da mensagem enviado no horário de almoço:</label>
+                  <input type="text" id="agenda-msg-almoco" placeholder="Aviso de almoço..." class="exec-input w-full rounded-xl px-3.5 py-2 text-xs">
+                </div>
+              </div>
+
+              <div class="col-span-5 p-5 rounded-2xl bg-black/20 border border-slate-800 space-y-3 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center space-x-2 mb-2">
+                    <svg class="w-4 h-4 text-amber-400"><use href="#icon-moon-msg"/></svg>
+                    <span class="text-xs font-bold">Início da Mensagem Fora de Expediente</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 mb-2">Texto colocado no começo da resposta quando o escritório está fechado (o menu/atendimento segue normal abaixo):</p>
+                  <textarea id="agenda-msg-fora" rows="4" class="exec-input w-full rounded-xl p-3 text-xs resize-none leading-relaxed"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dias da Semana Garantidos -->
+            <div class="space-y-2.5 pt-2">
+              <span class="text-xs font-bold text-[#e5c158] uppercase tracking-wider block">Expediente por Dia da Semana (Seg a Dom):</span>
+              <div id="grade-dias-semana" class="space-y-2.5"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= ABA 4: ATENDIMENTO HUMANO (FILA DO ADVOGADO) ================= -->
+        <div id="aba-pausados" class="hidden space-y-5">
+          <div id="tour-pausados-card" class="exec-card p-6 rounded-2xl space-y-4">
+            <div class="border-b border-slate-800/80 pb-3">
+              <h2 class="font-serif-legal text-lg font-bold">Atendimento Humano em Espera</h2>
+              <p class="text-xs text-slate-400 mt-1">Clientes que solicitaram falar diretamente com o advogado. O robô fica silenciado para estes números por 24 horas ou até você clicar em Reativar Robô Agora.</p>
+            </div>
+            <div id="lista-pausados" class="space-y-2.5"></div>
+          </div>
+        </div>
+
+        <!-- ================= ABA 5: HISTÓRICO DE MENSAGENS ================= -->
+        <div id="aba-terminal" class="hidden space-y-5">
+          <div id="tour-terminal-card" class="exec-card p-6 rounded-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+              <div>
+                <h2 class="font-serif-legal text-lg font-bold">Histórico de Mensagens Recebidas</h2>
+                <p class="text-xs text-slate-400 mt-0.5">Mensagens recebidas em tempo real com identificação de nomes e telefones reais.</p>
+              </div>
+              <button id="btn-limpar-logs" class="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs text-slate-200 transition">
+                <svg class="w-3.5 h-3.5"><use href="#icon-trash"/></svg>
+                <span>Limpar</span>
+              </button>
+            </div>
+            <div id="logs-box" class="h-[440px] exec-input rounded-2xl p-5 overflow-y-auto space-y-2.5">
+              <div class="text-slate-500 text-xs text-center py-16">Nenhuma mensagem registrada nesta sessão.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= ABA 6: CÓPIA DE SEGURANÇA (.JSON) ================= -->
+        <div id="aba-backup" class="hidden space-y-5">
+          <div id="tour-backup-card" class="exec-card p-6 rounded-2xl space-y-4">
+            <div class="border-b border-slate-800/80 pb-3">
+              <h2 class="font-serif-legal text-lg font-bold">Cópia de Segurança (.JSON)</h2>
+              <p class="text-xs text-slate-400 mt-0.5">Exporte suas pastas de processos e menus para restaurar a qualquer momento.</p>
+            </div>
+            <div class="grid grid-cols-2 gap-6 pt-2">
+              <div class="exec-card p-6 rounded-2xl flex flex-col justify-between space-y-5">
+                <div class="space-y-2">
+                  <div class="w-11 h-11 rounded-xl bg-[#d4af37]/15 border border-[#d4af37]/30 flex items-center justify-center text-[#e5c158]">
+                    <svg class="w-5 h-5"><use href="#icon-download"/></svg>
+                  </div>
+                  <h3 class="text-sm font-bold">Exportar Dados</h3>
+                  <p class="text-xs text-slate-400">Gera um arquivo .JSON completo com processos, horários e menus.</p>
+                </div>
+                <button id="btn-exportar-dados" class="w-full py-3 champagne-gradient font-bold text-xs rounded-xl shadow-md">Baixar Backup</button>
+              </div>
+              <div class="exec-card p-6 rounded-2xl flex flex-col justify-between space-y-5">
+                <div class="space-y-2">
+                  <div class="w-11 h-11 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-200">
+                    <svg class="w-5 h-5"><use href="#icon-upload"/></svg>
+                  </div>
+                  <h3 class="text-sm font-bold">Restaurar Dados</h3>
+                  <p class="text-xs text-slate-400">Recupere suas pastas e menus a partir de um backup prévio.</p>
+                </div>
+                <input type="file" id="input-importar-arquivo" accept=".json" class="hidden">
+                <button id="btn-importar-dados" class="w-full py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-bold text-xs rounded-xl transition">Escolher Arquivo (.JSON)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function obterConfigPadraoFallback() {
+      return {
+        varredura_automatica_inicio: false,
+        agenda: {
+          "0": { nome: "Domingo", ativo: false, abertura: "08:00", fechamento: "18:00" },
+          "1": { nome: "Segunda-feira", ativo: true, abertura: "08:00", fechamento: "18:00" },
+          "2": { nome: "Terça-feira", ativo: true, abertura: "08:00", fechamento: "18:00" },
+          "3": { nome: "Quarta-feira", ativo: true, abertura: "08:00", fechamento: "18:00" },
+          "4": { nome: "Quinta-feira", ativo: true, abertura: "08:00", fechamento: "18:00" },
+          "5": { nome: "Sexta-feira", ativo: true, abertura: "08:00", fechamento: "18:00" },
+          "6": { nome: "Sábado", ativo: false, abertura: "08:00", fechamento: "12:00" },
+          almoco_ativo: true,
+          almoco_inicio: "12:00",
+          almoco_fim: "13:30",
+          msg_almoco: "⏳ *Horário de Almoço:* No momento nossa equipe está em intervalo de almoço (retornamos às 13:30), mas nosso atendimento automático segue abaixo para ajudar você:",
+          msg_fora_expediente: "🌙 *Fora do Horário de Expediente:* Nosso escritório está fechado neste momento, mas nosso atendimento automático segue disponível abaixo para adiantar sua solicitação:"
+        },
+        fluxo: {
+          raiz: {
+            titulo: "Menu Principal (Boas-Vindas)",
+            mensagem: "⚖️ *Escritório de Advocacia*\\n\\nOlá! Seja muito bem-vindo(a) ao nosso atendimento digital.\\n\\nComo podemos auxiliar você hoje?",
+            opcoes: [
+              { gatilho: "1", rotulo: "Consultar Andamento de Processo", tipo: "processo", destino: "", resposta: "Perfeito! Por gentileza, digite apenas o seu *CPF* ou o *Número do Processo* para localizarmos sua pasta:" },
+              { gatilho: "2", rotulo: "Iniciar Nova Consulta Jurídica", tipo: "submenu", destino: "areas", resposta: "" },
+              { gatilho: "3", rotulo: "Falar com um Advogado", tipo: "humano", destino: "", resposta: "Perfeito! Um advogado da nossa equipe assumirá seu atendimento em instantes." }
+            ]
+          },
+          etapas: {
+            "areas": {
+              titulo: "Submenu: Especialidades",
+              mensagem: "*Nova Consulta Jurídica*\\n\\nSelecione a área correspondente ao seu caso:",
+              opcoes: [
+                { gatilho: "1", rotulo: "Direito Cível, Família ou Contratos", tipo: "texto", destino: "", resposta: "Compreendido. Envie um breve resumo do ocorrido para análise prévia do advogado." },
+                { gatilho: "0", rotulo: "Voltar ao Menu Inicial", tipo: "submenu", destino: "raiz", resposta: "" }
+              ]
+            }
+          }
+        },
+        processos: {
+          mensagens: {
+            msg_com_atualizacao: "⚖️ *Andamento Processual Localizado*\n\nOlá, *{nome}*!\nReferente ao processo nº *{processo}* (CPF: *{cpf}*):\n\n📋 *Resumo da Atualização ({data}):*\n{resumo}\n\n_(Digite *0* para voltar ao Menu Principal ou *3* para falar com um advogado)_",
+            msg_ja_visto: "⚖️ *Consulta Processual*\n\nOlá, *{nome}*! Verificamos a pasta do seu processo nº *{processo}* e informamos que *não houve novas movimentações* desde a sua última consulta em *{ultima_consulta}*.\n\n📌 *Último resumo registrado ({data}):*\n{resumo}\n\nFique tranquilo(a), assim que houver novidades atualizaremos por aqui!",
+            msg_sem_atualizacao: "⚖️ *Consulta Processual*\n\nOlá, *{nome}*! Seu processo nº *{processo}* está devidamente cadastrado em nosso sistema, porém ainda não possui movimentações ou resumos lançados até o momento.\n\nNossa equipe segue acompanhando!",
+            msg_nao_encontrado: "⚠️ Não conseguimos localizar nenhum processo com o *CPF* ou *Número de Processo* informado.\n\nPor favor, envie novamente apenas os números do seu CPF ou do Processo, ou digite *0* para voltar ao Menu Inicial."
+          },
+          lista: []
+        },
+        mapaNomes: {},
+        metricasReais: { totalMensagens: 0, contatosAtendidos: [] }
+      };
+    }
+
+    let configGlobal = obterConfigPadraoFallback();
+    let etapaSelecionada = 'raiz';
+    let idProcessoSelecionado = '';
+    let timerAutoSave = null;
+    let timerMapaVisual = null;
+
+    function garantirEstruturaAgenda() {
+      const padraoAgenda = obterConfigPadraoFallback().agenda;
+      if (!configGlobal.agenda || typeof configGlobal.agenda !== 'object') {
+        configGlobal.agenda = JSON.parse(JSON.stringify(padraoAgenda));
+        return;
+      }
+      ["1", "2", "3", "4", "5", "6", "0"].forEach(diaKey => {
+        if (!configGlobal.agenda[diaKey] || typeof configGlobal.agenda[diaKey] !== 'object') {
+          configGlobal.agenda[diaKey] = JSON.parse(JSON.stringify(padraoAgenda[diaKey]));
+        }
+      });
+      if (typeof configGlobal.varredura_automatica_inicio === 'undefined') configGlobal.varredura_automatica_inicio = false;
+      if (typeof configGlobal.agenda.almoco_ativo === 'undefined') configGlobal.agenda.almoco_ativo = true;
+      if (!configGlobal.agenda.almoco_inicio) configGlobal.agenda.almoco_inicio = "12:00";
+      if (!configGlobal.agenda.almoco_fim) configGlobal.agenda.almoco_fim = "13:30";
+      if (!configGlobal.agenda.msg_almoco) configGlobal.agenda.msg_almoco = padraoAgenda.msg_almoco;
+      if (!configGlobal.agenda.msg_fora_expediente) configGlobal.agenda.msg_fora_expediente = padraoAgenda.msg_fora_expediente;
+    }
+
+    function aplicarTema(tema) {
+      if (tema === 'light') {
+        document.body.classList.remove('theme-dark');
+        document.body.classList.add('theme-light');
+        document.getElementById('theme-icon-sun').classList.remove('hidden');
+        document.getElementById('theme-icon-moon').classList.add('hidden');
+      } else {
+        document.body.classList.remove('theme-light');
+        document.body.classList.add('theme-dark');
+        document.getElementById('theme-icon-sun').classList.add('hidden');
+        document.getElementById('theme-icon-moon').classList.remove('hidden');
+      }
+      localStorage.setItem('adv_bot_theme', tema);
+    }
+
+    document.getElementById('btn-toggle-theme').addEventListener('click', () => {
+      const atual = document.body.classList.contains('theme-light') ? 'light' : 'dark';
+      aplicarTema(atual === 'light' ? 'dark' : 'light');
+    });
+
+    const formatDrawer = document.getElementById('format-drawer');
+    const btnToggleFormat = document.getElementById('btn-toggle-format');
+    const inputEtapaMsg = document.getElementById('input-etapa-msg');
+
+    function alternarBarraFormatacao(forcarEstado = null) {
+      const estaAberta = formatDrawer.classList.contains('open');
+      const abrir = forcarEstado !== null ? forcarEstado : !estaAberta;
+      if (abrir) formatDrawer.classList.add('open');
+      else formatDrawer.classList.remove('open');
+    }
+
+    btnToggleFormat.addEventListener('click', () => alternarBarraFormatacao());
+    inputEtapaMsg.addEventListener('focus', () => alternarBarraFormatacao(true));
+
+    function atualizarPainelMetricas(qtdFilaHumana = null) {
+      const m = configGlobal.metricasReais || { totalMensagens: 0, contatosAtendidos: [] };
+      const contatosQtd = Array.isArray(m.contatosAtendidos) ? m.contatosAtendidos.length : 0;
+      const msgsQtd = m.totalMensagens || 0;
+      const horasPoupadas = ((msgsQtd * 2) / 60).toFixed(1);
+
+      document.getElementById('metric-clientes-reais').innerText = String(contatosQtd);
+      document.getElementById('metric-mensagens-reais').innerText = String(msgsQtd);
+      document.getElementById('metric-horas-reais').innerText = `${horasPoupadas} h`;
+
+      if (qtdFilaHumana !== null) {
+        document.getElementById('metric-fila-humana').innerText = String(qtdFilaHumana);
+      }
+      renderizarTelaInicial();
+    }
+
+    function mostrarToast(texto) {
+      const toast = document.getElementById('toast-msg');
+      document.getElementById('toast-texto').innerText = texto;
+      toast.classList.remove('hidden');
+      toast.classList.add('flex');
+      setTimeout(() => { toast.classList.add('hidden'); toast.classList.remove('flex'); }, 2800);
+    }
+
+    function agendarRenderMapaVisual() {
+      clearTimeout(timerMapaVisual);
+      timerMapaVisual = setTimeout(() => { renderizarMapaVisual(); }, 250);
+    }
+
+    function marcarAlteracaoPendente() {
+      const badge = document.getElementById('badge-autosave');
+      const btnSalvar = document.getElementById('btn-salvar-fluxo');
+      const labelSalvar = document.getElementById('label-btn-salvar');
+
+      badge.innerText = "● Gravando...";
+      badge.className = "text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#d4af37]/15 text-[#e5c158]";
+      btnSalvar.classList.add('unsaved-glow');
+      labelSalvar.innerText = "Salvar Agora ●";
+
+      clearTimeout(timerAutoSave);
+      timerAutoSave = setTimeout(() => { salvarConfiguracaoCompleta(true); }, 1000);
+    }
+
+    async function gerarHashSenha(texto) {
+      try {
+        const msgBuffer = new TextEncoder().encode(texto + "_adv_salt_v6");
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+      } catch (e) { return btoa(texto); }
+    }
+
+    function iniciarSplashELogin() {
+      const bar = document.getElementById('splash-bar');
+      const status = document.getElementById('splash-status');
+      
+      setTimeout(() => { bar.style.width = '45%'; status.innerText = 'Carregando módulos...'; }, 200);
+      setTimeout(() => { bar.style.width = '85%'; status.innerText = 'Iniciando WhatsApp...'; }, 500);
+      setTimeout(() => {
+        bar.style.width = '100%';
+        const splash = document.getElementById('splash-screen');
+        splash.style.opacity = '0';
+        setTimeout(() => {
+          splash.classList.add('hidden');
+          verificarEstadoLogin();
+        }, 300);
+      }, 800);
+    }
+
+    function verificarEstadoLogin() {
+      const contaSalva = localStorage.getItem('adv_bot_user_account');
+      const sessaoAtiva = sessionStorage.getItem('adv_bot_logged_in');
+      const authScreen = document.getElementById('auth-screen');
+
+      if (sessaoAtiva === 'true') {
+        const dados = contaSalva ? JSON.parse(contaSalva) : { office: 'Modo Convidado', user: 'Doutor(a)' };
+        aplicarUsuarioLogado(dados);
+        authScreen.classList.add('hidden');
+        authScreen.classList.remove('flex');
+        
+        const jaViu = localStorage.getItem('adv_bot_tour_v6_done');
+        if (!jaViu) {
+          setTimeout(() => dispararEntradaTriunfalLexBot(), 300);
+        }
+        return;
+      }
+
+      authScreen.classList.remove('hidden');
+      authScreen.classList.add('flex');
+
+      const officeBox = document.getElementById('campo-escritorio-box');
+      const recBox = document.getElementById('campo-chave-recuperacao');
+      const title = document.getElementById('auth-title');
+      const btnSubmit = document.getElementById('btn-auth-submit');
+
+      if (!contaSalva) {
+        officeBox.classList.remove('hidden');
+        recBox.classList.remove('hidden');
+        title.innerText = 'Configurar Escritório';
+        btnSubmit.innerText = 'Criar Conta e Entrar';
+      } else {
+        officeBox.classList.add('hidden');
+        recBox.classList.add('hidden');
+        title.innerText = 'Portal do Escritório';
+        btnSubmit.innerText = 'Desbloquear Painel';
+      }
+    }
+
+    function aplicarUsuarioLogado(dados) {
+      document.getElementById('header-user-info').innerText = `${dados.office || 'Escritório'} • Operador: ${dados.user}`;
+      document.getElementById('home-welcome-title').innerText = `Olá, ${dados.user || 'Doutor(a)'}! Bem-vindo ao ${dados.office || 'Escritório Digital'}.`;
+    }
+
+    document.getElementById('btn-guest-login').addEventListener('click', () => {
+      localStorage.removeItem('adv_bot_tour_v6_done');
+      sessionStorage.setItem('adv_bot_logged_in', 'true');
+      aplicarUsuarioLogado({ office: 'Escritório Modelo', user: 'Convidado' });
+      document.getElementById('auth-screen').classList.add('hidden');
+      document.getElementById('auth-screen').classList.remove('flex');
+      setTimeout(() => dispararEntradaTriunfalLexBot(), 250);
+    });
+
+    document.getElementById('btn-auth-submit').addEventListener('click', async () => {
+      const user = document.getElementById('auth-user').value.trim();
+      const pass = document.getElementById('auth-pass').value.trim();
+      const office = document.getElementById('auth-office').value.trim();
+      const recovery = document.getElementById('auth-recovery').value.trim();
+      const err = document.getElementById('auth-error');
+
+      if (!user || !pass) {
+        err.innerText = 'Preencha usuário e senha ou entre como convidado!';
+        err.classList.remove('hidden');
+        return;
+      }
+
+      const passHash = await gerarHashSenha(pass);
+      const contaSalva = localStorage.getItem('adv_bot_user_account');
+
+      if (!contaSalva) {
+        const novaConta = { user, passHash, recoveryKey: (recovery || 'OAB').toLowerCase(), office: office || 'Escritório de Advocacia' };
+        localStorage.setItem('adv_bot_user_account', JSON.stringify(novaConta));
+        sessionStorage.setItem('adv_bot_logged_in', 'true');
+        aplicarUsuarioLogado(novaConta);
+        document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('auth-screen').classList.remove('flex');
+        mostrarToast('Credenciais registradas!');
+        setTimeout(() => dispararEntradaTriunfalLexBot(), 300);
+      } else {
+        const dados = JSON.parse(contaSalva);
+        if (dados.user === user && dados.passHash === passHash) {
+          sessionStorage.setItem('adv_bot_logged_in', 'true');
+          aplicarUsuarioLogado(dados);
+          document.getElementById('auth-screen').classList.add('hidden');
+          document.getElementById('auth-screen').classList.remove('flex');
+          err.classList.add('hidden');
+          const jaViu = localStorage.getItem('adv_bot_tour_v6_done');
+          if (!jaViu) dispararEntradaTriunfalLexBot();
+        } else {
+          err.innerText = 'Usuário ou senha incorretos.';
+          err.classList.remove('hidden');
+        }
+      }
+    });
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      sessionStorage.removeItem('adv_bot_logged_in');
+      document.getElementById('auth-pass').value = '';
+      verificarEstadoLogin();
+    });
+
+    const modalReset = document.getElementById('modal-recuperar-senha');
+    document.getElementById('btn-esqueci-senha').addEventListener('click', () => {
+      modalReset.classList.remove('hidden'); modalReset.classList.add('flex');
+    });
+    document.getElementById('btn-cancelar-reset').addEventListener('click', () => {
+      modalReset.classList.add('hidden'); modalReset.classList.remove('flex');
+    });
+    document.getElementById('btn-confirmar-reset').addEventListener('click', () => {
+      const val = document.getElementById('input-chave-reset').value.trim().toLowerCase();
+      const conta = JSON.parse(localStorage.getItem('adv_bot_user_account') || '{}');
+      if (val === 'resetar' || (conta.recoveryKey && val === conta.recoveryKey)) {
+        localStorage.removeItem('adv_bot_user_account');
+        modalReset.classList.add('hidden'); modalReset.classList.remove('flex');
+        verificarEstadoLogin();
+        mostrarToast('Acesso redefinido!');
+      } else {
+        alert('Chave incorreta. Digite RESETAR para recriar.');
+      }
+    });
+
+    /* ================= TELA INICIAL ================= */
+    function renderizarTelaInicial() {
+      garantirEstruturaProcessos();
+      garantirEstruturaAgenda();
+      const lista = configGlobal.processos.lista || [];
+      document.getElementById('home-card-processos').innerText = String(lista.length);
+      document.getElementById('badge-processos').innerText = String(lista.length);
+
+      const qtdMenus = 1 + Object.keys((configGlobal.fluxo && configGlobal.fluxo.etapas) || {}).length;
+      const elMenus = document.getElementById('home-card-menus');
+      if (elMenus) elMenus.innerText = String(qtdMenus);
+
+      const agora = new Date();
+      const diaHoje = String(agora.getDay());
+      const confHoje = configGlobal.agenda && configGlobal.agenda[diaHoje];
+      if (confHoje && confHoje.ativo) {
+        document.getElementById('home-card-expediente').innerText = "Aberto Hoje";
+        document.getElementById('home-card-horario-detalhe').innerText = `${confHoje.nome}: ${confHoje.abertura} às ${confHoje.fechamento}`;
+      } else {
+        document.getElementById('home-card-expediente').innerText = "Fora de Expediente";
+        document.getElementById('home-card-horario-detalhe').innerText = "Atendendo normal com aviso no início";
+      }
+
+      const boxUltimos = document.getElementById('home-ultimos-processos');
+      if (boxUltimos) {
+        boxUltimos.innerHTML = '';
+        if (lista.length === 0) {
+          boxUltimos.innerHTML = '<div class="text-xs text-slate-500 text-center py-8">Nenhum processo cadastrado ainda.</div>';
+        } else {
+          lista.slice(0, 4).forEach(p => {
+            const d = document.createElement('div');
+            d.className = "p-2.5 rounded-xl exec-input hover:border-[#d4af37]/50 flex items-center justify-between cursor-pointer transition";
+            d.onclick = () => { ativarAba('processos'); selecionarProcessoNaLista(p.id); };
+            d.innerHTML = `
+              <div class="truncate pr-2">
+                <span class="text-xs font-bold block truncate">${p.nome || 'Cliente'}</span>
+                <span class="text-[10px] font-mono text-[#e5c158]">CPF: ${p.cpf || '-'} • Proc: ${p.numero || '-'}</span>
+              </div>
+              <span class="text-[10px] text-slate-400">➔</span>
+            `;
+            boxUltimos.appendChild(d);
+          });
+        }
+      }
+    }
+
+    window.irParaNovoProcessoDireto = function() {
+      ativarAba('processos');
+      limparFormularioProcesso();
+    };
+
+    /* ================= TOUR GUIADO ================= */
+    function dispararEntradaTriunfalLexBot() {
+      const modalCentro = document.getElementById('lexbot-center-modal');
+      modalCentro.classList.remove('hidden');
+      modalCentro.classList.add('flex');
+    }
+
+    document.getElementById('btn-centro-nao').addEventListener('click', () => {
+      document.getElementById('lexbot-center-modal').classList.add('hidden');
+      document.getElementById('lexbot-center-modal').classList.remove('flex');
+      localStorage.setItem('adv_bot_tour_v6_done', 'true');
+    });
+
+    document.getElementById('btn-centro-sim').addEventListener('click', () => {
+      document.getElementById('lexbot-center-modal').classList.add('hidden');
+      document.getElementById('lexbot-center-modal').classList.remove('flex');
+      iniciarTourGuiado();
+    });
+
+    const passosTour = [
+      { titulo: "1. Visão Geral", texto: "Aqui você acompanha o resumo das operações, status do expediente e os últimos clientes.", aba: "inicio", alvoId: "tour-home-banner" },
+      { titulo: "2. Produtividade Real", texto: "Mostra os clientes reais atendidos e as mensagens reais processadas pelo robô.", aba: "inicio", alvoId: "tour-metrics-bar" },
+      { titulo: "3. Consultar Processo", texto: "Cadastre o CPF ou Número do Processo e o resumo. O robô busca apenas pelos números informados.", aba: "processos", alvoId: "tour-processos-card" },
+      { titulo: "4. Menu do WhatsApp", texto: "Personalize as mensagens e os submenus numéricos que o cliente recebe ao mandar mensagem.", aba: "fluxo", alvoId: "tour-seletor-etapa" },
+      { titulo: "5. Formatação", texto: "Clique para formatar textos em negrito (*texto*) ou itálico (_texto_) com facilidade.", aba: "fluxo", alvoId: "format-drawer", acaoExtra: () => alternarBarraFormatacao(true) },
+      { titulo: "6. Horários & Almoço", texto: "Defina o expediente semanal e o intervalo de almoço. Fora de horário, o robô apenas muda o começo da mensagem e segue o atendimento normal!", aba: "agenda", alvoId: "tour-agenda-card" },
+      { titulo: "7. Atendimento Humano", texto: "Clientes em espera por atendimento ficam aqui. Você pode reativar o robô a qualquer instante.", aba: "pausados", alvoId: "tour-pausados-card" },
+      { titulo: "8. Conexão do WhatsApp", texto: "Escaneie este QR Code no WhatsApp para conectar. O robô responde rápido com respostas numéricas precisas!", aba: "inicio", alvoId: "tour-qr-card" }
+    ];
+
+    let passoAtualTour = 0;
+    let tourAtivo = false;
+
+    function limparFocoTour() {
+      document.querySelectorAll('.tour-focus-target').forEach(el => el.classList.remove('tour-focus-target'));
+    }
+
+    function posicionarLexBot(alvoEl) {
+      const wrapper = document.getElementById('lexbot-wrapper');
+      const rect = alvoEl.getBoundingClientRect();
+      let top = rect.top + (rect.height / 2) - 120;
+      let left = rect.right + 20;
+
+      if (left + 420 > window.innerWidth - 16) left = rect.left - 420 - 20;
+      if (left < 16) { left = Math.max(20, rect.right - 400); top = rect.bottom + 15; }
+      top = Math.max(20, Math.min(window.innerHeight - 240, top));
+
+      wrapper.style.bottom = 'auto'; wrapper.style.right = 'auto';
+      wrapper.style.top = `${top}px`; wrapper.style.left = `${left}px`;
+    }
+
+    function renderizarPassoTour() {
+      limparFocoTour();
+      const passo = passosTour[passoAtualTour];
+      if (!passo) return;
+
+      if (passo.aba) ativarAba(passo.aba);
+      if (passo.acaoExtra) passo.acaoExtra();
+
+      document.getElementById('lexbot-title').innerText = passo.titulo;
+      document.getElementById('lexbot-text').innerText = passo.texto;
+      document.getElementById('lexbot-step-counter').innerText = `${passoAtualTour + 1} de ${passosTour.length}`;
+      document.getElementById('btn-lexbot-next').innerText = (passoAtualTour === passosTour.length - 1) ? 'Concluir' : 'Próximo ➔';
+
+      setTimeout(() => {
+        const alvo = document.getElementById(passo.alvoId);
+        if (alvo) {
+          alvo.classList.add('tour-focus-target');
+          alvo.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          posicionarLexBot(alvo);
+        }
+      }, 70);
+    }
+
+    window.iniciarTourGuiado = function() {
+      tourAtivo = true; passoAtualTour = 0;
+      document.getElementById('tour-backdrop').classList.add('active');
+      document.getElementById('lexbot-bubble').classList.remove('hidden');
+      renderizarPassoTour();
+    };
+
+    function finalizarTour() {
+      tourAtivo = false; limparFocoTour(); alternarBarraFormatacao(false); ativarAba('inicio');
+      document.getElementById('tour-backdrop').classList.remove('active');
+      document.getElementById('lexbot-bubble').classList.add('hidden');
+      const wrapper = document.getElementById('lexbot-wrapper');
+      wrapper.style.top = 'auto'; wrapper.style.left = 'auto'; wrapper.style.bottom = '24px'; wrapper.style.right = '24px';
+      localStorage.setItem('adv_bot_tour_v6_done', 'true');
+      mostrarToast('Tour concluído!');
+    }
+
+    document.getElementById('btn-lexbot-next').addEventListener('click', () => {
+      if (passoAtualTour < passosTour.length - 1) { passoAtualTour++; renderizarPassoTour(); } else { finalizarTour(); }
+    });
+    document.getElementById('btn-lexbot-prev').addEventListener('click', () => {
+      if (passoAtualTour > 0) { passoAtualTour--; renderizarPassoTour(); }
+    });
+    document.getElementById('btn-close-bubble').addEventListener('click', finalizarTour);
+    document.getElementById('tour-backdrop').addEventListener('click', finalizarTour);
+    document.getElementById('btn-lexbot-avatar').addEventListener('click', () => {
+      if (tourAtivo) finalizarTour(); else iniciarTourGuiado();
+    });
+
+    /* ================= FORMATAÇÃO E MAPA VISUAL ================= */
+    window.formatarTexto = function(tipo) {
+      const textarea = document.getElementById('input-etapa-msg');
+      const start = textarea.selectionStart; const end = textarea.selectionEnd;
+      const texto = textarea.value; const sel = texto.substring(start, end) || 'texto';
+      let sym = tipo === 'italic' ? '_' : (tipo === 'strike' ? '~' : '*');
+      textarea.value = texto.substring(0, start) + `${sym}${sel}${sym}` + texto.substring(end);
+      textarea.focus();
+      const etapa = obterObjetoEtapaAtual();
+      if (etapa) etapa.mensagem = textarea.value;
+      agendarRenderMapaVisual(); marcarAlteracaoPendente();
+    };
+
+    window.inserirSnippet = function(snip) {
+      const textarea = document.getElementById('input-etapa-msg');
+      const start = textarea.selectionStart;
+      textarea.value = textarea.value.substring(0, start) + snip + textarea.value.substring(start);
+      textarea.focus();
+      const etapa = obterObjetoEtapaAtual();
+      if (etapa) etapa.mensagem = textarea.value;
+      agendarRenderMapaVisual(); marcarAlteracaoPendente();
+    };
+
+    function renderizarMapaVisual() {
+      const container = document.getElementById('mapa-visual-container');
+      if (!container) return;
+      container.innerHTML = '';
+      const todas = [
+        { id: 'raiz', dados: configGlobal.fluxo.raiz },
+        ...Object.keys(configGlobal.fluxo.etapas || {}).map(k => ({ id: k, dados: configGlobal.fluxo.etapas[k] }))
+      ];
+      todas.forEach(item => {
+        if (!item.dados) return;
+        const isSel = (item.id === etapaSelecionada);
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border transition cursor-pointer ${isSel ? 'bg-[#17223b] border-[#d4af37]' : 'exec-card hover:border-slate-700'}`;
+        card.onclick = () => {
+          etapaSelecionada = item.id;
+          document.getElementById('select-etapa').value = item.id;
+          carregarEtapaNoEditor(item.id);
+        };
+        let opHtml = '';
+        (item.dados.opcoes || []).forEach(op => {
+          let badgeClass = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+          let destinoLabel = 'Resposta Automática';
+          if (op.tipo === 'submenu') {
+            badgeClass = 'bg-sky-500/10 text-sky-400 border-sky-500/20';
+            destinoLabel = `Abre: ${op.destino || 'raiz'}`;
+          } else if (op.tipo === 'humano') {
+            badgeClass = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+            destinoLabel = 'Chama Advogado';
+          } else if (op.tipo === 'processo') {
+            badgeClass = 'bg-[#d4af37]/15 text-[#e5c158] border-[#d4af37]/30';
+            destinoLabel = 'Busca CPF/Processo';
+          }
+          opHtml += `
+            <div class="flex items-center justify-between text-[11px] exec-input px-3 py-1.5 rounded-lg">
+              <span class="w-5 h-5 rounded-md champagne-gradient font-bold flex items-center justify-center text-[10px]">${op.gatilho}</span>
+              <span class="truncate mx-2.5 flex-1">${op.rotulo}</span>
+              <span class="px-2 py-0.5 rounded-md border text-[10px] font-semibold ${badgeClass}">${destinoLabel}</span>
+            </div>`;
+        });
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold ${isSel ? 'text-[#e5c158]' : ''}">${item.dados.titulo || item.id}</span>
+            <span class="text-[10px] text-slate-400">${(item.dados.opcoes || []).length} opções</span>
+          </div>
+          <div class="space-y-1.5">${opHtml || '<span class="text-[11px] text-slate-500 italic">Sem opções cadastradas</span>'}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    window.ativarAba = function(abaNome) {
+      ['inicio', 'processos', 'fluxo', 'agenda', 'pausados', 'terminal', 'backup'].forEach(a => {
+        const d = document.getElementById('aba-' + a);
+        const b = document.getElementById('nav-btn-' + a);
+        if (d) d.classList.toggle('hidden', a !== abaNome);
+        if (b) {
+          b.className = a === abaNome 
+            ? "w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold champagne-gradient flex items-center justify-between shadow-sm transition" 
+            : "w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition";
+        }
+      });
+      if (abaNome === 'inicio') renderizarTelaInicial();
+      if (abaNome === 'processos') renderizarModuloProcessos();
+      if (abaNome === 'agenda') renderizarAgendaSemanal();
+    };
+
+    document.getElementById('nav-btn-inicio').addEventListener('click', () => ativarAba('inicio'));
+    document.getElementById('nav-btn-fluxo').addEventListener('click', () => ativarAba('fluxo'));
+    document.getElementById('nav-btn-processos').addEventListener('click', () => ativarAba('processos'));
+    document.getElementById('nav-btn-agenda').addEventListener('click', () => ativarAba('agenda'));
+    document.getElementById('nav-btn-pausados').addEventListener('click', async () => {
+      ativarAba('pausados');
+      if (window.api && window.api.obterPausados) renderizarPausados(await window.api.obterPausados());
+    });
+    document.getElementById('nav-btn-terminal').addEventListener('click', () => ativarAba('terminal'));
+    document.getElementById('nav-btn-backup').addEventListener('click', () => ativarAba('backup'));
+
+    function obterObjetoEtapaAtual() {
+      if (etapaSelecionada === 'raiz') return configGlobal.fluxo.raiz;
+      if (!configGlobal.fluxo.etapas) configGlobal.fluxo.etapas = {};
+      return configGlobal.fluxo.etapas[etapaSelecionada] || configGlobal.fluxo.raiz;
+    }
+
+    function popularSeletorDeEtapas() {
+      const select = document.getElementById('select-etapa');
+      select.innerHTML = '<option value="raiz">Menu Principal (Boas-Vindas)</option>';
+      Object.keys(configGlobal.fluxo.etapas || {}).forEach(id => {
+        const opt = document.createElement('option');
+        opt.value = id; opt.innerText = configGlobal.fluxo.etapas[id].titulo || id;
+        select.appendChild(opt);
+      });
+      select.value = etapaSelecionada;
+    }
+
+    document.getElementById('select-etapa').addEventListener('change', (e) => {
+      etapaSelecionada = e.target.value; carregarEtapaNoEditor(etapaSelecionada);
+    });
+
+    function carregarEtapaNoEditor(id) {
+      const etapa = obterObjetoEtapaAtual();
+      if (!etapa) return;
+      document.getElementById('input-etapa-msg').value = etapa.mensagem || '';
+      document.getElementById('btn-excluir-etapa').classList.toggle('hidden', id === 'raiz');
+      renderizarOpcoesDaEtapa(); renderizarMapaVisual();
+    }
+
+    document.getElementById('input-etapa-msg').addEventListener('input', (e) => {
+      const etapa = obterObjetoEtapaAtual();
+      if (etapa) { etapa.mensagem = e.target.value; agendarRenderMapaVisual(); marcarAlteracaoPendente(); }
+    });
+
+    function renderizarOpcoesDaEtapa() {
+      const container = document.getElementById('lista-opcoes');
+      container.innerHTML = '';
+      const etapa = obterObjetoEtapaAtual();
+      if (!etapa || !etapa.opcoes) return;
+
+      etapa.opcoes.forEach((op, idx) => {
+        const card = document.createElement('div');
+        card.className = "p-4 exec-card rounded-xl space-y-3";
+        card.innerHTML = `
+          <div class="flex items-center space-x-2.5">
+            <input type="text" id="op-gatilho-${idx}" class="w-11 exec-input rounded-lg px-2 py-1.5 text-xs text-center font-bold text-[#e5c158]">
+            <input type="text" id="op-rotulo-${idx}" placeholder="Título..." class="flex-1 exec-input rounded-lg px-3 py-1.5 text-xs">
+            <select id="op-tipo-${idx}" class="exec-input rounded-lg px-2.5 py-1.5 text-xs text-[#e5c158] font-semibold">
+              <option value="texto" ${op.tipo === 'texto' ? 'selected' : ''}>Responder Texto</option>
+              <option value="submenu" ${op.tipo === 'submenu' ? 'selected' : ''}>Abrir Submenu</option>
+              <option value="processo" ${op.tipo === 'processo' ? 'selected' : ''}>Consultar Processo (CPF/CNJ)</option>
+              <option value="humano" ${op.tipo === 'humano' ? 'selected' : ''}>Chamar Advogado</option>
+            </select>
+            <button type="button" onclick="excluirOpcao(${idx})" class="text-slate-500 hover:text-rose-400 p-1.5 transition"><svg class="w-4 h-4"><use href="#icon-trash"/></svg></button>
+          </div>
+          <div id="op-extra-${idx}"></div>
+        `;
+        container.appendChild(card);
+
+        const g = document.getElementById(`op-gatilho-${idx}`);
+        const r = document.getElementById(`op-rotulo-${idx}`);
+        const t = document.getElementById(`op-tipo-${idx}`);
+        const x = document.getElementById(`op-extra-${idx}`);
+
+        g.value = op.gatilho || '';
+        r.value = op.rotulo || '';
+
+        g.oninput = (ev) => { op.gatilho = ev.target.value; agendarRenderMapaVisual(); marcarAlteracaoPendente(); };
+        r.oninput = (ev) => { op.rotulo = ev.target.value; agendarRenderMapaVisual(); marcarAlteracaoPendente(); };
+        t.onchange = (ev) => {
+          op.tipo = ev.target.value;
+          if (op.tipo === 'submenu' && !op.destino) op.destino = 'raiz';
+          if (op.tipo === 'processo' && !op.resposta) op.resposta = "Por favor, digite o seu CPF ou Número do Processo:";
+          renderizarOpcoesDaEtapa(); agendarRenderMapaVisual(); marcarAlteracaoPendente();
+        };
+
+        if (op.tipo === 'submenu') {
+          const sel = document.createElement('select');
+          sel.className = "w-full exec-input rounded-lg px-3 py-2 text-xs";
+          sel.innerHTML = `<option value="raiz">Destino: Menu Principal</option>` +
+            Object.keys(configGlobal.fluxo.etapas || {}).map(k => `<option value="${k}" ${op.destino === k ? 'selected' : ''}>Destino: ${configGlobal.fluxo.etapas[k].titulo || k}</option>`).join('');
+          sel.onchange = (ev) => { op.destino = ev.target.value; agendarRenderMapaVisual(); marcarAlteracaoPendente(); };
+          x.appendChild(sel);
+        } else {
+          const txt = document.createElement('textarea');
+          txt.rows = 2;
+          txt.className = "w-full exec-input rounded-lg p-2.5 text-xs resize-none";
+          txt.value = op.resposta || '';
+          txt.oninput = (ev) => { op.resposta = ev.target.value; marcarAlteracaoPendente(); };
+          x.appendChild(txt);
+        }
+      });
+    }
+
+    window.excluirOpcao = (idx) => {
+      const e = obterObjetoEtapaAtual();
+      if (e && e.opcoes) { e.opcoes.splice(idx, 1); renderizarOpcoesDaEtapa(); agendarRenderMapaVisual(); marcarAlteracaoPendente(); }
+    };
+
+    document.getElementById('btn-add-opcao').addEventListener('click', () => {
+      const e = obterObjetoEtapaAtual();
+      if (!e.opcoes) e.opcoes = [];
+      e.opcoes.push({ gatilho: String(e.opcoes.length + 1), rotulo: "Nova Opção", tipo: "texto", destino: "", resposta: "Informação registrada. Entraremos em contato." });
+      renderizarOpcoesDaEtapa(); agendarRenderMapaVisual(); marcarAlteracaoPendente();
+    });
+
+    const modalSub = document.getElementById('modal-submenu');
+    document.getElementById('btn-nova-etapa').addEventListener('click', () => { document.getElementById('input-nome-submenu').value = ''; modalSub.classList.remove('hidden'); modalSub.classList.add('flex'); });
+    document.getElementById('btn-cancelar-modal').addEventListener('click', () => { modalSub.classList.add('hidden'); modalSub.classList.remove('flex'); });
+    document.getElementById('btn-confirmar-modal').addEventListener('click', () => {
+      const nome = document.getElementById('input-nome-submenu').value.trim();
+      if (!nome) return;
+      const id = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "_");
+      configGlobal.fluxo.etapas[id] = { titulo: `Submenu: ${nome}`, mensagem: `*${nome}*\\n\\nComo podemos lhe orientar?`, opcoes: [{ gatilho: "0", rotulo: "Voltar ao Início", tipo: "submenu", destino: "raiz", resposta: "" }] };
+      modalSub.classList.add('hidden'); modalSub.classList.remove('flex');
+      etapaSelecionada = id; popularSeletorDeEtapas(); carregarEtapaNoEditor(id); marcarAlteracaoPendente();
+    });
+
+    document.getElementById('btn-excluir-etapa').addEventListener('click', () => {
+      if (etapaSelecionada === 'raiz') return;
+      delete configGlobal.fluxo.etapas[etapaSelecionada];
+      etapaSelecionada = 'raiz'; popularSeletorDeEtapas(); carregarEtapaNoEditor('raiz'); marcarAlteracaoPendente();
+    });
+
+    /* ================= MÓDULO DE PROCESSOS E RESUMOS ================= */
+    function garantirEstruturaProcessos() {
+      const padrao = obterConfigPadraoFallback().processos;
+      if (!configGlobal.processos) configGlobal.processos = padrao;
+      if (!configGlobal.processos.mensagens) configGlobal.processos.mensagens = padrao.mensagens;
+      if (!Array.isArray(configGlobal.processos.lista)) configGlobal.processos.lista = [];
+    }
+
+    function carregarTemplatesProcessosNosInputs() {
+      garantirEstruturaProcessos();
+      const m = configGlobal.processos.mensagens;
+      document.getElementById('tpl-msg-com-atualizacao').value = m.msg_com_atualizacao || '';
+      document.getElementById('tpl-msg-ja-visto').value = m.msg_ja_visto || '';
+      document.getElementById('tpl-msg-sem-atualizacao').value = m.msg_sem_atualizacao || '';
+      document.getElementById('tpl-msg-nao-encontrado').value = m.msg_nao_encontrado || '';
+    }
+
+    document.getElementById('btn-toggle-msg-processos').addEventListener('click', () => {
+      const p = document.getElementById('painel-msg-processos');
+      p.classList.toggle('hidden');
+      carregarTemplatesProcessosNosInputs();
+    });
+
+    document.getElementById('btn-salvar-tpl-processos').addEventListener('click', () => {
+      garantirEstruturaProcessos();
+      configGlobal.processos.mensagens.msg_com_atualizacao = document.getElementById('tpl-msg-com-atualizacao').value;
+      configGlobal.processos.mensagens.msg_ja_visto = document.getElementById('tpl-msg-ja-visto').value;
+      configGlobal.processos.mensagens.msg_sem_atualizacao = document.getElementById('tpl-msg-sem-atualizacao').value;
+      configGlobal.processos.mensagens.msg_nao_encontrado = document.getElementById('tpl-msg-nao-encontrado').value;
+      salvarConfiguracaoCompleta(false);
+      document.getElementById('painel-msg-processos').classList.add('hidden');
+    });
+
+    function limparFormularioProcesso() {
+      idProcessoSelecionado = '';
+      document.getElementById('proc-id-edit').value = '';
+      document.getElementById('proc-nome').value = '';
+      document.getElementById('proc-cpf').value = '';
+      document.getElementById('proc-numero').value = '';
+      document.getElementById('proc-resumo').value = '';
+      document.getElementById('proc-tem-atualizacao').checked = true;
+      document.getElementById('avatar-ficha-proc').innerText = 'NP';
+      document.getElementById('form-proc-titulo').innerText = 'Nova Pasta de Processo';
+      document.getElementById('subtitulo-status-ficha').innerText = 'Preencha o CPF ou Número do Processo e escreva o resumo';
+      document.getElementById('btn-resetar-visto-ficha').classList.add('hidden');
+      document.getElementById('btn-excluir-proc-ficha').classList.add('hidden');
+      renderizarModuloProcessos();
+      document.getElementById('proc-cpf').focus();
+    }
+
+    document.getElementById('btn-limpar-form-proc').addEventListener('click', limparFormularioProcesso);
+
+    window.selecionarProcessoNaLista = function(id) {
+      const p = (configGlobal.processos.lista || []).find(item => item.id === id);
+      if (!p) return;
+      idProcessoSelecionado = p.id;
+      document.getElementById('proc-id-edit').value = p.id;
+      document.getElementById('proc-nome').value = p.nome || '';
+      document.getElementById('proc-cpf').value = p.cpf || '';
+      document.getElementById('proc-numero').value = p.numero || '';
+      document.getElementById('proc-resumo').value = p.resumo || '';
+      document.getElementById('proc-tem-atualizacao').checked = Boolean(p.temAtualizacao);
+
+      const iniciais = (p.nome || 'CL').trim().split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      document.getElementById('avatar-ficha-proc').innerText = iniciais || 'CL';
+      document.getElementById('form-proc-titulo').innerText = `Pasta: ${p.nome || 'Cliente'}`;
+
+      const qtdVistos = Object.keys(p.consultasPorContato || {}).length;
+      document.getElementById('subtitulo-status-ficha').innerText = qtdVistos > 0
+        ? `✓ Já consultado pelo cliente no WhatsApp • Salvo em ${p.dataAtualizacaoTexto || '-'}`
+        : `● Novo resumo pronto para consulta • Salvo em ${p.dataAtualizacaoTexto || '-'}`;
+
+      document.getElementById('btn-resetar-visto-ficha').classList.toggle('hidden', qtdVistos === 0);
+      document.getElementById('btn-excluir-proc-ficha').classList.remove('hidden');
+      renderizarModuloProcessos();
+    };
+
+    document.getElementById('btn-resetar-visto-ficha').addEventListener('click', () => {
+      if (!idProcessoSelecionado) return;
+      const p = (configGlobal.processos.lista || []).find(item => item.id === idProcessoSelecionado);
+      if (!p) return;
+      p.consultasPorContato = {};
+      p._resetarVistos = true;
+      salvarConfiguracaoCompleta(true);
+      selecionarProcessoNaLista(p.id);
+      mostrarToast("Reenvio liberado! O cliente receberá o resumo novamente.");
+    });
+
+    document.getElementById('btn-excluir-proc-ficha').addEventListener('click', () => {
+      if (!idProcessoSelecionado) return;
+      configGlobal.processos.lista = (configGlobal.processos.lista || []).filter(item => item.id !== idProcessoSelecionado);
+      salvarConfiguracaoCompleta(false);
+      limparFormularioProcesso();
+    });
+
+    document.getElementById('btn-salvar-processo').addEventListener('click', () => {
+      garantirEstruturaProcessos();
+      const idEdit = document.getElementById('proc-id-edit').value;
+      const nome = document.getElementById('proc-nome').value.trim() || 'Cliente';
+      const cpf = document.getElementById('proc-cpf').value.trim();
+      const numero = document.getElementById('proc-numero').value.trim();
+      const resumo = document.getElementById('proc-resumo').value.trim();
+      const temAtualizacao = document.getElementById('proc-tem-atualizacao').checked;
+
+      const digitosCpf = cpf.replace(/\D/g, '');
+      const digitosNum = numero.replace(/\D/g, '');
+
+      if (digitosCpf.length < 5 && digitosNum.length < 5) {
+        alert("Preencha ao menos o CPF ou o Número do Processo (mínimo de 5 números)!");
+        return;
+      }
+
+      const agoraStr = new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+
+      if (idEdit) {
+        const idx = configGlobal.processos.lista.findIndex(p => p.id === idEdit);
+        if (idx !== -1) {
+          configGlobal.processos.lista[idx] = {
+            ...configGlobal.processos.lista[idx],
+            nome,
+            cpf,
+            numero,
+            resumo,
+            temAtualizacao,
+            updatedAt: Date.now(),
+            dataAtualizacaoTexto: agoraStr,
+            consultasPorContato: {},
+            _resetarVistos: true
+          };
+          idProcessoSelecionado = idEdit;
+        }
+      } else {
+        const novoId = 'proc_' + Date.now();
+        configGlobal.processos.lista.unshift({
+          id: novoId,
+          nome,
+          cpf,
+          numero,
+          resumo,
+          temAtualizacao,
+          updatedAt: Date.now(),
+          dataAtualizacaoTexto: agoraStr,
+          consultasPorContato: {},
+          _resetarVistos: true
+        });
+        idProcessoSelecionado = novoId;
+      }
+
+      salvarConfiguracaoCompleta(false);
+      selecionarProcessoNaLista(idProcessoSelecionado);
+      mostrarToast("Pasta salva com sucesso!");
+    });
+
+    document.getElementById('busca-processos').addEventListener('input', () => renderizarModuloProcessos());
+
+    function renderizarModuloProcessos() {
+      garantirEstruturaProcessos();
+      const lista = configGlobal.processos.lista || [];
+      document.getElementById('badge-processos').innerText = String(lista.length);
+
+      const termo = (document.getElementById('busca-processos').value || '').toLowerCase().trim();
+      const termoDig = termo.replace(/\D/g, '');
+      const box = document.getElementById('lista-processos-box');
+      box.innerHTML = '';
+
+      const filtrados = lista.filter(p => {
+        if (!termo) return true;
+        const nMatch = (p.nome || '').toLowerCase().includes(termo);
+        const cMatch = (p.cpf || '').toLowerCase().includes(termo) || (termoDig && (p.cpf || '').replace(/\D/g, '').includes(termoDig));
+        const pMatch = (p.numero || '').toLowerCase().includes(termo) || (termoDig && (p.numero || '').replace(/\D/g, '').includes(termoDig));
+        return nMatch || cMatch || pMatch;
+      });
+
+      if (filtrados.length === 0) {
+        box.innerHTML = '<div class="p-8 text-center text-xs text-slate-500">Nenhum processo cadastrado.</div>';
+        return;
+      }
+
+      filtrados.forEach(p => {
+        const isSel = (p.id === idProcessoSelecionado);
+        const qtdVistos = Object.keys(p.consultasPorContato || {}).length;
+        const temConteudoAtivo = Boolean(p.temAtualizacao && p.resumo && p.resumo.trim());
+        const iniciais = (p.nome || 'CL').trim().split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+        const item = document.createElement('div');
+        item.className = `p-3.5 exec-card rounded-2xl cursor-pointer flex items-center justify-between transition ${isSel ? 'proc-list-item-active' : ''}`;
+        item.onclick = () => selecionarProcessoNaLista(p.id);
+
+        item.innerHTML = `
+          <div class="flex items-center space-x-3 overflow-hidden pr-2">
+            <div class="w-9 h-9 rounded-xl champagne-gradient flex items-center justify-center text-slate-950 font-extrabold text-xs flex-shrink-0 shadow">
+              ${iniciais}
+            </div>
+            <div class="overflow-hidden">
+              <div class="flex items-center space-x-2">
+                <span class="text-xs font-bold truncate">${p.nome || 'Cliente'}</span>
+                <span class="w-2 h-2 rounded-full ${temConteudoAtivo ? (qtdVistos > 0 ? 'bg-sky-400' : 'bg-emerald-400') : 'bg-slate-600'}"></span>
+              </div>
+              <p class="text-[10px] font-mono text-slate-400 truncate mt-0.5">
+                CPF: <strong class="text-[#e5c158]">${p.cpf || '-'}</strong> • Nº: <strong class="text-slate-300">${p.numero || '-'}</strong>
+              </p>
+            </div>
+          </div>
+          <span class="text-[11px] text-[#e5c158] font-bold flex-shrink-0">➔</span>
+        `;
+        box.appendChild(item);
+      });
+    }
+
+    /* ================= HORÁRIOS & ALMOÇO ================= */
+    function carregarConfiguracaoAgendaNosCampos() {
+      garantirEstruturaAgenda();
+      const a = configGlobal.agenda;
+      document.getElementById('agenda-almoco-ativo').checked = Boolean(a.almoco_ativo);
+      document.getElementById('agenda-almoco-inicio').value = a.almoco_inicio || '12:00';
+      document.getElementById('agenda-almoco-fim').value = a.almoco_fim || '13:30';
+      document.getElementById('agenda-msg-almoco').value = a.msg_almoco || '';
+      document.getElementById('agenda-msg-fora').value = a.msg_fora_expediente || '';
+
+      const checkAuto = document.getElementById('check-varredura-auto');
+      if (checkAuto) {
+        checkAuto.checked = Boolean(configGlobal.varredura_automatica_inicio);
+      }
+    }
+
+    function renderizarAgendaSemanal() {
+      garantirEstruturaAgenda();
+      carregarConfiguracaoAgendaNosCampos();
+      const container = document.getElementById('grade-dias-semana');
+      if (!container) return;
+      container.innerHTML = '';
+
+      ["1", "2", "3", "4", "5", "6", "0"].forEach(k => {
+        const d = configGlobal.agenda[k];
+        if (!d) return;
+        const row = document.createElement('div');
+        row.className = "flex items-center justify-between p-3.5 exec-card rounded-xl text-xs";
+        row.innerHTML = `
+          <label class="flex items-center space-x-3 w-48 cursor-pointer">
+            <input type="checkbox" ${d.ativo ? 'checked' : ''} class="accent-[#d4af37] w-4 h-4 rounded" onchange="configGlobal.agenda['${k}'].ativo=this.checked; marcarAlteracaoPendente();">
+            <span class="font-semibold">${d.nome}</span>
+          </label>
+          <div class="flex items-center space-x-3">
+            <span class="text-slate-400">Abertura:</span>
+            <input type="time" value="${d.abertura || '08:00'}" class="exec-input rounded-lg px-2.5 py-1" onchange="configGlobal.agenda['${k}'].abertura=this.value; marcarAlteracaoPendente();">
+            <span class="text-slate-400">Fechamento:</span>
+            <input type="time" value="${d.fechamento || '18:00'}" class="exec-input rounded-lg px-2.5 py-1" onchange="configGlobal.agenda['${k}'].fechamento=this.value; marcarAlteracaoPendente();">
+          </div>`;
+        container.appendChild(row);
+      });
+    }
+
+    document.getElementById('agenda-almoco-ativo').addEventListener('change', (e) => {
+      configGlobal.agenda.almoco_ativo = e.target.checked;
+      marcarAlteracaoPendente();
+    });
+    document.getElementById('agenda-almoco-inicio').addEventListener('change', (e) => {
+      configGlobal.agenda.almoco_inicio = e.target.value;
+      marcarAlteracaoPendente();
+    });
+    document.getElementById('agenda-almoco-fim').addEventListener('change', (e) => {
+      configGlobal.agenda.almoco_fim = e.target.value;
+      marcarAlteracaoPendente();
+    });
+    document.getElementById('agenda-msg-almoco').addEventListener('input', (e) => {
+      configGlobal.agenda.msg_almoco = e.target.value;
+      marcarAlteracaoPendente();
+    });
+    document.getElementById('agenda-msg-fora').addEventListener('input', (e) => {
+      configGlobal.agenda.msg_fora_expediente = e.target.value;
+      marcarAlteracaoPendente();
+    });
+
+    // CONTROLE DO TOGGLE DE VARREDURA AUTOMÁTICA
+    const checkVarreduraAuto = document.getElementById('check-varredura-auto');
+    if (checkVarreduraAuto) {
+      checkVarreduraAuto.addEventListener('change', (e) => {
+        configGlobal.varredura_automatica_inicio = e.target.checked;
+        marcarAlteracaoPendente();
+        mostrarToast(e.target.checked 
+          ? 'Varredura automática no início ATIVADA!' 
+          : 'Varredura automática no início DESATIVADA (Padrão).');
+      });
+    }
+
+    /* ================= FILA HUMANA ================= */
+    function renderizarPausados(mapa) {
+      const container = document.getElementById('lista-pausados');
+      const chaves = Object.keys(mapa || {});
+      document.getElementById('badge-pausados').innerText = String(chaves.length);
+      atualizarPainelMetricas(chaves.length);
+      container.innerHTML = chaves.length === 0 ? '<div class="exec-card p-10 rounded-2xl text-center text-xs text-slate-400">Nenhum cliente na fila humana no momento.</div>' : '';
+      chaves.forEach(num => {
+        const numLimpo = String(num).replace(/\D/g, '');
+        const nomeSalvo = (configGlobal.mapaNomes && configGlobal.mapaNomes[numLimpo]) || (configGlobal.mapaNomes && configGlobal.mapaNomes[num]) || '';
+        const rotulo = nomeSalvo ? `${nomeSalvo} (+${numLimpo})` : `+${numLimpo}`;
+
+        const div = document.createElement('div');
+        div.className = "exec-card p-4 rounded-xl flex items-center justify-between text-xs";
+        div.innerHTML = `
+          <div>
+            <span class="font-bold text-white block">${rotulo}</span>
+            <span class="text-[10px] text-amber-400">Robô pausado por 24h para atendimento humano</span>
+          </div>
+          <button onclick="reativarCliente('${num}')" class="px-4 py-2 champagne-gradient font-bold rounded-xl transition shadow flex items-center space-x-1.5">
+            <svg class="w-3.5 h-3.5"><use href="#icon-refresh"/></svg>
+            <span>Reativar Robô Agora</span>
+          </button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    window.reativarCliente = async (num) => {
+      if (window.api && window.api.removerPausa) {
+        const novosPausados = await window.api.removerPausa(num);
+        renderizarPausados(novosPausados);
+        mostrarToast("Robô reativado para este cliente com sucesso!");
+      }
+    };
+
+    async function salvarConfiguracaoCompleta(silencioso = false) {
+      garantirEstruturaAgenda();
+      localStorage.setItem('adv_bot_config_backup', JSON.stringify(configGlobal));
+      if (window.api && window.api.salvarConfig) await window.api.salvarConfig(configGlobal);
+      document.getElementById('badge-autosave').innerText = "✓ Salvo";
+      document.getElementById('badge-autosave').className = "text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+      document.getElementById('btn-salvar-fluxo').classList.remove('unsaved-glow');
+      document.getElementById('label-btn-salvar').innerText = "Salvar Menu";
+      renderizarTelaInicial();
+      if (!silencioso) mostrarToast('Alterações salvas!');
+    }
+
+    function aplicarStatusConexaoNaUI(st, qrUrl = null) {
+      const txtEl = document.getElementById('status-text');
+      const dotEl = document.getElementById('status-dot');
+      const qrBox = document.getElementById('qr-box');
+
+      if (qrUrl) {
+        qrBox.innerHTML = `<img src="${qrUrl}" class="w-28 h-28 rounded-lg object-contain bg-white p-1"/>`;
+      }
+
+      if (st === 'ready') {
+        txtEl.innerText = 'Conectado';
+        dotEl.className = 'w-2 h-2 rounded-full bg-emerald-400';
+        qrBox.innerHTML = `<div class="text-emerald-400 text-xs font-bold text-center space-y-1"><svg class="w-8 h-8 mx-auto"><use href="#icon-shield"/></svg><span class="block">Aparelho Ativo</span></div>`;
+      } else if (st === 'authenticated') {
+        txtEl.innerText = 'Sincronizando...';
+        dotEl.className = 'w-2 h-2 rounded-full bg-sky-400 animate-pulse';
+      } else if (st === 'waiting_qr') {
+        txtEl.innerText = 'Aguardando QR Code';
+        dotEl.className = 'w-2 h-2 rounded-full bg-[#e5c158] animate-pulse';
+      } else {
+        txtEl.innerText = 'Reconectando...';
+        dotEl.className = 'w-2 h-2 rounded-full bg-rose-500 animate-pulse';
+      }
+    }
+
+    document.getElementById('btn-salvar-fluxo').addEventListener('click', () => salvarConfiguracaoCompleta(false));
+    document.getElementById('btn-salvar-agenda').addEventListener('click', () => salvarConfiguracaoCompleta(false));
+    document.getElementById('btn-limpar-logs').addEventListener('click', () => {
+      document.getElementById('logs-box').innerHTML = '<div class="text-slate-500 text-xs text-center py-16">Histórico limpo.</div>';
+    });
+
+    // BOTÃO PARA LER MENSAGENS NÃO LIDAS MANUALMENTE
+    document.getElementById('btn-varrer-nao-lidas').addEventListener('click', async () => {
+      mostrarToast('Analisando mensagens não lidas...');
+      if (window.api && window.api.forcarVarreduraNaoLidas) {
+        const qtd = await window.api.forcarVarreduraNaoLidas();
+        mostrarToast(qtd > 0 ? `${qtd} conversa(s) respondida(s)!` : 'Nenhuma mensagem pendente sem resposta.');
+      }
+    });
+
+    document.getElementById('btn-reconnect').addEventListener('click', async () => {
+      mostrarToast('Reiniciando WhatsApp...');
+      aplicarStatusConexaoNaUI('initializing');
+      if (window.api && window.api.reiniciarBot) await window.api.reiniciarBot();
+    });
+
+    const dispararInstalacaoUpdate = () => {
+      mostrarToast('Reiniciando aplicativo para aplicar a nova versão...');
+      if (window.api && window.api.instalarAtualizacaoAgora) {
+        window.api.instalarAtualizacaoAgora();
+      }
+    };
+
+    document.getElementById('btn-instalar-update').addEventListener('click', dispararInstalacaoUpdate);
+    document.getElementById('btn-header-update').addEventListener('click', dispararInstalacaoUpdate);
+    document.getElementById('btn-fechar-banner-update').addEventListener('click', () => {
+      document.getElementById('banner-update-app').classList.add('hidden');
+      document.getElementById('banner-update-app').classList.remove('flex');
+    });
+
+    document.getElementById('btn-exportar-dados').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify({ versao: "7.0", conta: JSON.parse(localStorage.getItem('adv_bot_user_account')||'{}'), config: configGlobal }, null, 2)], { type: "application/json" });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Backup_Advocacia_${new Date().toISOString().slice(0,10)}.json`; a.click();
+      mostrarToast("Backup baixado com sucesso!");
+    });
+    document.getElementById('btn-importar-dados').addEventListener('click', () => document.getElementById('input-importar-arquivo').click());
+    document.getElementById('btn-restaurar-login').addEventListener('click', () => document.getElementById('input-importar-arquivo').click());
+    document.getElementById('input-importar-arquivo').addEventListener('change', (e) => {
+      const f = e.target.files[0]; if(!f) return;
+      const r = new FileReader();
+      r.onload = async (ev) => {
+        try {
+          const l = JSON.parse(ev.target.result);
+          if (l.config) {
+            configGlobal = l.config;
+            garantirEstruturaAgenda();
+            garantirEstruturaProcessos();
+            localStorage.setItem('adv_bot_config_backup', JSON.stringify(configGlobal));
+            if(window.api) window.api.salvarConfig(configGlobal);
+          }
+          popularSeletorDeEtapas(); carregarEtapaNoEditor('raiz'); renderizarAgendaSemanal(); renderizarModuloProcessos(); renderizarTelaInicial();
+          mostrarToast("Backup restaurado!");
+        } catch(err) { alert("Arquivo inválido."); }
+      };
+      r.readAsText(f);
+    });
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const temaSalvo = localStorage.getItem('adv_bot_theme') || 'dark';
+      aplicarTema(temaSalvo);
+
+      iniciarSplashELogin();
+      try {
+        if (window.api && window.api.obterConfig) {
+          const cfg = await window.api.obterConfig();
+          if (cfg && cfg.fluxo) configGlobal = cfg;
+        } else {
+          const loc = localStorage.getItem('adv_bot_config_backup');
+          if (loc) configGlobal = JSON.parse(loc);
+        }
+      } catch(e) {}
+
+      garantirEstruturaAgenda();
+      garantirEstruturaProcessos();
+      popularSeletorDeEtapas();
+      carregarEtapaNoEditor('raiz');
+      renderizarAgendaSemanal();
+      renderizarModuloProcessos();
+      renderizarTelaInicial();
+      renderizarPausados({});
+      atualizarPainelMetricas(0);
+
+      if (configGlobal.processos.lista.length > 0) {
+        selecionarProcessoNaLista(configGlobal.processos.lista[0].id);
+      }
+
+      if (window.api) {
+        if (window.api.obterEstadoConexao) {
+          const est = await window.api.obterEstadoConexao();
+          if (est) aplicarStatusConexaoNaUI(est.status, est.qr);
+        }
+
+        window.api.aoReceberQR((url) => aplicarStatusConexaoNaUI('waiting_qr', url));
+        window.api.aoMudarStatus((st) => aplicarStatusConexaoNaUI(st));
+        window.api.aoAtualizarPausados((l) => renderizarPausados(l));
+        
+        if (window.api.aoAtualizarProcessos) {
+          window.api.aoAtualizarProcessos((cfg) => {
+            configGlobal = cfg;
+            garantirEstruturaAgenda();
+            renderizarModuloProcessos();
+            renderizarTelaInicial();
+            if (idProcessoSelecionado) selecionarProcessoNaLista(idProcessoSelecionado);
+          });
+        }
+
+        if (window.api.aoReceberEventoUpdate) {
+          window.api.aoReceberEventoUpdate((dados) => {
+            const banner = document.getElementById('banner-update-app');
+            const btnInstalar = document.getElementById('btn-instalar-update');
+            const btnHeader = document.getElementById('btn-header-update');
+            const txtUpdate = document.getElementById('texto-update-app');
+
+            if (dados.status === 'downloading') {
+              banner.classList.remove('hidden');
+              banner.classList.add('flex');
+              txtUpdate.innerText = `Baixando nova atualização v${dados.versao || ''} em segundo plano...`;
+              btnInstalar.classList.add('hidden');
+              mostrarToast('Nova atualização encontrada! Baixando em segundo plano...');
+            } else if (dados.status === 'ready') {
+              banner.classList.remove('hidden');
+              banner.classList.add('flex');
+              txtUpdate.innerText = `Nova versão v${dados.versao || ''} baixada e pronta para instalar!`;
+              btnInstalar.classList.remove('hidden');
+              btnHeader.classList.remove('hidden');
+              btnHeader.classList.add('flex');
+              mostrarToast('Atualização concluída! Clique no botão para atualizar o sistema.');
+            }
+          });
+        }
+
+        window.api.aoReceberLog((log) => {
+          if (log.metricasReais) {
+            if (!configGlobal.metricasReais) configGlobal.metricasReais = {};
+            configGlobal.metricasReais.totalMensagens = log.metricasReais.totalMensagens;
+            configGlobal.metricasReais.contatosAtendidos = new Array(log.metricasReais.totalContatos);
+            atualizarPainelMetricas();
+          }
+
+          const rotuloExibicao = log.exibicao || log.nome || log.numero;
+
+          const box = document.getElementById('logs-box');
+          if (box.innerText.includes('Nenhuma') || box.innerText.includes('limpo')) box.innerHTML = '';
+          const div = document.createElement('div');
+          div.className = "p-3.5 exec-card rounded-xl flex items-center justify-between text-xs";
+          div.innerHTML = `<span class="text-[#e5c158] font-bold">${rotuloExibicao}</span><span class="truncate mx-2">${log.msg}</span><span class="text-slate-500">${log.hora}</span>`;
+          box.prepend(div);
+          while(box.children.length > 100) box.removeChild(box.lastElementChild);
+
+          const homeLogs = document.getElementById('home-ultimos-logs');
+          if (homeLogs) {
+            if (homeLogs.innerText.includes('Aguardando')) homeLogs.innerHTML = '';
+            const mini = document.createElement('div');
+            mini.className = "p-2.5 rounded-xl exec-input flex items-center justify-between text-[11px]";
+            mini.innerHTML = `<div class="truncate pr-2"><strong class="text-[#e5c158]">${rotuloExibicao}:</strong> <span>${log.msg}</span></div><span class="text-slate-500 text-[10px]">${log.hora}</span>`;
+            homeLogs.prepend(mini);
+            while(homeLogs.children.length > 4) homeLogs.removeChild(homeLogs.lastElementChild);
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
