@@ -649,10 +649,26 @@ async function processarMensagemEntrada(msg, veioDaVarredura = false) {
 }
 
 function configurarAutoUpdater() {
-    if (!app.isPackaged || !autoUpdater) return;
+    if (!autoUpdater) return;
 
     try {
+        autoUpdater.autoDownload = true;
+        autoUpdater.autoInstallOnAppQuit = true;
+        
+        try {
+            autoUpdater.setFeedURL({
+                provider: 'github',
+                owner: 'danireid123',
+                repo: 'advocacia-studio-pro'
+            });
+        } catch (e) {}
+
+        autoUpdater.on('checking-for-update', () => {
+            console.log('[AUTO-UPDATER] Verificando atualizações no GitHub...');
+        });
+
         autoUpdater.on('update-available', (info) => {
+            console.log('[AUTO-UPDATER] Nova versão detectada:', info ? info.version : '');
             if (mainWindow && !mainWindow.isDestroyed()) {
                 mainWindow.webContents.send('bot-update-status', {
                     status: 'downloading',
@@ -662,6 +678,7 @@ function configurarAutoUpdater() {
         });
 
         autoUpdater.on('update-downloaded', (info) => {
+            console.log('[AUTO-UPDATER] Download concluído com sucesso!');
             if (mainWindow && !mainWindow.isDestroyed()) {
                 mainWindow.webContents.send('bot-update-status', {
                     status: 'ready',
@@ -670,8 +687,20 @@ function configurarAutoUpdater() {
             }
         });
 
-        autoUpdater.checkForUpdatesAndNotify();
-    } catch (e) {}
+        autoUpdater.on('error', (err) => {
+            console.error('[AUTO-UPDATER ERRO]:', err ? (err.message || err) : 'Erro desconhecido');
+        });
+
+        if (app.isPackaged) {
+            setTimeout(() => {
+                autoUpdater.checkForUpdatesAndNotify().catch(e => {
+                    console.error('[AUTO-UPDATER FALHA AO BUSCAR]:', e.message);
+                });
+            }, 2500);
+        }
+    } catch (e) {
+        console.error('[AUTO-UPDATER EXCEPTION]:', e);
+    }
 }
 
 function createWindow() {
