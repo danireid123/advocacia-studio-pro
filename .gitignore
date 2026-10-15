@@ -1,3 +1,4 @@
-node_modules/ 
-dist/ 
-wwebjs_auth_session/ 
+node_modules/
+dist/
+wwebjs_auth_session/
+bun.lock

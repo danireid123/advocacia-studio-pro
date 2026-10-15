@@ -1,6 +1,6 @@
 {
   "name": "advocacia-studio-pro",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Suite Juridica Executiva com WhatsApp Integrado",
   "main": "main.js",
   "scripts": {
@@ -38,7 +38,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "seu-usuario",
+        "owner": "danireid123",
         "repo": "advocacia-studio-pro"
       }
     ]

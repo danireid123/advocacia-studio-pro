@@ -368,20 +368,7 @@
           <svg class="w-7 h-7"><use href="#icon-scales"/></svg>
         </div>
         <h2 id="auth-title" class="font-serif-legal text-xl font-bold">Portal do Escritório</h2>
-        <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Acesse com as credenciais ou entre como convidado para testar.</p>
-      </div>
-
-      <div class="p-1 rounded-2xl bg-gradient-to-r from-[#d4af37]/30 via-[#d4af37]/60 to-[#d4af37]/30">
-        <button id="btn-guest-login" class="w-full py-3.5 px-4 bg-[#111827] hover:bg-[#1a253a] text-[#f3e5ab] rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition shadow-md">
-          <svg class="w-4 h-4 text-[#e5c158]"><use href="#icon-scales"/></svg>
-          <span>Entrar como Convidado (Modo Teste)</span>
-        </button>
-      </div>
-
-      <div class="relative flex py-1 items-center">
-        <div class="flex-grow border-t border-slate-800"></div>
-        <span class="flex-shrink mx-3 text-[10px] uppercase tracking-widest text-slate-500 font-semibold">ou acesso com senha</span>
-        <div class="flex-grow border-t border-slate-800"></div>
+        <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Acesse com suas credenciais para continuar.</p>
       </div>
 
       <div class="space-y-3.5">
@@ -1295,7 +1282,7 @@
       const authScreen = document.getElementById('auth-screen');
 
       if (sessaoAtiva === 'true') {
-        const dados = contaSalva ? JSON.parse(contaSalva) : { office: 'Modo Convidado', user: 'Doutor(a)' };
+        const dados = contaSalva ? JSON.parse(contaSalva) : { office: 'Escritório', user: 'Doutor(a)' };
         aplicarUsuarioLogado(dados);
         authScreen.classList.add('hidden');
         authScreen.classList.remove('flex');
@@ -1333,15 +1320,6 @@
       document.getElementById('home-welcome-title').innerText = `Olá, ${dados.user || 'Doutor(a)'}! Bem-vindo ao ${dados.office || 'Escritório Digital'}.`;
     }
 
-    document.getElementById('btn-guest-login').addEventListener('click', () => {
-      localStorage.removeItem('adv_bot_tour_v6_done');
-      sessionStorage.setItem('adv_bot_logged_in', 'true');
-      aplicarUsuarioLogado({ office: 'Escritório Modelo', user: 'Convidado' });
-      document.getElementById('auth-screen').classList.add('hidden');
-      document.getElementById('auth-screen').classList.remove('flex');
-      setTimeout(() => dispararEntradaTriunfalLexBot(), 250);
-    });
-
     document.getElementById('btn-auth-submit').addEventListener('click', async () => {
       const user = document.getElementById('auth-user').value.trim();
       const pass = document.getElementById('auth-pass').value.trim();
@@ -1350,7 +1328,7 @@
       const err = document.getElementById('auth-error');
 
       if (!user || !pass) {
-        err.innerText = 'Preencha usuário e senha ou entre como convidado!';
+        err.innerText = 'Preencha usuário e senha!';
         err.classList.remove('hidden');
         return;
       }
