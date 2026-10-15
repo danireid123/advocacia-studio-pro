@@ -650,6 +650,89 @@ async function processarMensagemEntrada(msg, veioDaVarredura = false) {
 }
 
 let ultimaInfoUpdate = null;
+let arquivoInstaladorBaixado = null;
+let baixandoUpdate = false;
+
+function baixarEInstalarAtualizacaoNativa(exeUrl, versao) {
+    if (!exeUrl || baixandoUpdate) return;
+    baixandoUpdate = true;
+
+    const os = require('os');
+    const tempDir = app.getPath ? app.getPath('temp') : os.tmpdir();
+    const destPath = path.join(tempDir, `Advocacia-Studio-Pro-Setup-${versao}.exe`);
+
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('bot-update-status', {
+            status: 'downloading',
+            versao: versao,
+            progresso: 0
+        });
+    }
+
+    function realizarDownload(urlAtual) {
+        https.get(urlAtual, { headers: { 'User-Agent': 'AdvocaciaStudioPro-Updater' } }, (res) => {
+            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                return realizarDownload(res.headers.location);
+            }
+
+            if (res.statusCode !== 200) {
+                console.error('[UPDATER NATIVO] Erro ao baixar executável, status:', res.statusCode);
+                baixandoUpdate = false;
+                if (mainWindow && !mainWindow.isDestroyed()) {
+                    mainWindow.webContents.send('bot-update-status', {
+                        status: 'error',
+                        erro: `Erro no download do executável (HTTP ${res.statusCode})`
+                    });
+                }
+                return;
+            }
+
+            const totalBytes = parseInt(res.headers['content-length'] || '0', 10);
+            let downloadedBytes = 0;
+            const fileStream = fs.createWriteStream(destPath);
+
+            res.on('data', (chunk) => {
+                downloadedBytes += chunk.length;
+                if (totalBytes > 0) {
+                    const pct = Math.round((downloadedBytes / totalBytes) * 100);
+                    if (mainWindow && !mainWindow.isDestroyed()) {
+                        mainWindow.webContents.send('bot-update-status', {
+                            status: 'downloading',
+                            versao: versao,
+                            progresso: pct
+                        });
+                    }
+                }
+            });
+
+            res.pipe(fileStream);
+
+            fileStream.on('finish', () => {
+                fileStream.close();
+                baixandoUpdate = false;
+                arquivoInstaladorBaixado = destPath;
+                console.log('[UPDATER NATIVO] Download concluído com sucesso em:', destPath);
+
+                if (mainWindow && !mainWindow.isDestroyed()) {
+                    mainWindow.webContents.send('bot-update-status', {
+                        status: 'ready',
+                        versao: versao
+                    });
+                }
+            });
+
+            fileStream.on('error', (errStream) => {
+                baixandoUpdate = false;
+                console.error('[UPDATER NATIVO FILE ERROR]:', errStream.message);
+            });
+        }).on('error', (errReq) => {
+            baixandoUpdate = false;
+            console.error('[UPDATER NATIVO REQ ERROR]:', errReq.message);
+        });
+    }
+
+    realizarDownload(exeUrl);
+}
 
 function checarAtualizacaoGitHubDireta(disparoManual = false) {
     try {
@@ -697,16 +780,27 @@ function checarAtualizacaoGitHubDireta(disparoManual = false) {
 
                     if (temNova) {
                         console.log(`[ATUALIZACAO] Nova versão v${tag} encontrada! Versão instalada: v${versaoAtual}`);
+                        const exeAsset = json.assets && Array.isArray(json.assets)
+                            ? json.assets.find(a => a.name && a.name.endsWith('.exe'))
+                            : null;
+
                         ultimaInfoUpdate = {
                             versao: tag,
-                            url: json.html_url || 'https://github.com/danireid123/advocacia-studio-pro/releases/latest'
+                            url: json.html_url || 'https://github.com/danireid123/advocacia-studio-pro/releases/latest',
+                            exeUrl: exeAsset ? exeAsset.browser_download_url : null
                         };
-                        if (mainWindow && !mainWindow.isDestroyed()) {
-                            mainWindow.webContents.send('bot-update-status', {
-                                status: 'ready',
-                                versao: tag,
-                                url: ultimaInfoUpdate.url
-                            });
+
+                        if (ultimaInfoUpdate.exeUrl) {
+                            // Inicia o download silencioso imediatamente em segundo plano
+                            baixarEInstalarAtualizacaoNativa(ultimaInfoUpdate.exeUrl, tag);
+                        } else {
+                            if (mainWindow && !mainWindow.isDestroyed()) {
+                                mainWindow.webContents.send('bot-update-status', {
+                                    status: 'ready',
+                                    versao: tag,
+                                    url: ultimaInfoUpdate.url
+                                });
+                            }
                         }
                     } else {
                         console.log(`[ATUALIZACAO] App na versão mais recente (v${versaoAtual})`);
@@ -969,12 +1063,34 @@ ipcMain.handle('forcar-varredura-nao-lidas', async () => {
 
 ipcMain.handle('instalar-atualizacao-agora', () => {
     let executou = false;
+
+    // 1. Se o instalador nativo foi baixado em disco, dispara em modo silencioso (/S) e reinicia
+    if (arquivoInstaladorBaixado && fs.existsSync(arquivoInstaladorBaixado)) {
+        console.log('[UPDATER NATIVO] Executando instalador silencioso e reiniciando app:', arquivoInstaladorBaixado);
+        try {
+            const { spawn } = require('child_process');
+            spawn(arquivoInstaladorBaixado, ['/S'], {
+                detached: true,
+                stdio: 'ignore'
+            }).unref();
+            setTimeout(() => {
+                app.quit();
+            }, 600);
+            return true;
+        } catch (errSpawn) {
+            console.error('[ERRO DISPARAR INSTALADOR]:', errSpawn);
+        }
+    }
+
+    // 2. Se autoUpdater baixou
     if (autoUpdater) {
         try {
-            autoUpdater.quitAndInstall();
+            autoUpdater.quitAndInstall(false, true);
             executou = true;
         } catch (e) {}
     }
+
+    // 3. Fallback final caso não haja instalador em disco
     if (!executou && ultimaInfoUpdate && ultimaInfoUpdate.url) {
         shell.openExternal(ultimaInfoUpdate.url);
     }

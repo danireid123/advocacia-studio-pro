@@ -2276,17 +2276,18 @@
             } else if (dados.status === 'downloading') {
               banner.classList.remove('hidden');
               banner.classList.add('flex');
-              txtUpdate.innerText = `Baixando nova atualização v${dados.versao || ''} em segundo plano...`;
+              const prog = (dados.progresso !== undefined && dados.progresso > 0) ? ` (${dados.progresso}%)` : '';
+              txtUpdate.innerText = `Baixando nova atualização v${dados.versao || ''}${prog} em segundo plano...`;
               btnInstalar.classList.add('hidden');
-              mostrarToast('Nova atualização encontrada! Baixando em segundo plano...');
+              mostrarToast(`Baixando atualização v${dados.versao || ''}${prog}...`);
             } else if (dados.status === 'ready') {
               banner.classList.remove('hidden');
               banner.classList.add('flex');
-              txtUpdate.innerText = `Nova versão v${dados.versao || ''} baixada e pronta para instalar!`;
+              txtUpdate.innerText = `Nova versão v${dados.versao || ''} pronta! Clique ao lado para reiniciar:`;
               btnInstalar.classList.remove('hidden');
               btnHeader.classList.remove('hidden');
               btnHeader.classList.add('flex');
-              mostrarToast('Atualização concluída! Clique no botão para atualizar o sistema.');
+              mostrarToast('Atualização baixada! Clique no botão para reiniciar e atualizar.');
             } else if (dados.status === 'error') {
               console.warn('[UPDATE WARNING]:', dados.erro);
               if (dados.erro && !dados.erro.includes('net::ERR_INTERNET_DISCONNECTED')) {
