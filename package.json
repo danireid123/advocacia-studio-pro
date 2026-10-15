@@ -1,6 +1,6 @@
 {
   "name": "advocacia-studio-pro",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Suite Juridica Executiva com WhatsApp Integrado",
   "main": "main.js",
   "scripts": {
@@ -24,10 +24,13 @@
       "main.js",
       "preload.js",
       "index.html",
-      "package.json"
+      "package.json",
+      "icon.png",
+      "icon.ico"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "icon.ico"
     },
     "nsis": {
       "oneClick": false,
