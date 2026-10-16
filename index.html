@@ -341,7 +341,7 @@
     </symbol>
   </svg>
 
-  <!-- 1. SPLASH SCREEN COM GARANTIA DE ABERTURA -->
+  <!-- 1. SPLASH SCREEN (Ecrã de Carregamento Real e Funcional) -->
   <div id="splash-screen" class="fixed inset-0 bg-[#080b12] z-[1200] flex flex-col items-center justify-center transition-opacity duration-700">
     <div class="relative mb-7">
       <div class="w-24 h-24 rounded-3xl champagne-gradient flex items-center justify-center text-slate-950 shadow-2xl">
@@ -415,7 +415,7 @@
     </div>
   </div>
 
-  <!-- 3. ENTRADA DO LEXBOT (GRANDE E DESTACADO) -->
+  <!-- 3. ENTRADA DO LEXBOT -->
   <div id="lexbot-center-modal" class="fixed inset-0 bg-[#060911]/90 backdrop-blur-md z-[9999] hidden items-center justify-center p-4">
     <div class="exec-card w-full max-w-md rounded-3xl p-8 border-2 border-[#d4af37]/60 text-center space-y-5 mascot-center-entry shadow-2xl">
       <div class="w-36 h-36 mx-auto mascot-float flex items-center justify-center bg-[#111827] rounded-3xl border-2 border-[#d4af37]/50 p-3 shadow-inner">
@@ -526,7 +526,7 @@
     </div>
   </div>
 
-  <!-- HEADER EXECUTIVO (SEM A BADGE DE ANTI-GRUPOS) -->
+  <!-- HEADER EXECUTIVO -->
   <header id="main-header" class="h-16 exec-card border-b border-white/5 px-6 flex items-center justify-between z-20">
     <div class="flex items-center space-x-3.5">
       <div class="w-10 h-10 rounded-xl champagne-gradient flex items-center justify-center text-slate-950 shadow-md">
@@ -747,7 +747,7 @@
           </div>
         </div>
 
-        <!-- ================= ABA 1: CONSULTAR PROCESSO (CPF / CNJ) ================= -->
+        <!-- ================= ABA 1: CONSULTAR PROCESSO ================= -->
         <div id="aba-processos" class="hidden space-y-5">
           <div id="tour-processos-card" class="exec-card p-6 rounded-2xl space-y-5">
             <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
@@ -795,7 +795,7 @@
               </div>
             </div>
 
-            <!-- Master-Detail: Lista à esquerda + Ficha à direita -->
+            <!-- Master-Detail -->
             <div class="grid grid-cols-12 gap-6 pt-1">
               <div class="col-span-5 exec-card rounded-2xl p-4 flex flex-col h-[500px]">
                 <div class="flex items-center space-x-2 mb-3.5">
@@ -825,11 +825,11 @@
                     </div>
 
                     <div class="flex items-center space-x-2">
-                      <button type="button" id="btn-resetar-visto-ficha" class="hidden px-3 py-1.5 bg-sky-950/70 hover:bg-sky-900 text-sky-300 border border-sky-700/50 rounded-xl text-[11px] font-bold transition flex items-center space-x-1" title="Permitir que o cliente receba novamente o resumo ao consultar">
+                      <button type="button" id="btn-resetar-visto-ficha" class="hidden px-3 py-1.5 bg-sky-950/70 hover:bg-sky-900 text-sky-300 border border-sky-700/50 rounded-xl text-[11px] font-bold transition flex items-center space-x-1">
                         <svg class="w-3.5 h-3.5"><use href="#icon-refresh"/></svg>
                         <span>Liberar Reenvio</span>
                       </button>
-                      <button type="button" id="btn-excluir-proc-ficha" class="hidden p-2 bg-rose-950/50 hover:bg-rose-900/70 text-rose-400 border border-rose-800/40 rounded-xl transition" title="Excluir Pasta">
+                      <button type="button" id="btn-excluir-proc-ficha" class="hidden p-2 bg-rose-950/50 hover:bg-rose-900/70 text-rose-400 border border-rose-800/40 rounded-xl transition">
                         <svg class="w-4 h-4"><use href="#icon-trash"/></svg>
                       </button>
                     </div>
@@ -839,11 +839,11 @@
 
                   <div class="grid grid-cols-12 gap-3 p-3.5 rounded-xl bg-black/20 border border-[#d4af37]/30">
                     <div class="col-span-4">
-                      <label class="text-[11px] font-bold text-[#e5c158] block mb-1">CPF do Cliente (Busca) *</label>
+                      <label class="text-[11px] font-bold text-[#e5c158] block mb-1">CPF do Cliente *</label>
                       <input type="text" id="proc-cpf" placeholder="000.000.000-00" class="exec-input w-full rounded-xl px-3 py-2 text-xs font-mono">
                     </div>
                     <div class="col-span-4">
-                      <label class="text-[11px] font-bold text-[#e5c158] block mb-1">Nº do Processo (Busca) *</label>
+                      <label class="text-[11px] font-bold text-[#e5c158] block mb-1">Nº do Processo *</label>
                       <input type="text" id="proc-numero" placeholder="0000000-00.2026..." class="exec-input w-full rounded-xl px-3 py-2 text-xs font-mono">
                     </div>
                     <div class="col-span-4">
@@ -876,7 +876,7 @@
           </div>
         </div>
 
-        <!-- ================= ABA 2: MENU AUTOMÁTICO DO WHATSAPP ================= -->
+        <!-- ================= ABA 2: MENU AUTOMÁTICO ================= -->
         <div id="aba-fluxo" class="hidden space-y-5">
           <div id="tour-fluxo-header" class="flex items-center justify-between exec-card px-6 py-4 rounded-2xl">
             <div>
@@ -962,7 +962,7 @@
           </div>
         </div>
 
-        <!-- ================= ABA 3: HORÁRIOS & INTERVALO DE ALMOÇO ================= -->
+        <!-- ================= ABA 3: HORÁRIOS & ALMOÇO ================= -->
         <div id="aba-agenda" class="hidden space-y-5">
           <div id="tour-agenda-card" class="exec-card p-6 rounded-2xl space-y-5">
             <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
@@ -1016,15 +1016,14 @@
                     <svg class="w-4 h-4 text-amber-400"><use href="#icon-moon-msg"/></svg>
                     <span class="text-xs font-bold">Início da Mensagem Fora de Expediente</span>
                   </div>
-                  <p class="text-[11px] text-slate-400 mb-2">Texto colocado no começo da resposta quando o escritório está fechado (o menu/atendimento segue normal abaixo):</p>
+                  <p class="text-[11px] text-slate-400 mb-2">Texto colocado no começo da resposta quando o escritório está fechado:</p>
                   <textarea id="agenda-msg-fora" rows="4" class="exec-input w-full rounded-xl p-3 text-xs resize-none leading-relaxed"></textarea>
                 </div>
               </div>
             </div>
 
-            <!-- Dias da Semana Garantidos -->
             <div class="space-y-2.5 pt-2">
-              <span class="text-xs font-bold text-[#e5c158] uppercase tracking-wider block">Expediente por Dia da Semana (Seg a Dom):</span>
+              <span class="text-xs font-bold text-[#e5c158] uppercase tracking-wider block">Expediente por Dia da Semana:</span>
               <div id="grade-dias-semana" class="space-y-2.5"></div>
             </div>
           </div>
@@ -1035,7 +1034,7 @@
           <div id="tour-pausados-card" class="exec-card p-6 rounded-2xl space-y-4">
             <div class="border-b border-slate-800/80 pb-3">
               <h2 class="font-serif-legal text-lg font-bold">Atendimento Humano em Espera</h2>
-              <p class="text-xs text-slate-400 mt-1">Clientes que solicitaram falar diretamente com o advogado. O robô fica silenciado para estes números por 24 horas ou até você clicar em Reativar Robô Agora.</p>
+              <p class="text-xs text-slate-400 mt-1">Clientes que solicitaram falar com o advogado. O robô fica silenciado para estes números por 24 horas.</p>
             </div>
             <div id="lista-pausados" class="space-y-2.5"></div>
           </div>
@@ -1047,7 +1046,7 @@
             <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
               <div>
                 <h2 class="font-serif-legal text-lg font-bold">Histórico de Mensagens Recebidas</h2>
-                <p class="text-xs text-slate-400 mt-0.5">Mensagens recebidas em tempo real com identificação de nomes e telefones reais.</p>
+                <p class="text-xs text-slate-400 mt-0.5">Mensagens recebidas em tempo real.</p>
               </div>
               <button id="btn-limpar-logs" class="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs text-slate-200 transition">
                 <svg class="w-3.5 h-3.5"><use href="#icon-trash"/></svg>
@@ -1065,7 +1064,7 @@
           <div id="tour-backup-card" class="exec-card p-6 rounded-2xl space-y-4">
             <div class="border-b border-slate-800/80 pb-3">
               <h2 class="font-serif-legal text-lg font-bold">Cópia de Segurança (.JSON)</h2>
-              <p class="text-xs text-slate-400 mt-0.5">Exporte suas pastas de processos e menus para restaurar a qualquer momento.</p>
+              <p class="text-xs text-slate-400 mt-0.5">Exporte suas pastas de processos e menus.</p>
             </div>
             <div class="grid grid-cols-2 gap-6 pt-2">
               <div class="exec-card p-6 rounded-2xl flex flex-col justify-between space-y-5">
@@ -1074,7 +1073,7 @@
                     <svg class="w-5 h-5"><use href="#icon-download"/></svg>
                   </div>
                   <h3 class="text-sm font-bold">Exportar Dados</h3>
-                  <p class="text-xs text-slate-400">Gera um arquivo .JSON completo com processos, horários e menus.</p>
+                  <p class="text-xs text-slate-400">Gera um arquivo .JSON completo com processos e menus.</p>
                 </div>
                 <button id="btn-exportar-dados" class="w-full py-3 champagne-gradient font-bold text-xs rounded-xl shadow-md">Baixar Backup</button>
               </div>
@@ -1084,7 +1083,7 @@
                     <svg class="w-5 h-5"><use href="#icon-upload"/></svg>
                   </div>
                   <h3 class="text-sm font-bold">Restaurar Dados</h3>
-                  <p class="text-xs text-slate-400">Recupere suas pastas e menus a partir de um backup prévio.</p>
+                  <p class="text-xs text-slate-400">Recupere suas pastas a partir de um backup.</p>
                 </div>
                 <input type="file" id="input-importar-arquivo" accept=".json" class="hidden">
                 <button id="btn-importar-dados" class="w-full py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-bold text-xs rounded-xl transition">Escolher Arquivo (.JSON)</button>
@@ -1285,26 +1284,34 @@
       } catch (e) { return btoa(texto); }
     }
 
+    // =========================================================================
+    // SPLASH SCREEN COM PROGRESSO REAL E DUPLA GARANTIA DE TRANSIÇÃO (SEM TRAVAR)
+    // =========================================================================
     function iniciarSplashELogin() {
       const bar = document.getElementById('splash-bar');
       const status = document.getElementById('splash-status');
       
-      setTimeout(() => { bar.style.width = '60%'; status.innerText = 'Carregando módulos...'; }, 200);
-      setTimeout(() => { bar.style.width = '90%'; status.innerText = 'Iniciando ambiente seguro...'; }, 700);
+      // Animação progressiva da barra de carregamento
+      setTimeout(() => { if(bar) bar.style.width = '35%'; if(status) status.innerText = 'Carregando banco de dados local...'; }, 150);
+      setTimeout(() => { if(bar) bar.style.width = '70%'; if(status) status.innerText = 'Inicializando motor de atendimento...'; }, 450);
+      setTimeout(() => { if(bar) bar.style.width = '95%'; if(status) status.innerText = 'Conectando ambiente seguro...'; }, 850);
       
-      // Garantia absoluta de 1.2 segundos para fechar o splash e nunca travar em loop
+      // Dupla garantia: fecha o splash e abre o login em no máximo 1.8 segundos para nunca prender
       setTimeout(() => {
-        bar.style.width = '100%';
-        const splash = document.getElementById('splash-screen');
-        if (splash) {
-          splash.style.opacity = '0';
-          setTimeout(() => {
-            splash.classList.add('hidden');
-            splash.style.display = 'none';
-            verificarEstadoLogin();
-          }, 300);
-        }
-      }, 1200);
+        fecharSplashEContinuar();
+      }, 1800);
+    }
+
+    function fecharSplashEContinuar() {
+      const splash = document.getElementById('splash-screen');
+      if (splash && !splash.classList.contains('hidden')) {
+        splash.style.opacity = '0';
+        setTimeout(() => {
+          splash.classList.add('hidden');
+          splash.style.display = 'none';
+          verificarEstadoLogin();
+        }, 400);
+      }
     }
 
     function verificarEstadoLogin() {
@@ -1797,7 +1804,7 @@
       etapaSelecionada = 'raiz'; popularSeletorDeEtapas(); carregarEtapaNoEditor('raiz'); marcarAlteracaoPendente();
     });
 
-    /* ================= MÓDULO DE PROCESSOS E RESUMOS ================= */
+    /* ================= MÓDULO DE PROCESSOS ================= */
     function garantirEstruturaProcessos() {
       const padrao = obterConfigPadraoFallback().processos;
       if (!configGlobal.processos) configGlobal.processos = padrao;
@@ -1882,7 +1889,7 @@
       p._resetarVistos = true;
       salvarConfiguracaoCompleta(true);
       selecionarProcessoNaLista(p.id);
-      mostrarToast("Reenvio liberado! O cliente receberá o resumo novamente.");
+      mostrarToast("Reenvio liberado!");
     });
 
     document.getElementById('btn-excluir-proc-ficha').addEventListener('click', () => {
@@ -1916,11 +1923,7 @@
         if (idx !== -1) {
           configGlobal.processos.lista[idx] = {
             ...configGlobal.processos.lista[idx],
-            nome,
-            cpf,
-            numero,
-            resumo,
-            temAtualizacao,
+            nome, cpf, numero, resumo, temAtualizacao,
             updatedAt: Date.now(),
             dataAtualizacaoTexto: agoraStr,
             consultasPorContato: {},
@@ -1932,11 +1935,7 @@
         const novoId = 'proc_' + Date.now();
         configGlobal.processos.lista.unshift({
           id: novoId,
-          nome,
-          cpf,
-          numero,
-          resumo,
-          temAtualizacao,
+          nome, cpf, numero, resumo, temAtualizacao,
           updatedAt: Date.now(),
           dataAtualizacaoTexto: agoraStr,
           consultasPorContato: {},
@@ -2075,9 +2074,7 @@
       checkVarreduraAuto.addEventListener('change', (e) => {
         configGlobal.varredura_automatica_inicio = e.target.checked;
         marcarAlteracaoPendente();
-        mostrarToast(e.target.checked 
-          ? 'Varredura automática no início ATIVADA!' 
-          : 'Varredura automática no início DESATIVADA (Padrão).');
+        mostrarToast(e.target.checked ? 'Varredura automática ativada!' : 'Varredura automática desativada.');
       });
     }
 
@@ -2090,7 +2087,7 @@
       container.innerHTML = chaves.length === 0 ? '<div class="exec-card p-10 rounded-2xl text-center text-xs text-slate-400">Nenhum cliente na fila humana no momento.</div>' : '';
       chaves.forEach(num => {
         const numLimpo = String(num).replace(/\D/g, '');
-        const nomeSalvo = (configGlobal.mapaNomes && configGlobal.mapaNomes[numLimpo]) || (configGlobal.mapaNomes && configGlobal.mapaNomes[num]) || '';
+        const nomeSalvo = (configGlobal.mapaNomes && configGlobal.mapaNomes[numLimpo]) || '';
         const rotulo = nomeSalvo ? `${nomeSalvo} (+${numLimpo})` : `+${numLimpo}`;
 
         const div = document.createElement('div');
@@ -2113,7 +2110,7 @@
       if (window.api && window.api.removerPausa) {
         const novosPausados = await window.api.removerPausa(num);
         renderizarPausados(novosPausados);
-        mostrarToast("Robô reativado para este cliente com sucesso!");
+        mostrarToast("Robô reativado!");
       }
     };
 
@@ -2161,10 +2158,10 @@
     });
 
     document.getElementById('btn-varrer-nao-lidas').addEventListener('click', async () => {
-      mostrarToast('Analisando mensagens não lidas...');
+      mostrarToast('Analisando mensagens...');
       if (window.api && window.api.forcarVarreduraNaoLidas) {
         const qtd = await window.api.forcarVarreduraNaoLidas();
-        mostrarToast(qtd > 0 ? `${qtd} conversa(s) respondida(s)!` : 'Nenhuma mensagem pendente sem resposta.');
+        mostrarToast(qtd > 0 ? `${qtd} conversa(s) respondida(s)!` : 'Nenhuma mensagem pendente.');
       }
     });
 
@@ -2177,12 +2174,11 @@
     const dispararInstalacaoUpdate = async () => {
       const txtUpdate = document.getElementById('texto-update-app');
       const btnInstalar = document.getElementById('btn-instalar-update');
-      if (txtUpdate) txtUpdate.innerText = 'Encerrando sessão com segurança e instalando atualização... O aplicativo reiniciará sozinho em instantes!';
+      if (txtUpdate) txtUpdate.innerText = 'Instalando atualização... O app reiniciará em instantes!';
       if (btnInstalar) {
         btnInstalar.disabled = true;
-        btnInstalar.innerText = 'Atualizando... Aguarde';
+        btnInstalar.innerText = 'Atualizando...';
       }
-      mostrarToast('Instalando atualização automaticamente... O app já vai reiniciar!');
       if (window.api && window.api.instalarAtualizacaoAgora) {
         await window.api.instalarAtualizacaoAgora();
       }
@@ -2226,7 +2222,9 @@
       const temaSalvo = localStorage.getItem('adv_bot_theme') || 'dark';
       aplicarTema(temaSalvo);
 
+      // Inicia a splash screen garantindo a exibição do carregamento
       iniciarSplashELogin();
+
       try {
         if (window.api && window.api.obterConfig) {
           const cfg = await window.api.obterConfig();
@@ -2254,11 +2252,26 @@
       if (window.api) {
         if (window.api.obterEstadoConexao) {
           const est = await window.api.obterEstadoConexao();
-          if (est) aplicarStatusConexaoNaUI(est.status, est.qr);
+          if (est) {
+            aplicarStatusConexaoNaUI(est.status, est.qr);
+            if (est.status === 'ready' || est.status === 'authenticated') {
+              fecharSplashEContinuar();
+            }
+          }
         }
 
-        window.api.aoReceberQR((url) => aplicarStatusConexaoNaUI('waiting_qr', url));
-        window.api.aoMudarStatus((st) => aplicarStatusConexaoNaUI(st));
+        window.api.aoReceberQR((url) => {
+          aplicarStatusConexaoNaUI('waiting_qr', url);
+          fecharSplashEContinuar();
+        });
+
+        window.api.aoMudarStatus((st) => {
+          aplicarStatusConexaoNaUI(st);
+          if (st === 'ready' || st === 'authenticated') {
+            fecharSplashEContinuar();
+          }
+        });
+
         window.api.aoAtualizarPausados((l) => renderizarPausados(l));
         
         if (window.api.aoAtualizarProcessos) {
@@ -2282,16 +2295,16 @@
               banner.classList.remove('hidden');
               banner.classList.add('flex');
               const pct = typeof dados.progresso === 'number' ? ` (${dados.progresso}%)` : '';
-              txtUpdate.innerText = `Baixando nova atualização ${dados.versao ? 'v' + dados.versao : ''}${pct} automaticamente em segundo plano...`;
+              txtUpdate.innerText = `Baixando nova atualização ${dados.versao ? 'v' + dados.versao : ''}${pct} em segundo plano...`;
               btnInstalar.classList.add('hidden');
             } else if (dados.status === 'ready') {
               banner.classList.remove('hidden');
               banner.classList.add('flex');
-              txtUpdate.innerText = `Nova versão ${dados.versao ? 'v' + dados.versao : ''} pronta! Clique ao lado para reiniciar o aplicativo já atualizado.`;
+              txtUpdate.innerText = `Nova versão ${dados.versao ? 'v' + dados.versao : ''} pronta! Clique ao lado para reiniciar.`;
               btnInstalar.classList.remove('hidden');
               btnHeader.classList.remove('hidden');
               btnHeader.classList.add('flex');
-              mostrarToast('Atualização pronta para instalar!');
+              mostrarToast('Atualização pronta!');
             }
           });
         }
@@ -2305,7 +2318,6 @@
           }
 
           const rotuloExibicao = log.exibicao || log.nome || log.numero;
-
           const box = document.getElementById('logs-box');
           if (box.innerText.includes('Nenhuma') || box.innerText.includes('limpo')) box.innerHTML = '';
           const div = document.createElement('div');
@@ -2313,16 +2325,6 @@
           div.innerHTML = `<span class="text-[#e5c158] font-bold">${rotuloExibicao}</span><span class="truncate mx-2">${log.msg}</span><span class="text-slate-500">${log.hora}</span>`;
           box.prepend(div);
           while(box.children.length > 100) box.removeChild(box.lastElementChild);
-
-          const homeLogs = document.getElementById('home-ultimos-logs');
-          if (homeLogs) {
-            if (homeLogs.innerText.includes('Aguardando')) homeLogs.innerHTML = '';
-            const mini = document.createElement('div');
-            mini.className = "p-2.5 rounded-xl exec-input flex items-center justify-between text-[11px]";
-            mini.innerHTML = `<div class="truncate pr-2"><strong class="text-[#e5c158]">${rotuloExibicao}:</strong> <span>${log.msg}</span></div><span class="text-slate-500 text-[10px]">${log.hora}</span>`;
-            homeLogs.prepend(mini);
-            while(homeLogs.children.length > 4) homeLogs.removeChild(homeLogs.lastElementChild);
-          }
         });
       }
     });

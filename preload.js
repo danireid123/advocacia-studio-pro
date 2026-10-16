@@ -1,21 +1,22 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
-  obterConfig: () => ipcRenderer.invoke('obter-config'),
-  salvarConfig: (cfg) => ipcRenderer.invoke('salvar-config', cfg),
-  reiniciarBot: () => ipcRenderer.invoke('reiniciar-bot'),
-  obterEstadoConexao: () => ipcRenderer.invoke('obter-estado-conexao'),
-  obterPausados: () => ipcRenderer.invoke('obter-pausados'),
-  removerPausa: (numero) => ipcRenderer.invoke('remover-pausa', numero),
-  forcarVarreduraNaoLidas: () => ipcRenderer.invoke('forcar-varredura-nao-lidas'),
-  instalarAtualizacaoAgora: () => ipcRenderer.invoke('instalar-atualizacao-agora'),
-  verificarAtualizacaoManual: () => ipcRenderer.invoke('verificar-atualizacao-manual'),
-  obterVersaoApp: () => ipcRenderer.invoke('obter-versao-app'),
+    obterConfig: () => ipcRenderer.invoke('obter-config'),
+    salvarConfig: (config) => ipcRenderer.invoke('salvar-config', config),
+    obterVersaoApp: () => ipcRenderer.invoke('obter-versao-app'),
+    obterEstadoConexao: () => ipcRenderer.invoke('obter-estado-conexao'),
+    reiniciarBot: () => ipcRenderer.invoke('reiniciar-bot'),
+    forcarVarreduraNaoLidas: () => ipcRenderer.invoke('forcar-varredura-nao-lidas'),
+    verificarAtualizacaoManual: () => ipcRenderer.invoke('verificar-atualizacao-manual'),
+    instalarAtualizacaoAgora: () => ipcRenderer.invoke('instalar-atualizacao-agora'),
+    obterPausados: () => ipcRenderer.invoke('obter-pausados'),
+    removerPausa: (numero) => ipcRenderer.invoke('remover-pausa', numero),
 
-  aoReceberQR: (cb) => ipcRenderer.on('bot-qr', (_, url) => cb(url)),
-  aoMudarStatus: (cb) => ipcRenderer.on('bot-status', (_, status) => cb(status)),
-  aoReceberLog: (cb) => ipcRenderer.on('bot-log', (_, log) => cb(log)),
-  aoAtualizarPausados: (cb) => ipcRenderer.on('bot-pausados', (_, mapa) => cb(mapa)),
-  aoAtualizarProcessos: (cb) => ipcRenderer.on('bot-processos-sync', (_, cfg) => cb(cfg)),
-  aoReceberEventoUpdate: (cb) => ipcRenderer.on('bot-update-status', (_, dados) => cb(dados))
+    // Eventos vindos do main.js
+    aoReceberQR: (callback) => ipcRenderer.on('bot-qr', (event, qr) => callback(qr)),
+    aoMudarStatus: (callback) => ipcRenderer.on('bot-status', (event, status) => callback(status)),
+    aoReceberLog: (callback) => ipcRenderer.on('bot-log', (event, log) => callback(log)),
+    aoAtualizarPausados: (callback) => ipcRenderer.on('bot-pausados', (event, pausados) => callback(pausados)),
+    aoAtualizarProcessos: (callback) => ipcRenderer.on('bot-processos-sync', (event, config) => callback(config)),
+    aoReceberEventoUpdate: (callback) => ipcRenderer.on('bot-update-status', (event, dados) => callback(dados))
 });
