@@ -1,5 +1,6 @@
 node_modules/
 dist/
+.cache/
 wwebjs_auth_session/
 bun.lock
 -e 

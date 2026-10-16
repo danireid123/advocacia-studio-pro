@@ -6,6 +6,13 @@ const fs = require('fs');
 const https = require('https');
 const { spawn } = require('child_process');
 
+process.on('uncaughtException', (err) => {
+    console.error('[Proteção Anti-Crash] uncaughtException:', err);
+});
+process.on('unhandledRejection', (reason) => {
+    console.error('[Proteção Anti-Crash] unhandledRejection:', reason);
+});
+
 let mainWindow;
 let client = null;
 let configEmMemoria = null;
@@ -370,9 +377,19 @@ function obterPrefixoHorario(config, remetenteChave) {
         const diaSemana = String(agora.getDay());
         const minutosAgora = agora.getHours() * 60 + agora.getMinutes();
 
+        const registrarAviso = () => {
+            avisoForaHorarioRecente[remetenteChave] = Date.now();
+            if (Object.keys(avisoForaHorarioRecente).length > 500) {
+                const limite = Date.now() - 60 * 60 * 1000;
+                for (const k in avisoForaHorarioRecente) {
+                    if (avisoForaHorarioRecente[k] < limite) delete avisoForaHorarioRecente[k];
+                }
+            }
+        };
+
         const confDia = agenda[diaSemana];
         if (!confDia || !confDia.ativo) {
-            avisoForaHorarioRecente[remetenteChave] = Date.now();
+            registrarAviso();
             return (agenda.msg_fora_expediente || '').trim() + '\n\n';
         }
 
@@ -380,7 +397,7 @@ function obterPrefixoHorario(config, remetenteChave) {
         const minFechamento = converterHoraParaMinutos(confDia.fechamento || '18:00');
 
         if (minutosAgora < minAbertura || minutosAgora >= minFechamento) {
-            avisoForaHorarioRecente[remetenteChave] = Date.now();
+            registrarAviso();
             return (agenda.msg_fora_expediente || '').trim() + '\n\n';
         }
 
@@ -388,7 +405,7 @@ function obterPrefixoHorario(config, remetenteChave) {
             const minAlmocoIni = converterHoraParaMinutos(agenda.almoco_inicio || '12:00');
             const minAlmocoFim = converterHoraParaMinutos(agenda.almoco_fim || '13:30');
             if (minutosAgora >= minAlmocoIni && minutosAgora < minAlmocoFim) {
-                avisoForaHorarioRecente[remetenteChave] = Date.now();
+                registrarAviso();
                 return (agenda.msg_almoco || '').trim() + '\n\n';
             }
         }
@@ -486,6 +503,10 @@ async function processarMensagemEntrada(msg, origemVarreduraOffline = false) {
         if (!textoOriginal) return false;
 
         mensagensJaProcessadas.add(msgId);
+        if (mensagensJaProcessadas.size > 2000) {
+            const primeiroItem = mensagensJaProcessadas.values().next().value;
+            mensagensJaProcessadas.delete(primeiroItem);
+        }
         if (origemVarreduraOffline) {
             config.idsMensagensVarreduraRespondidas.push(msgId);
             if (config.idsMensagensVarreduraRespondidas.length > 500) {
