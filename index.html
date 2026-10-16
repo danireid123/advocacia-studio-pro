@@ -392,6 +392,9 @@
     <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="20 6 9 17 4 12"/>
     </symbol>
+    <symbol id="icon-user-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" x2="22" y1="8" y2="13"/><line x1="22" x2="17" y1="8" y2="13"/>
+    </symbol>
   </svg>
 
   <!-- 1. SPLASH SCREEN -->
@@ -410,7 +413,7 @@
     <div class="w-72 h-1.5 bg-slate-900 rounded-full overflow-hidden mt-6 border border-slate-800/80">
       <div id="splash-bar" class="h-full champagne-gradient w-0 transition-all duration-500 rounded-full"></div>
     </div>
-    <span class="text-[10px] text-slate-500 mt-4 tracking-widest uppercase font-semibold">Executive Edition • Beta 0.8 (v1.8.0)</span>
+    <span class="text-[10px] text-slate-500 mt-4 tracking-widest uppercase font-semibold">Executive Edition • Beta 0.8 (v1.8.1)</span>
   </div>
 
   <!-- 2. TELA DE LOGIN EXECUTIVA (COM AUTO-LOGIN DE 30 DIAS) -->
@@ -597,7 +600,7 @@
       <div>
         <div class="flex items-center space-x-2.5">
           <span class="font-serif-legal font-bold tracking-wide text-base">Advocacia <span class="text-[#e5c158]">Studio Pro</span></span>
-          <span id="badge-versao-topo" class="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/30">Beta 0.8 (v1.8.0)</span>
+          <span id="badge-versao-topo" class="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/30">Beta 0.8 (v1.8.1)</span>
           <span id="badge-autosave" class="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">✓ Auto-Save Ativo</span>
         </div>
         <p id="header-user-info" class="text-[11px] text-slate-400">Ambiente Corporativo</p>
@@ -673,6 +676,10 @@
             <button id="nav-btn-pausados" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
               <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-user-clock"/></svg><span>Fila de Espera (Advogado)</span></div>
               <span id="badge-pausados" class="px-2 py-0.5 text-[10px] rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+            </button>
+            <button id="nav-btn-ignorados" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition" title="Contatos que nunca receberão mensagens automáticas">
+              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-user-x"/></svg><span>Contatos Ignorados</span></div>
+              <span id="badge-ignorados" class="px-2 py-0.5 text-[10px] rounded-full bg-slate-800 text-rose-300 font-bold">0</span>
             </button>
             <button id="nav-btn-terminal" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
               <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-activity"/></svg><span>Histórico de Mensagens</span></div>
@@ -1231,6 +1238,60 @@
           </div>
         </div>
 
+        <!-- ================= ABA 7: CONTATOS IGNORADOS ================= -->
+        <div id="aba-ignorados" class="hidden space-y-5 tab-pane-anim">
+          <div class="exec-card p-6 rounded-2xl space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+              <div>
+                <div class="flex items-center space-x-2.5">
+                  <h2 class="font-serif-legal text-lg font-bold">Contatos Ignorados (Lista de Bloqueio)</h2>
+                  <span class="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30">
+                    Bloqueio Absoluto de Respostas
+                  </span>
+                </div>
+                <p class="text-xs text-slate-400 mt-1">Os números cadastrados nesta lista <strong>nunca</strong> receberão disparos automáticos, mensagens de triagem ou resumos de processo do robô.</p>
+              </div>
+              <div class="flex items-center space-x-2 bg-black/20 border border-slate-800 px-3.5 py-2 rounded-xl text-xs">
+                <span class="text-slate-400">Total bloqueados:</span>
+                <span id="contagem-ignorados-topo" class="font-bold text-rose-400">0</span>
+              </div>
+            </div>
+
+            <!-- Formulário para cadastrar novo número bloqueado -->
+            <div class="p-4 rounded-2xl bg-black/20 border border-[#d4af37]/30 space-y-3">
+              <span class="text-xs font-bold text-[#e5c158] uppercase tracking-wider block">Cadastrar Novo Contato para Bloquear</span>
+              <div class="grid grid-cols-12 gap-3 items-end">
+                <div class="col-span-5">
+                  <label class="text-[11px] font-bold text-slate-300 block mb-1">Número do WhatsApp / Telefone *</label>
+                  <input type="text" id="input-ignorado-numero" placeholder="Ex: (11) 98765-4321 ou 5511987654321" class="exec-input w-full rounded-xl px-3.5 py-2.5 text-xs font-mono">
+                </div>
+                <div class="col-span-5">
+                  <label class="text-[11px] font-semibold text-slate-400 block mb-1">Identificação / Motivo (Opcional)</label>
+                  <input type="text" id="input-ignorado-nome" placeholder="Ex: Juiz, Sócio, Familiar, Fornecedor..." class="exec-input w-full rounded-xl px-3.5 py-2.5 text-xs">
+                </div>
+                <div class="col-span-2">
+                  <button type="button" id="btn-add-ignorado" class="w-full py-2.5 champagne-gradient font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center space-x-1.5">
+                    <svg class="w-4 h-4"><use href="#icon-plus"/></svg>
+                    <span>Bloquear</span>
+                  </button>
+                </div>
+              </div>
+              <p class="text-[11px] text-slate-500">Aceita números com DDD, traços, parênteses ou apenas os dígitos. O filtro higieniza automaticamente.</p>
+            </div>
+
+            <!-- Lista de números ignorados em tempo real -->
+            <div class="space-y-3 pt-1">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-[#e5c158]">Lista de Contatos e Números Bloqueados</h3>
+                <span class="text-[11px] text-slate-400">Remova a qualquer momento com 1 clique para reativar</span>
+              </div>
+              <div id="lista-ignorados" class="space-y-2 max-h-[380px] overflow-y-auto pr-1">
+                <div class="exec-card p-10 rounded-2xl text-center text-xs text-slate-400">Nenhum contato na lista de bloqueio. Todos os contatos recebem atendimento normal.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </main>
   </div>
@@ -1295,6 +1356,7 @@
         mapaNomes: {},
         mapaTelefones: {},
         pausadosPersistidos: {},
+        contatosIgnorados: [],
         metricasReais: { totalMensagens: 0, contatosAtendidos: [] }
       };
     }
@@ -1315,11 +1377,24 @@
           localStorage.setItem('adv_bot_config_backup', JSON.stringify(cfg));
           return true;
         },
-        obterVersaoApp: async () => 'Beta 0.8 (v1.8.0)',
+        obterVersaoApp: async () => 'Beta 0.8 (v1.8.1)',
         reiniciarBot: async () => true,
         obterEstadoConexao: async () => ({ status: 'ready', qr: null, subStatus: 'Conectado e Operante' }),
         obterPausados: async () => ({}),
         removerPausa: async () => ({}),
+        obterIgnorados: async () => JSON.parse(localStorage.getItem('adv_bot_ignored_contacts') || '[]'),
+        adicionarIgnorado: async (item) => {
+          const l = JSON.parse(localStorage.getItem('adv_bot_ignored_contacts') || '[]');
+          l.push(item);
+          localStorage.setItem('adv_bot_ignored_contacts', JSON.stringify(l));
+          return l;
+        },
+        removerIgnorado: async (num) => {
+          let l = JSON.parse(localStorage.getItem('adv_bot_ignored_contacts') || '[]');
+          l = l.filter(x => (x.id !== num && x.numero !== num));
+          localStorage.setItem('adv_bot_ignored_contacts', JSON.stringify(l));
+          return l;
+        },
         forcarVarreduraNaoLidas: async () => ({ respondidas: 0, analisadas: 0, itens: [] }),
         obterStatusAutoStart: async () => true,
         definirAutoStart: async () => true,
@@ -1330,6 +1405,7 @@
         aoReceberLog: () => {},
         aoAtualizarPausados: () => {},
         aoAtualizarProcessos: () => {},
+        aoAtualizarIgnorados: () => {},
         aoReceberProgressoVarredura: () => {},
         aoReceberEventoUpdate: () => {}
       };
@@ -1644,6 +1720,11 @@
           : 'px-2 py-0.5 text-[9px] rounded-full bg-slate-800 text-slate-400 font-bold';
       }
 
+      const badgeIgnorados = document.getElementById('badge-ignorados');
+      if (badgeIgnorados) {
+        badgeIgnorados.innerText = String((contatosIgnoradosCache || []).length);
+      }
+
       const agora = new Date();
       const diaHoje = String(agora.getDay());
       const confHoje = configGlobal.agenda && configGlobal.agenda[diaHoje];
@@ -1859,7 +1940,7 @@
     }
 
     window.ativarAba = function(abaNome) {
-      ['inicio', 'processos', 'fluxo', 'varredura', 'agenda', 'pausados', 'terminal', 'backup'].forEach(a => {
+      ['inicio', 'processos', 'fluxo', 'varredura', 'agenda', 'pausados', 'ignorados', 'terminal', 'backup'].forEach(a => {
         const d = document.getElementById('aba-' + a);
         const b = document.getElementById('nav-btn-' + a);
         if (d) {
@@ -1875,6 +1956,7 @@
       if (abaNome === 'processos') renderizarModuloProcessos();
       if (abaNome === 'varredura') renderizarPaginaVarredura();
       if (abaNome === 'agenda') renderizarAgendaSemanal();
+      if (abaNome === 'ignorados') carregarERenderizarIgnorados();
     };
 
     document.getElementById('nav-btn-inicio').addEventListener('click', () => ativarAba('inicio'));
@@ -1886,8 +1968,116 @@
       ativarAba('pausados');
       if (window.api && window.api.obterPausados) renderizarPausados(await window.api.obterPausados());
     });
+    document.getElementById('nav-btn-ignorados').addEventListener('click', () => ativarAba('ignorados'));
     document.getElementById('nav-btn-terminal').addEventListener('click', () => ativarAba('terminal'));
     document.getElementById('nav-btn-backup').addEventListener('click', () => ativarAba('backup'));
+
+    let contatosIgnoradosCache = [];
+
+    async function carregarERenderizarIgnorados() {
+      if (window.api && window.api.obterIgnorados) {
+        try {
+          contatosIgnoradosCache = await window.api.obterIgnorados();
+        } catch (e) {
+          contatosIgnoradosCache = configGlobal.contatosIgnorados || [];
+        }
+      } else {
+        contatosIgnoradosCache = configGlobal.contatosIgnorados || [];
+      }
+      renderizarContatosIgnorados(contatosIgnoradosCache);
+    }
+
+    function renderizarContatosIgnorados(lista = null) {
+      if (lista !== null) contatosIgnoradosCache = Array.isArray(lista) ? lista : [];
+      const arr = contatosIgnoradosCache || [];
+      const container = document.getElementById('lista-ignorados');
+      const badge = document.getElementById('badge-ignorados');
+      const topoCount = document.getElementById('contagem-ignorados-topo');
+
+      if (badge) badge.innerText = String(arr.length);
+      if (topoCount) topoCount.innerText = String(arr.length);
+
+      if (!container) return;
+      if (arr.length === 0) {
+        container.innerHTML = '<div class="exec-card p-10 rounded-2xl text-center text-xs text-slate-400">Nenhum contato na lista de bloqueio. Todos os contatos recebem atendimento normal.</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      arr.forEach((item) => {
+        const itemObj = (typeof item === 'object' && item !== null) ? item : { numero: String(item), nome: '' };
+        const numLimpo = String(itemObj.numero || '').replace(/\D/g, '');
+        const telFormatado = itemObj.telefoneFormatado || `+${numLimpo}`;
+        const nomeOuNota = itemObj.nome ? itemObj.nome : 'Sem identificação';
+        const dataAdd = itemObj.adicionadoEm || 'Bloqueado';
+        const idItem = itemObj.id || numLimpo;
+
+        const row = document.createElement('div');
+        row.className = "exec-card p-4 rounded-xl flex items-center justify-between text-xs border-l-4 border-rose-500 hover:border-rose-400 transition";
+        row.innerHTML = `
+          <div class="flex items-center space-x-3 overflow-hidden pr-2">
+            <div class="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 flex-shrink-0">
+              <svg class="w-4 h-4"><use href="#icon-user-x"/></svg>
+            </div>
+            <div class="overflow-hidden">
+              <div class="flex items-center space-x-2">
+                <span class="text-xs font-bold text-white truncate">${telFormatado}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-300 font-semibold border border-rose-500/20">Bloqueado</span>
+              </div>
+              <p class="text-[11px] text-slate-400 truncate mt-0.5">${nomeOuNota} • <span class="text-slate-500 text-[10px]">Adicionado em ${dataAdd}</span></p>
+            </div>
+          </div>
+          <button type="button" onclick="removerContatoIgnorado('${idItem}')" class="px-3 py-1.5 bg-rose-950/60 hover:bg-rose-900 border border-rose-800/40 text-rose-300 text-[11px] font-bold rounded-xl transition flex items-center space-x-1 shadow flex-shrink-0">
+            <svg class="w-3.5 h-3.5"><use href="#icon-trash"/></svg>
+            <span>Desbloquear</span>
+          </button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    window.removerContatoIgnorado = async function(idOuNumero) {
+      if (window.api && window.api.removerIgnorado) {
+        const novaLista = await window.api.removerIgnorado(idOuNumero);
+        renderizarContatosIgnorados(novaLista);
+      } else {
+        contatosIgnoradosCache = contatosIgnoradosCache.filter(x => (x.id !== idOuNumero && x.numero !== idOuNumero));
+        renderizarContatosIgnorados(contatosIgnoradosCache);
+      }
+      mostrarToast("Contato removido da lista de bloqueio!");
+    };
+
+    async function adicionarNovoContatoIgnorado() {
+      const inputNum = document.getElementById('input-ignorado-numero');
+      const inputNome = document.getElementById('input-ignorado-nome');
+      if (!inputNum) return;
+      const valorNum = (inputNum.value || '').trim();
+      const valorNome = inputNome ? (inputNome.value || '').trim() : '';
+      const digitos = valorNum.replace(/\D/g, '');
+
+      if (digitos.length < 8) {
+        alert("Digite um número de telefone válido (com DDD, mínimo 8 dígitos).");
+        return;
+      }
+
+      if (window.api && window.api.adicionarIgnorado) {
+        const novaLista = await window.api.adicionarIgnorado({ numero: digitos, nome: valorNome });
+        renderizarContatosIgnorados(novaLista);
+      } else {
+        contatosIgnoradosCache.push({
+          id: 'ign_' + Date.now(),
+          numero: digitos,
+          telefoneFormatado: `+${digitos}`,
+          nome: valorNome,
+          adicionadoEm: new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+        });
+        renderizarContatosIgnorados(contatosIgnoradosCache);
+      }
+
+      inputNum.value = '';
+      if (inputNome) inputNome.value = '';
+      mostrarToast("Contato bloqueado com sucesso!");
+    }
 
     function formatarTimestampLegivel(tsSegundos) {
       if (!tsSegundos || tsSegundos <= 0) return 'Aguardando 1ª conexão...';
@@ -2527,7 +2717,17 @@
       renderizarAgendaSemanal();
       renderizarModuloProcessos();
       renderizarPaginaVarredura();
+      carregarERenderizarIgnorados();
       renderizarTelaInicial();
+
+      const btnAddIgn = document.getElementById('btn-add-ignorado');
+      if (btnAddIgn) btnAddIgn.addEventListener('click', adicionarNovoContatoIgnorado);
+      const inputIgnNum = document.getElementById('input-ignorado-numero');
+      if (inputIgnNum) {
+        inputIgnNum.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') adicionarNovoContatoIgnorado();
+        });
+      }
 
       if (configGlobal.processos.lista.length > 0) {
         selecionarProcessoNaLista(configGlobal.processos.lista[0].id);
@@ -2537,6 +2737,12 @@
         if (window.api.obterPausados) {
           const pausadosIniciais = await window.api.obterPausados();
           renderizarPausados(pausadosIniciais || {});
+        }
+
+        if (window.api.aoAtualizarIgnorados) {
+          window.api.aoAtualizarIgnorados((lista) => {
+            renderizarContatosIgnorados(lista);
+          });
         }
 
         if (window.api.obterEstadoConexao) {

@@ -41,10 +41,54 @@ const GITHUB_REPO = 'advocacia-studio-pro';
 const USER_DATA_DIR = app.getPath('userData');
 const CONFIG_PATH = path.join(USER_DATA_DIR, 'config.json');
 const CONFIG_BACKUP_PATH = path.join(USER_DATA_DIR, 'config.backup.json');
+const IGNORED_CONTACTS_PATH = path.join(USER_DATA_DIR, 'ignored_contacts.json');
 const AUTH_DIR = path.join(USER_DATA_DIR, 'wwebjs_auth_session_v2');
 
 if (!fs.existsSync(AUTH_DIR)) {
     fs.mkdirSync(AUTH_DIR, { recursive: true });
+}
+
+function carregarContatosIgnorados() {
+    try {
+        if (fs.existsSync(IGNORED_CONTACTS_PATH)) {
+            const raw = fs.readFileSync(IGNORED_CONTACTS_PATH, 'utf-8');
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) return parsed;
+        }
+    } catch (e) {}
+    try {
+        const cfg = carregarConfig();
+        if (Array.isArray(cfg.contatosIgnorados)) return cfg.contatosIgnorados;
+    } catch (e) {}
+    return [];
+}
+
+function salvarContatosIgnorados(lista) {
+    try {
+        const limpa = Array.isArray(lista) ? lista : [];
+        fs.writeFileSync(IGNORED_CONTACTS_PATH, JSON.stringify(limpa, null, 2), 'utf-8');
+        const cfg = carregarConfig();
+        cfg.contatosIgnorados = limpa;
+        salvarConfigDisco(cfg, false);
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('bot-ignorados-sync', limpa);
+        }
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+function isContactIgnored(fromNumber, ignoredList) {
+    const cleanNumber = String(fromNumber || '').replace(/\D/g, '');
+    if (!cleanNumber) return false;
+    const list = Array.isArray(ignoredList) ? ignoredList : carregarContatosIgnorados();
+    return list.some(item => {
+        const itemNum = typeof item === 'object' && item !== null ? (item.numero || item.telefone || '') : item;
+        const cleanItem = String(itemNum || '').replace(/\D/g, '');
+        if (!cleanItem || cleanItem.length < 4) return false;
+        return cleanNumber.includes(cleanItem) || cleanItem.includes(cleanNumber);
+    });
 }
 
 function obterIconeNativo() {
@@ -173,6 +217,7 @@ function criarConfigPadrao() {
         mapaNomes: {},
         mapaTelefones: {},
         pausadosPersistidos: {},
+        contatosIgnorados: [],
         metricasReais: { totalMensagens: 0, contatosAtendidos: [] }
     };
 }
@@ -201,6 +246,7 @@ function migrarTemplatesAntigosProcessos(cfg) {
     if (!cfg.mapaNomes) cfg.mapaNomes = {};
     if (!cfg.mapaTelefones) cfg.mapaTelefones = {};
     if (!cfg.pausadosPersistidos) cfg.pausadosPersistidos = {};
+    if (!Array.isArray(cfg.contatosIgnorados)) cfg.contatosIgnorados = [];
     if (!Array.isArray(cfg.historicoVarreduras)) cfg.historicoVarreduras = [];
     if (!Array.isArray(cfg.idsMensagensVarreduraRespondidas)) cfg.idsMensagensVarreduraRespondidas = [];
     return cfg;
@@ -487,6 +533,12 @@ async function processarMensagemEntrada(msg, origemVarreduraOffline = false) {
         if (!msg || msg.fromMe || msg.isStatus || msg.broadcast) return false;
         if (!msg.from || msg.from.includes('@g.us') || msg.from.includes('@newsletter') || msg.from.includes('@broadcast')) return false;
 
+        // SUB-AGENTE 2: Interceptador de Contatos Ignorados (Descarte imediato antes de qualquer resposta)
+        const senderId = msg.from || '';
+        if (isContactIgnored(senderId) || (msg.author && isContactIgnored(msg.author))) {
+            return false;
+        }
+
         const msgId = (msg.id && msg.id._serialized) ? msg.id._serialized : `${msg.from}_${msg.timestamp}_${msg.body}`;
         if (mensagensJaProcessadas.has(msgId)) return false;
 
@@ -516,6 +568,12 @@ async function processarMensagemEntrada(msg, origemVarreduraOffline = false) {
 
         const identidade = await resolverIdentidadeCompleta(msg, config);
         const remetenteChave = identidade.chaveCliente;
+
+        // Verificação redundante com número real limpo da identidade
+        if (isContactIgnored(remetenteChave) || isContactIgnored(identidade.telefoneFormatado)) {
+            return false;
+        }
+
         const gatilhoDigitado = extrairGatilhoLimpo(textoOriginal);
 
         const registroPausa = contatosPausados[remetenteChave] || contatosPausados[msg.from];
@@ -661,8 +719,15 @@ function emitirProgressoVarredura(dados) {
     }
 }
 
-async function varrerMensagensNaoLidas() {
-    if (!client || statusAtualBot !== 'ready' || varrendoNaoLidas) {
+const MAX_AGE_MS = 24 * 60 * 60 * 1000; // Limite rigoroso de 24 horas
+
+async function syncOfflineMessages(cli) {
+    return await varrerMensagensNaoLidas(cli);
+}
+
+async function varrerMensagensNaoLidas(clienteEspecifico = null) {
+    const alvoClient = clienteEspecifico || client;
+    if (!alvoClient || statusAtualBot !== 'ready' || varrendoNaoLidas) {
         emitirProgressoVarredura({
             emAndamento: false,
             fase: statusAtualBot !== 'ready' ? 'WhatsApp ainda não está conectado.' : 'Varredura já em andamento.',
@@ -675,8 +740,11 @@ async function varrerMensagensNaoLidas() {
 
     varrendoNaoLidas = true;
     const config = carregarConfig();
+    const listaIgnorados = carregarContatosIgnorados();
+    const agoraMs = Date.now();
     const primeiraConexao = config.primeiraConexaoTimestamp || momentoConexao;
-    const janelaCorteMinima = primeiraConexao > 0 ? primeiraConexao : (momentoConexao - 86400);
+    const corte24h = Math.floor((agoraMs - MAX_AGE_MS) / 1000);
+    const janelaCorteMinima = Math.max(corte24h, primeiraConexao > 0 ? primeiraConexao : (momentoConexao - 86400));
 
     let analisadas = 0;
     let respondidas = 0;
@@ -691,7 +759,7 @@ async function varrerMensagensNaoLidas() {
     });
 
     try {
-        const chats = await client.getChats();
+        const chats = await alvoClient.getChats();
         const candidatos = chats.filter(c => !c.isGroup && c.unreadCount > 0);
 
         emitirProgressoVarredura({
@@ -705,12 +773,24 @@ async function varrerMensagensNaoLidas() {
         for (const chat of candidatos) {
             analisadas++;
             try {
-                const msgs = await chat.fetchMessages({ limit: 8 });
+                const senderId = (chat.id && (chat.id._serialized || chat.id.user)) || String(chat.id || '');
+                if (isContactIgnored(senderId, listaIgnorados)) {
+                    continue;
+                }
+
+                const qtdParaBuscar = Math.min(Math.max(chat.unreadCount || 1, 1), 10);
+                const msgs = await chat.fetchMessages({ limit: qtdParaBuscar });
                 if (!msgs || msgs.length === 0) continue;
 
                 const ultimaMsg = msgs[msgs.length - 1];
                 if (!ultimaMsg || ultimaMsg.fromMe) continue;
-                if (ultimaMsg.timestamp && ultimaMsg.timestamp < janelaCorteMinima) continue;
+
+                // Corte temporal estrito de 24 horas
+                const msgTimestampMs = (ultimaMsg.timestamp || 0) * 1000;
+                const idadeMs = agoraMs - msgTimestampMs;
+                if (idadeMs > MAX_AGE_MS || (ultimaMsg.timestamp && ultimaMsg.timestamp < janelaCorteMinima)) {
+                    continue;
+                }
 
                 const msgId = (ultimaMsg.id && ultimaMsg.id._serialized) ? ultimaMsg.id._serialized : `${ultimaMsg.from}_${ultimaMsg.timestamp}`;
                 if (mensagensJaProcessadas.has(msgId) || (config.idsMensagensVarreduraRespondidas || []).includes(msgId)) {
@@ -718,6 +798,10 @@ async function varrerMensagensNaoLidas() {
                 }
 
                 const identidade = await resolverIdentidadeCompleta(ultimaMsg, config);
+                if (isContactIgnored(identidade.chaveCliente, listaIgnorados) || isContactIgnored(identidade.telefoneFormatado, listaIgnorados)) {
+                    continue;
+                }
+
                 const ok = await processarMensagemEntrada(ultimaMsg, true);
                 if (ok) {
                     respondidas++;
@@ -729,6 +813,10 @@ async function varrerMensagensNaoLidas() {
                     };
                     itensProcessados.push(itemInfo);
                 }
+
+                try {
+                    await chat.sendSeen();
+                } catch (errSeen) {}
 
                 emitirProgressoVarredura({
                     emAndamento: true,
@@ -927,19 +1015,31 @@ function createWindow() {
         height: 900,
         minWidth: 1100,
         minHeight: 720,
-        title: 'Advocacia Studio Pro • Beta 0.8',
+        title: 'Advocacia Studio Pro • Beta 0.8 (v1.8.1)',
         icon: obterIconeNativo(),
         backgroundColor: '#0b0f17',
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
-            nodeIntegration: false
+            nodeIntegration: false,
+            backgroundThrottling: true
         },
         autoHideMenuBar: true
     });
 
     mainWindow.loadFile('index.html');
 }
+
+// Otimização para PC fraco: limpeza periódica de referências em memória (< 300MB)
+setInterval(() => {
+    try {
+        if (global.gc) global.gc();
+        if (mensagensJaProcessadas && mensagensJaProcessadas.size > 800) {
+            const arr = Array.from(mensagensJaProcessadas).slice(0, 400);
+            for (const item of arr) mensagensJaProcessadas.delete(item);
+        }
+    } catch (e) {}
+}, 5 * 60 * 1000);
 
 app.whenReady().then(() => {
     const cfg = carregarConfig(true);
@@ -1012,14 +1112,17 @@ async function iniciarWhatsApp(forcarReinicio = false) {
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
             '--disable-accelerated-2d-canvas',
-            '--disable-gpu',
             '--no-first-run',
-            '--no-default-browser-check',
+            '--no-zygote',
+            '--disable-gpu',
+            '--disable-software-rasterizer',
             '--disable-extensions',
+            '--mute-audio',
+            '--js-flags="--max-old-space-size=256"',
+            '--no-default-browser-check',
             '--disable-sync',
             '--disable-translate',
             '--disable-default-apps',
-            '--mute-audio',
             '--blink-settings=imagesEnabled=false',
             '--disable-background-timer-throttling',
             '--disable-backgrounding-occluded-windows',
@@ -1139,3 +1242,36 @@ ipcMain.handle('verificar-atualizacao-manual', async () => await verificarEBaixa
 ipcMain.handle('instalar-atualizacao-agora', async () => await executarInstalacaoSilenciosaUpdate());
 ipcMain.handle('obter-pausados', () => contatosPausados);
 ipcMain.handle('remover-pausa', (e, num) => { delete contatosPausados[num]; emitirPausados(); return contatosPausados; });
+ipcMain.handle('obter-ignorados', () => carregarContatosIgnorados());
+ipcMain.handle('adicionar-ignorado', (e, item) => {
+    const lista = carregarContatosIgnorados();
+    const numeroLimpo = apenasNumeros(typeof item === 'object' && item !== null ? item.numero : item);
+    if (!numeroLimpo) return lista;
+    const jaExiste = lista.some(x => apenasNumeros(typeof x === 'object' && x !== null ? x.numero : x) === numeroLimpo);
+    if (!jaExiste) {
+        const novoItem = {
+            id: 'ign_' + Date.now(),
+            numero: numeroLimpo,
+            telefoneFormatado: formatarTelefoneBrasil(numeroLimpo),
+            nome: (typeof item === 'object' && item !== null && item.nome) ? String(item.nome).trim() : '',
+            adicionadoEm: new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+        };
+        lista.push(novoItem);
+        salvarContatosIgnorados(lista);
+    }
+    return lista;
+});
+ipcMain.handle('remover-ignorado', (e, identificador) => {
+    let lista = carregarContatosIgnorados();
+    const limpo = apenasNumeros(identificador);
+    lista = lista.filter(x => {
+        if (typeof x === 'object' && x !== null) {
+            if (x.id && x.id === identificador) return false;
+            if (apenasNumeros(x.numero) === limpo) return false;
+            return true;
+        }
+        return apenasNumeros(x) !== limpo;
+    });
+    salvarContatosIgnorados(lista);
+    return lista;
+});
