@@ -1,11 +1,12 @@
 {
   "name": "advocacia-studio-pro",
-  "version": "1.1.0",
-  "description": "Advocacia Studio Pro - Suite Executiva de Atendimento e Processos",
+  "version": "1.8.0",
+  "description": "Advocacia Studio Pro - Suite Executiva de Atendimento e Processos (Beta 0.8)",
   "main": "main.js",
   "author": "Escritorio Digital",
   "license": "MIT",
   "scripts": {
+    "dev": "node -e \"const http=require('http'),fs=require('fs');http.createServer((q,s)=>{if(q.url.includes('.zip')||q.url==='/download'){s.writeHead(200,{'Content-Type':'application/zip','Content-Disposition':'attachment; filename=\\\"advocacia-studio-pro-completo.zip\\\"'});fs.createReadStream('advocacia-studio-pro-completo.zip').pipe(s);}else{fs.createReadStream('index.html').pipe(s);}}).listen(3000);\"",
     "start": "electron .",
     "build": "electron-builder --win",
     "release": "electron-builder --win --publish always"
@@ -25,7 +26,7 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "icon.ico",
+      "icon": "icon.png",
       "verifyUpdateCodeSignature": false,
       "artifactName": "Advocacia-Studio-Pro-Setup-${version}.${ext}"
     },

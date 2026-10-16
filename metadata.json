@@ -1,8 +1,5 @@
 {
   "name": "Advocacia Studio Pro",
-  "description": "Executive Suite Jurídica com Gestão de Processos e Atendimento Automatizado",
-  "version": "1.0.0",
-  "capabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
+  "description": "Suite Jurídica Executiva com WhatsApp Integrado",
+  "version": "1.8.0"
 }

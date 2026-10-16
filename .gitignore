@@ -5,3 +5,5 @@ bun.lock
 -e 
 *.zip
 metadata.json
+.wwebjs_cache/
+*.zip

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Advocacia Studio Pro • Executive Suite</title>
+  <title>Advocacia Studio Pro • Beta 0.8 (Executive Suite)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -64,16 +64,16 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
-      transition: background-color 0.25s ease, color 0.25s ease;
+      transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
     }
 
     body.theme-light .exec-card {
       background: #ffffff !important;
       border-color: #cbd5e1 !important;
-      box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.06) !important;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06) !important;
     }
     body.theme-light .exec-card:hover {
-      border-color: rgba(184, 134, 11, 0.45) !important;
+      border-color: rgba(184, 134, 11, 0.5) !important;
     }
     body.theme-light .exec-input {
       background: #f8fafc !important;
@@ -158,7 +158,7 @@
       backdrop-filter: blur(16px);
       border: 1px solid var(--border-color);
       box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
-      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .exec-card:hover {
       border-color: rgba(212, 175, 55, 0.35);
@@ -177,7 +177,7 @@
       background: var(--input-bg);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
     }
     .exec-input:focus {
       outline: none;
@@ -191,34 +191,84 @@
       box-shadow: 0 4px 20px -4px rgba(212, 175, 55, 0.25);
     }
 
+    @keyframes tabFadeIn {
+      0% { opacity: 0; transform: translateY(6px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .tab-pane-anim {
+      animation: tabFadeIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #334155;
+      transition: 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background-color: #f8fafc;
+      transition: 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    input:checked + .toggle-slider {
+      background: linear-gradient(135deg, #e5c158 0%, #b8860b 100%);
+      border-color: #f3e5ab;
+    }
+    input:checked + .toggle-slider:before {
+      transform: translateX(18px);
+      background-color: #090d16;
+    }
+
     @keyframes floatMascot {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-6px) rotate(1.5deg); }
+      50% { transform: translateY(-5px) rotate(1.5deg); }
     }
     @keyframes blinkEye {
       0%, 92%, 100% { transform: scaleY(1); }
       96% { transform: scaleY(0.1); }
     }
     @keyframes pulseAura {
-      0%, 100% { filter: drop-shadow(0 6px 14px rgba(212, 175, 55, 0.25)); }
-      50% { filter: drop-shadow(0 8px 22px rgba(212, 175, 55, 0.55)); }
+      0%, 100% { filter: drop-shadow(0 5px 12px rgba(212, 175, 55, 0.35)); }
+      50% { filter: drop-shadow(0 8px 20px rgba(212, 175, 55, 0.65)); }
     }
     @keyframes entryCenter {
-      0% { opacity: 0; transform: scale(0.8) translateY(25px); }
+      0% { opacity: 0; transform: scale(0.85) translateY(20px); }
       100% { opacity: 1; transform: scale(1) translateY(0); }
     }
 
-    .mascot-float { animation: floatMascot 3.5s ease-in-out infinite, pulseAura 4s ease-in-out infinite; }
+    .mascot-float { animation: floatMascot 3.2s ease-in-out infinite, pulseAura 3.8s ease-in-out infinite; }
     .mascot-eye { transform-origin: center; animation: blinkEye 4.2s infinite; }
-    .mascot-center-entry { animation: entryCenter 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .mascot-center-entry { animation: entryCenter 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
     #lexbot-wrapper {
       position: fixed;
       z-index: 1000;
-      transition: top 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
-                left 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
-                bottom 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
-                right 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: top 0.42s cubic-bezier(0.22, 1, 0.36, 1), 
+                  left 0.42s cubic-bezier(0.22, 1, 0.36, 1), 
+                  bottom 0.42s cubic-bezier(0.22, 1, 0.36, 1), 
+                  right 0.42s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     #tour-backdrop {
@@ -229,7 +279,7 @@
       z-index: 850;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.35s ease;
+      transition: opacity 0.32s ease;
     }
     #tour-backdrop.active {
       opacity: 1;
@@ -243,7 +293,7 @@
       backdrop-filter: none !important;
       box-shadow: 0 0 0 3px #d4af37, 0 0 45px rgba(212, 175, 55, 0.55) !important;
       border-radius: 1rem;
-      transition: all 0.3s ease;
+      transition: all 0.28s ease;
     }
 
     .format-drawer {
@@ -290,6 +340,9 @@
     </symbol>
     <symbol id="icon-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+    </symbol>
+    <symbol id="icon-radar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19.07 4.93A10 10 0 0 0 6.99 3.34"/><path d="M4 6h.01"/><path d="M2.29 9.62A10 10 0 1 0 21.31 8.35"/><path d="M16.24 7.76A6 6 0 1 0 8.23 16.67"/><path d="M12 18h.01"/><path d="M17.99 11.66A6 6 0 0 1 15.77 16.67"/><circle cx="12" cy="12" r="2"/><path d="m13.41 10.59 5.66-5.66"/>
     </symbol>
     <symbol id="icon-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>
@@ -341,8 +394,8 @@
     </symbol>
   </svg>
 
-  <!-- 1. SPLASH SCREEN (Ecrã de Carregamento Real e Funcional) -->
-  <div id="splash-screen" class="fixed inset-0 bg-[#080b12] z-[1200] flex flex-col items-center justify-center transition-opacity duration-700">
+  <!-- 1. SPLASH SCREEN -->
+  <div id="splash-screen" class="fixed inset-0 bg-[#080b12] z-[1200] flex flex-col items-center justify-center transition-opacity duration-500">
     <div class="relative mb-7">
       <div class="w-24 h-24 rounded-3xl champagne-gradient flex items-center justify-center text-slate-950 shadow-2xl">
         <svg class="w-12 h-12"><use href="#icon-scales"/></svg>
@@ -352,15 +405,15 @@
     <h1 class="font-serif-legal text-2xl font-bold tracking-wider text-white">
       Advocacia <span class="text-[#e5c158]">Studio Pro</span>
     </h1>
-    <p id="splash-status" class="text-xs text-slate-400 mt-2.5 font-medium tracking-wide">Inicializando ambiente seguro...</p>
+    <p id="splash-status" class="text-xs text-slate-400 mt-2.5 font-medium tracking-wide">Inicializando motor de alta velocidade...</p>
     
     <div class="w-72 h-1.5 bg-slate-900 rounded-full overflow-hidden mt-6 border border-slate-800/80">
-      <div id="splash-bar" class="h-full champagne-gradient w-0 transition-all duration-700 rounded-full"></div>
+      <div id="splash-bar" class="h-full champagne-gradient w-0 transition-all duration-500 rounded-full"></div>
     </div>
-    <span class="text-[10px] text-slate-600 mt-4 tracking-widest uppercase font-semibold">Executive Edition • Versão 1.0.4</span>
+    <span class="text-[10px] text-slate-500 mt-4 tracking-widest uppercase font-semibold">Executive Edition • Beta 0.8 (v1.8.0)</span>
   </div>
 
-  <!-- 2. TELA DE LOGIN EXECUTIVA -->
+  <!-- 2. TELA DE LOGIN EXECUTIVA (COM AUTO-LOGIN DE 30 DIAS) -->
   <div id="auth-screen" class="fixed inset-0 bg-[#080b12]/95 backdrop-blur-2xl z-[1100] hidden items-center justify-center p-4">
     <div class="exec-card w-full max-w-md rounded-3xl p-8 border border-slate-800/90 space-y-6">
       <div class="flex flex-col items-center text-center">
@@ -368,7 +421,7 @@
           <svg class="w-7 h-7"><use href="#icon-scales"/></svg>
         </div>
         <h2 id="auth-title" class="font-serif-legal text-xl font-bold">Portal do Escritório</h2>
-        <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Acesse com suas credenciais para continuar.</p>
+        <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Acesso protegido com sessão inteligente de 30 dias.</p>
       </div>
 
       <div class="space-y-3.5">
@@ -388,6 +441,15 @@
           <label class="text-xs font-semibold text-slate-300 block mb-1.5">Chave de Recuperação</label>
           <input type="text" id="auth-recovery" placeholder="Para recuperar se esquecer" class="exec-input w-full rounded-xl px-4 py-2.5 text-xs">
         </div>
+
+        <div class="pt-1 flex items-center justify-between">
+          <label class="flex items-center space-x-2.5 cursor-pointer select-none">
+            <input type="checkbox" id="auth-keep-30days" checked class="accent-[#d4af37] w-4 h-4 rounded cursor-pointer">
+            <span class="text-xs text-slate-300 font-medium">Lembrar acesso por 30 dias</span>
+          </label>
+          <span class="text-[10px] text-[#e5c158] bg-[#d4af37]/10 px-2 py-0.5 rounded-md border border-[#d4af37]/20">Auto-Login</span>
+        </div>
+
         <p id="auth-error" class="text-xs text-rose-400 font-medium text-center hidden"></p>
         <button id="btn-auth-submit" class="w-full py-3 champagne-gradient font-bold rounded-xl text-xs uppercase tracking-wider shadow-lg transition">Acessar Painel</button>
       </div>
@@ -415,10 +477,10 @@
     </div>
   </div>
 
-  <!-- 3. ENTRADA DO LEXBOT -->
+  <!-- 3. ENTRADA DO LEXBOT (SEM QUADRADO EM VOLTA) -->
   <div id="lexbot-center-modal" class="fixed inset-0 bg-[#060911]/90 backdrop-blur-md z-[9999] hidden items-center justify-center p-4">
     <div class="exec-card w-full max-w-md rounded-3xl p-8 border-2 border-[#d4af37]/60 text-center space-y-5 mascot-center-entry shadow-2xl">
-      <div class="w-36 h-36 mx-auto mascot-float flex items-center justify-center bg-[#111827] rounded-3xl border-2 border-[#d4af37]/50 p-3 shadow-inner">
+      <div class="w-24 h-24 mx-auto mascot-float flex items-center justify-center">
         <svg viewBox="18 6 84 106" class="w-full h-full">
           <line x1="60" y1="10" x2="60" y2="24" stroke="#e5c158" stroke-width="5" stroke-linecap="round"/>
           <circle cx="60" cy="9" r="6.5" fill="#f3e5ab"/>
@@ -434,22 +496,22 @@
         </svg>
       </div>
       <div class="space-y-2">
-        <span class="text-[11px] font-extrabold uppercase tracking-widest px-3.5 py-1 rounded-full bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/40">Assistente Jurídico LexBot</span>
-        <h3 class="font-serif-legal text-xl font-bold">Bem-vindo(a) ao seu Escritório Digital!</h3>
-        <p class="text-xs text-slate-300 leading-relaxed">Gostaria de fazer um tour rápido de 1 minuto para conhecer o painel, a consulta de processos por CPF/CNJ e os horários de expediente?</p>
+        <span class="text-[11px] font-extrabold uppercase tracking-widest px-3.5 py-1 rounded-full bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/40">Assistente Jurídico LexBot • Beta 0.8</span>
+        <h3 class="font-serif-legal text-xl font-bold">Bem-vindo(a) à Versão Beta 0.8!</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">Gostaria de fazer um tour rápido pelas novidades, incluindo a nova Varredura Pendente (Offline), opções pós-consulta (1 e 2) e inicialização automática?</p>
       </div>
       <div class="flex space-x-3 pt-2">
         <button id="btn-centro-nao" class="flex-1 py-3 bg-slate-800/90 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition">Explorar sozinho</button>
-        <button id="btn-centro-sim" class="flex-1 py-3 champagne-gradient font-bold text-xs rounded-xl shadow-lg transition">Iniciar Tour Rápido ➔</button>
+        <button id="btn-centro-sim" class="flex-1 py-3 champagne-gradient font-bold text-xs rounded-xl shadow-lg transition">Iniciar Tour Beta 0.8 ➔</button>
       </div>
     </div>
   </div>
 
   <div id="tour-backdrop"></div>
 
-  <!-- 4. LEXBOT FLUTUANTE -->
-  <div id="lexbot-wrapper" style="bottom: 24px; right: 24px;" class="flex items-center pointer-events-none">
-    <div id="lexbot-bubble" class="pointer-events-auto mr-3 w-88 max-w-[380px] exec-card border border-[#d4af37]/40 rounded-2xl p-5 hidden relative">
+  <!-- 4. LEXBOT FLUTUANTE COMPACTO (SEM QUADRADO EM VOLTA) -->
+  <div id="lexbot-wrapper" style="bottom: 20px; right: 22px;" class="flex items-center pointer-events-none">
+    <div id="lexbot-bubble" class="pointer-events-auto mr-3 w-88 max-w-[380px] exec-card border border-[#d4af37]/50 rounded-2xl p-5 hidden relative">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-2.5">
         <div class="flex items-center space-x-2">
           <span class="w-2 h-2 rounded-full bg-[#e5c158] animate-ping"></span>
@@ -459,7 +521,7 @@
       </div>
       <p id="lexbot-text" class="text-xs text-slate-200 leading-relaxed min-h-[80px]"></p>
       <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-800/80">
-        <span id="lexbot-step-counter" class="text-[11px] font-medium text-slate-400">1 de 8</span>
+        <span id="lexbot-step-counter" class="text-[11px] font-medium text-slate-400">1 de 9</span>
         <div class="flex space-x-2">
           <button id="btn-lexbot-prev" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-[11px] font-semibold transition">Voltar</button>
           <button id="btn-lexbot-next" class="px-3.5 py-1.5 champagne-gradient rounded-lg text-[11px] font-bold shadow transition">Próximo ➔</button>
@@ -468,7 +530,7 @@
     </div>
 
     <button id="btn-lexbot-avatar" class="pointer-events-auto group relative focus:outline-none flex flex-col items-center" title="Abrir Guia e Ajuda LexBot">
-      <div class="w-24 h-24 rounded-3xl bg-[#111827]/95 border-2 border-[#d4af37] shadow-[0_10px_30px_rgba(212,175,55,0.4)] mascot-float flex items-center justify-center p-2.5 transition-transform duration-200 group-hover:scale-110 group-hover:border-[#f3e5ab]">
+      <div class="w-16 h-16 mascot-float flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
         <svg viewBox="18 6 84 106" class="w-full h-full">
           <line x1="60" y1="10" x2="60" y2="24" stroke="#e5c158" stroke-width="5" stroke-linecap="round"/>
           <circle cx="60" cy="9" r="6.5" fill="#f3e5ab"/>
@@ -483,8 +545,8 @@
           <polygon points="56,84 64,84 67,104 60,109 53,104" fill="#d4af37"/>
         </svg>
       </div>
-      <span class="-mt-2 px-3 py-0.5 rounded-full champagne-gradient text-[10px] font-extrabold uppercase tracking-wider shadow-lg border border-white/20">
-        Ajuda LexBot
+      <span class="-mt-1 px-2.5 py-0.5 rounded-full champagne-gradient text-[9px] font-extrabold uppercase tracking-wider shadow-md">
+        LexBot
       </span>
     </button>
   </div>
@@ -496,8 +558,8 @@
         <svg class="w-5 h-5"><use href="#icon-flow"/></svg>
         <h3 class="text-sm font-bold">Novo Submenu de Atendimento</h3>
       </div>
-      <p class="text-xs text-slate-300">Qual o nome da especialidade ou setor? (Ex: Direito de Família)</p>
-      <input type="text" id="input-nome-submenu" placeholder="Ex: Direito de Família" class="exec-input w-full rounded-xl px-3.5 py-2.5 text-xs">
+      <p class="text-xs text-slate-300">Qual o nome da especialidade ou setor? (Ex: Direito Trabalhista)</p>
+      <input type="text" id="input-nome-submenu" placeholder="Ex: Direito Trabalhista" class="exec-input w-full rounded-xl px-3.5 py-2.5 text-xs">
       <div class="flex justify-end space-x-2 pt-2">
         <button id="btn-cancelar-modal" class="px-4 py-2 bg-slate-800 text-slate-300 text-xs font-semibold rounded-xl">Cancelar</button>
         <button id="btn-confirmar-modal" class="px-4 py-2 champagne-gradient text-xs font-bold rounded-xl">Criar</button>
@@ -508,19 +570,19 @@
   <!-- TOAST SUTIL -->
   <div id="toast-msg" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#131c2e] border border-[#d4af37]/60 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-semibold hidden items-center space-x-2.5 z-[110]">
     <svg class="w-4 h-4 text-[#e5c158]"><use href="#icon-check"/></svg>
-    <span id="toast-texto">Configurações salvas com sucesso!</span>
+    <span id="toast-texto">Configurações salvas automaticamente!</span>
   </div>
 
   <!-- BANNER EXECUTIVO DE ATUALIZAÇÃO DISPONÍVEL -->
   <div id="banner-update-app" class="hidden w-full bg-gradient-to-r from-amber-600 via-[#d4af37] to-amber-600 text-slate-950 px-6 py-2.5 items-center justify-between font-semibold text-xs shadow-xl z-30 transition-all duration-300">
     <div class="flex items-center space-x-2.5">
       <span class="w-2.5 h-2.5 rounded-full bg-slate-950 animate-ping"></span>
-      <span id="texto-update-app">Nova versão disponível!</span>
+      <span id="texto-update-app">Nova atualização disponível!</span>
     </div>
     <div class="flex items-center space-x-3">
       <button id="btn-instalar-update" class="px-4 py-1.5 bg-slate-950 hover:bg-slate-900 text-[#f3e5ab] font-bold text-xs rounded-xl shadow transition flex items-center space-x-1.5">
         <svg class="w-3.5 h-3.5 text-[#e5c158]"><use href="#icon-refresh"/></svg>
-        <span>Reiniciar e Atualizar Agora</span>
+        <span>Salvar Tudo e Atualizar Agora</span>
       </button>
       <button id="btn-fechar-banner-update" class="text-slate-950 hover:text-white font-bold text-sm px-1.5">✕</button>
     </div>
@@ -535,50 +597,49 @@
       <div>
         <div class="flex items-center space-x-2.5">
           <span class="font-serif-legal font-bold tracking-wide text-base">Advocacia <span class="text-[#e5c158]">Studio Pro</span></span>
-          <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/30">v1.0.4</span>
-          <span id="badge-autosave" class="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-slate-800/80 text-slate-400">✓ Salvo</span>
+          <span id="badge-versao-topo" class="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/30">Beta 0.8 (v1.8.0)</span>
+          <span id="badge-autosave" class="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">✓ Auto-Save Ativo</span>
         </div>
         <p id="header-user-info" class="text-[11px] text-slate-400">Ambiente Corporativo</p>
       </div>
     </div>
 
     <div class="flex items-center space-x-3">
-      <!-- BOTÃO DE ATUALIZAÇÃO NO HEADER -->
       <button id="btn-header-update" class="hidden items-center space-x-1.5 px-3.5 py-1.5 champagne-gradient text-xs font-extrabold rounded-xl shadow-lg animate-bounce transition" title="Instalar nova atualização disponível agora">
         <svg class="w-3.5 h-3.5"><use href="#icon-refresh"/></svg>
         <span>Atualizar App</span>
       </button>
 
-      <!-- MENU / CONTROLE DE VARREDURA DE MENSAGENS NÃO LIDAS -->
-      <div class="flex items-center space-x-2 bg-slate-900/90 border border-slate-800 rounded-xl px-2.5 py-1">
-        <label class="flex items-center space-x-1.5 cursor-pointer text-[11px] text-slate-300 select-none" title="Se ativado, ao conectar no WhatsApp o robô responde sozinho as mensagens não lidas que o humano ainda não respondeu">
-          <input type="checkbox" id="check-varredura-auto" class="accent-[#d4af37] rounded w-3.5 h-3.5 cursor-pointer">
-          <span class="font-medium">Auto-Varredura</span>
+      <!-- CONTROLE RÁPIDO: INICIAR COM O WINDOWS -->
+      <div id="tour-autostart-box" class="flex items-center space-x-2 bg-slate-900/90 border border-slate-800 rounded-xl px-3 py-1.5" title="Abrir o Advocacia Studio Pro automaticamente sempre que o computador ligar">
+        <span class="text-[11px] font-medium text-slate-300">Abrir com PC</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="check-iniciar-windows" checked>
+          <span class="toggle-slider"></span>
         </label>
-        <span class="text-slate-700">|</span>
-        <button id="btn-varrer-nao-lidas" class="text-xs font-bold text-[#e5c158] hover:text-[#f3e5ab] transition flex items-center space-x-1" title="Verificar e responder agora mensagens não lidas pendentes">
-          <svg class="w-3.5 h-3.5"><use href="#icon-check"/></svg>
-          <span>Ler Agora</span>
-        </button>
       </div>
 
-      <!-- BOTÃO ALTERNÂNCIA TEMA (SOL / LUA) -->
+      <!-- BOTÃO ALTERNÂNCIA TEMA -->
       <button id="btn-toggle-theme" class="p-2 rounded-xl bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700 text-[#e5c158] transition" title="Alternar entre Modo Escuro e Modo Claro">
         <svg id="theme-icon-sun" class="w-4 h-4 hidden"><use href="#icon-sun"/></svg>
         <svg id="theme-icon-moon" class="w-4 h-4"><use href="#icon-moon"/></svg>
       </button>
 
-      <div id="status-pill" class="flex items-center space-x-2 px-3.5 py-1.5 bg-slate-900/90 border border-slate-800 rounded-full text-xs font-medium text-slate-300">
-        <span id="status-dot" class="w-2 h-2 rounded-full bg-[#e5c158] animate-pulse"></span>
-        <span id="status-text">Iniciando...</span>
+      <!-- STATUS VISUAL DETALHADO DO CHROMIUM NA UI -->
+      <div id="status-pill" class="flex flex-col items-end px-3.5 py-1 bg-slate-900/90 border border-slate-800 rounded-xl">
+        <div class="flex items-center space-x-2 text-xs font-bold text-slate-200">
+          <span id="status-dot" class="w-2 h-2 rounded-full bg-[#e5c158] animate-pulse"></span>
+          <span id="status-text">Iniciando motor...</span>
+        </div>
+        <span id="substatus-text" class="text-[10px] text-slate-400 font-medium truncate max-w-[230px]">Preparando Chromium...</span>
       </div>
-      <button id="btn-reconnect" class="flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-800/70 hover:bg-slate-800 border border-slate-700/70 text-xs font-medium rounded-xl transition text-slate-200">
+
+      <button id="btn-reconnect" class="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-800/70 hover:bg-slate-800 border border-slate-700/70 text-xs font-medium rounded-xl transition text-slate-200">
         <svg class="w-3.5 h-3.5 text-[#e5c158]"><use href="#icon-refresh"/></svg>
         <span>Reconectar</span>
       </button>
-      <button id="btn-logout" class="flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-rose-950/40 border border-slate-800 text-xs font-medium rounded-xl transition text-slate-400 hover:text-rose-300">
+      <button id="btn-logout" class="flex items-center space-x-1.5 px-3 py-2 bg-slate-900 hover:bg-rose-950/40 border border-slate-800 text-xs font-medium rounded-xl transition text-slate-400 hover:text-rose-300" title="Encerrar sessão de 30 dias e trocar conta">
         <svg class="w-3.5 h-3.5"><use href="#icon-logout"/></svg>
-        <span>Trocar Conta</span>
       </button>
     </div>
   </header>
@@ -587,10 +648,10 @@
   <div class="flex flex-1 overflow-hidden">
     
     <!-- SIDEBAR -->
-    <aside id="main-sidebar" class="w-64 exec-card border-r border-white/5 p-4 flex flex-col justify-between">
-      <div class="space-y-5">
+    <aside id="main-sidebar" class="w-68 exec-card border-r border-white/5 p-4 flex flex-col justify-between">
+      <div class="space-y-4">
         <div>
-          <span class="px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">Módulos</span>
+          <span class="px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">Módulos Beta 0.8</span>
           <nav id="sidebar-nav" class="mt-2 space-y-1">
             <button id="nav-btn-inicio" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold champagne-gradient flex items-center justify-between shadow-sm transition">
               <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-home"/></svg><span>Visão Geral</span></div>
@@ -602,11 +663,15 @@
             <button id="nav-btn-fluxo" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
               <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-flow"/></svg><span>Menu Automático do WhatsApp</span></div>
             </button>
+            <button id="nav-btn-varredura" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
+              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-radar"/></svg><span>Varredura Pendente (Offline)</span></div>
+              <span id="badge-varredura" class="px-2 py-0.5 text-[9px] rounded-full bg-emerald-500/20 text-emerald-400 font-bold">Auto</span>
+            </button>
             <button id="nav-btn-agenda" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
-              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-calendar"/></svg><span>Horários de Atendimento & Almoço</span></div>
+              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-calendar"/></svg><span>Horários & Almoço</span></div>
             </button>
             <button id="nav-btn-pausados" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
-              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-user-clock"/></svg><span>Atendimento Humano em Espera</span></div>
+              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-user-clock"/></svg><span>Fila de Espera (Advogado)</span></div>
               <span id="badge-pausados" class="px-2 py-0.5 text-[10px] rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
             </button>
             <button id="nav-btn-terminal" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
@@ -619,15 +684,16 @@
         </div>
       </div>
 
-      <!-- Card QR Code WhatsApp -->
+      <!-- Card QR Code WhatsApp + Substatus Detalhado -->
       <div id="tour-qr-card" class="exec-card p-3.5 rounded-2xl flex flex-col items-center text-center">
         <div class="flex items-center space-x-1.5 mb-2">
           <svg class="w-3.5 h-3.5 text-[#e5c158]"><use href="#icon-qr"/></svg>
           <span class="text-[11px] font-bold">Conexão WhatsApp</span>
         </div>
         <div id="qr-box" class="w-32 h-32 bg-[#080b12] border border-slate-800 rounded-xl flex items-center justify-center p-2">
-          <span class="text-[11px] text-slate-500 text-center leading-tight">Sincronizando...</span>
+          <span class="text-[11px] text-slate-500 text-center leading-tight">Iniciando motor...</span>
         </div>
+        <p id="qr-substatus-text" class="text-[10px] text-slate-400 mt-2 leading-tight">Aguardando Chromium...</p>
       </div>
     </aside>
 
@@ -635,54 +701,54 @@
     <main id="main-content-area" class="flex-1 p-6 overflow-y-auto pb-24">
       <div class="max-w-6xl mx-auto space-y-6">
         
-        <!-- FAIXA SUPERIOR DE PRODUTIVIDADE (DADOS REAIS) -->
+        <!-- FAIXA SUPERIOR DE PRODUTIVIDADE -->
         <div id="tour-metrics-bar" class="exec-card px-6 py-4 rounded-2xl grid grid-cols-4 divide-x divide-slate-800/60">
           <div class="pr-4 flex items-center justify-between">
             <div>
-              <span class="text-[11px] font-medium text-slate-400 block">Contatos Únicos Atendidos</span>
+              <span class="text-[11px] font-medium text-slate-400 block">Contatos Atendidos</span>
               <span id="metric-clientes-reais" class="text-xl font-bold mt-0.5 block">0</span>
             </div>
             <span class="text-[10px] px-2 py-1 rounded-lg bg-[#d4af37]/10 text-[#e5c158] font-semibold">Clientes</span>
           </div>
           <div class="px-6 flex items-center justify-between">
             <div>
-              <span class="text-[11px] font-medium text-slate-400 block">Mensagens pelo Robô</span>
+              <span class="text-[11px] font-medium text-slate-400 block">Respostas do Robô</span>
               <span id="metric-mensagens-reais" class="text-xl font-bold text-emerald-400 mt-0.5 block">0</span>
             </div>
-            <span class="text-[10px] px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 font-semibold">Respostas</span>
+            <span class="text-[10px] px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 font-semibold">Automático</span>
           </div>
           <div class="px-6 flex items-center justify-between">
             <div>
               <span class="text-[11px] font-medium text-slate-400 block">Aguardando Advogado</span>
               <span id="metric-fila-humana" class="text-xl font-bold text-amber-300 mt-0.5 block">0</span>
             </div>
-            <span class="text-[10px] px-2 py-1 rounded-lg bg-amber-500/10 text-amber-300 font-semibold">Humano</span>
+            <span class="text-[10px] px-2 py-1 rounded-lg bg-amber-500/10 text-amber-300 font-semibold">Na Fila</span>
           </div>
           <div class="pl-6 flex items-center justify-between">
             <div>
-              <span class="text-[11px] font-medium text-slate-400 block">Horas Poupadas (Reais)</span>
+              <span class="text-[11px] font-medium text-slate-400 block">Horas Poupadas</span>
               <span id="metric-horas-reais" class="text-xl font-bold text-sky-400 mt-0.5 block">0.0 h</span>
             </div>
             <span class="text-[10px] px-2 py-1 rounded-lg bg-sky-500/10 text-sky-400 font-semibold">2 min/msg</span>
           </div>
         </div>
 
-        <!-- ================= ABA 0: TELA INICIAL (VISÃO GERAL) ================= -->
-        <div id="aba-inicio" class="space-y-6">
+        <!-- ================= ABA 0: VISÃO GERAL ================= -->
+        <div id="aba-inicio" class="space-y-6 tab-pane-anim">
           <div id="tour-home-banner" class="exec-card p-6 rounded-2xl border border-[#d4af37]/30 flex items-center justify-between">
             <div class="space-y-1.5">
-              <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-[#d4af37]/15 text-[#e5c158]">Painel Executivo</span>
+              <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-[#d4af37]/15 text-[#e5c158]">Painel Executivo • Beta 0.8</span>
               <h2 id="home-welcome-title" class="font-serif-legal text-2xl font-bold">Olá! Bem-vindo ao seu Escritório Digital.</h2>
-              <p class="text-xs text-slate-400">Resumo operacional das atividades, horários de expediente e consultas processuais.</p>
+              <p class="text-xs text-slate-400">Conexão rápida ativa, auto-salvamento blindado e varredura inteligente de mensagens offline.</p>
             </div>
             <div class="flex space-x-3">
               <button onclick="irParaNovoProcessoDireto()" class="px-4 py-2.5 champagne-gradient rounded-xl text-xs font-bold shadow-lg flex items-center space-x-2 transition">
                 <svg class="w-4 h-4"><use href="#icon-plus"/></svg>
                 <span>Cadastrar Processo</span>
               </button>
-              <button onclick="iniciarTourGuiado()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-[#e5c158] border border-slate-700 rounded-xl text-xs font-semibold transition flex items-center space-x-2">
-                <svg class="w-4 h-4"><use href="#icon-scales"/></svg>
-                <span>Tour LexBot</span>
+              <button onclick="ativarAba('varredura')" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 rounded-xl text-xs font-semibold transition flex items-center space-x-2">
+                <svg class="w-4 h-4"><use href="#icon-radar"/></svg>
+                <span>Varredura Offline</span>
               </button>
             </div>
           </div>
@@ -692,7 +758,7 @@
               <div>
                 <span class="text-xs font-semibold text-slate-400 block">Processos Cadastrados</span>
                 <span id="home-card-processos" class="text-3xl font-extrabold text-[#e5c158] mt-1 block">0</span>
-                <span class="text-[11px] text-slate-400 mt-1 block">Prontos para consulta via CPF/Processo</span>
+                <span class="text-[11px] text-slate-400 mt-1 block">Com opções 1 (Fechar) e 2 (Advogado)</span>
               </div>
               <div class="w-12 h-12 rounded-2xl bg-[#d4af37]/15 flex items-center justify-center text-[#e5c158]">
                 <svg class="w-6 h-6"><use href="#icon-folder"/></svg>
@@ -736,7 +802,7 @@
             <div class="col-span-6 exec-card p-5 rounded-2xl flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-3">
-                  <h3 class="text-xs font-bold uppercase tracking-wider text-[#e5c158]">Atividade Recente</h3>
+                  <h3 class="text-xs font-bold uppercase tracking-wider text-[#e5c158]">Atividade Recente (Nomes Salvos)</h3>
                   <button onclick="ativarAba('terminal')" class="text-[11px] text-[#e5c158] hover:underline font-semibold">Abrir Histórico ➔</button>
                 </div>
                 <div id="home-ultimos-logs" class="space-y-2 max-h-48 overflow-y-auto pr-1">
@@ -747,29 +813,29 @@
           </div>
         </div>
 
-        <!-- ================= ABA 1: CONSULTAR PROCESSO ================= -->
-        <div id="aba-processos" class="hidden space-y-5">
+        <!-- ================= ABA 1: CONSULTAR PROCESSO (OPÇÕES 1 E 2 PÓS-CPF) ================= -->
+        <div id="aba-processos" class="hidden space-y-5 tab-pane-anim">
           <div id="tour-processos-card" class="exec-card p-6 rounded-2xl space-y-5">
             <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
               <div>
                 <div class="flex items-center space-x-2.5">
                   <h2 class="font-serif-legal text-lg font-bold">Consultar Processo (CPF / CNJ)</h2>
                   <span class="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-[#d4af37]/15 text-[#e5c158] border border-[#d4af37]/30">
-                    Busca Estrita por Números
+                    Pós-Consulta: 1 (Encerrar) ou 2 (Advogado)
                   </span>
                 </div>
-                <p class="text-xs text-slate-400 mt-1">O robô identifica a pasta exclusivamente pelo CPF ou pelo Número do Processo (o nome serve apenas para saudação).</p>
+                <p class="text-xs text-slate-400 mt-1">Após enviar o resumo do processo, o cliente pode digitar <strong>1</strong> para finalizar a conversa ou <strong>2</strong> para entrar na fila do advogado.</p>
               </div>
               <button id="btn-toggle-msg-processos" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-[#e5c158] border border-slate-700 rounded-xl text-xs font-bold transition flex items-center space-x-2">
                 <svg class="w-3.5 h-3.5"><use href="#icon-settings"/></svg>
-                <span>Configurar Respostas do Robô</span>
+                <span>Configurar Respostas e Opções 1 / 2</span>
               </button>
             </div>
 
             <!-- Gaveta de Customização das Mensagens -->
             <div id="painel-msg-processos" class="hidden bg-[#090d16] border border-[#d4af37]/40 rounded-2xl p-5 space-y-4">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-[#e5c158]">Modelos de Resposta de Processo</span>
+                <span class="text-xs font-bold text-[#e5c158]">Modelos de Resposta de Processo e Ações Pós-Consulta</span>
                 <span class="text-[11px] text-slate-400">Tags: <code class="text-[#e5c158]">{nome}</code> <code class="text-[#e5c158]">{cpf}</code> <code class="text-[#e5c158]">{processo}</code> <code class="text-[#e5c158]">{resumo}</code> <code class="text-[#e5c158]">{data}</code></span>
               </div>
               <div class="grid grid-cols-2 gap-4">
@@ -782,12 +848,20 @@
                   <textarea id="tpl-msg-ja-visto" rows="4" class="exec-input w-full rounded-xl p-3 text-xs resize-none"></textarea>
                 </div>
                 <div>
-                  <label class="text-[11px] font-semibold text-amber-300 block mb-1">3. Sem movimentação:</label>
+                  <label class="text-[11px] font-semibold text-amber-300 block mb-1">3. Sem movimentação cadastrada:</label>
                   <textarea id="tpl-msg-sem-atualizacao" rows="3" class="exec-input w-full rounded-xl p-3 text-xs resize-none"></textarea>
                 </div>
                 <div>
                   <label class="text-[11px] font-semibold text-rose-400 block mb-1">4. Quando CPF ou Processo não foi achado:</label>
                   <textarea id="tpl-msg-nao-encontrado" rows="3" class="exec-input w-full rounded-xl p-3 text-xs resize-none"></textarea>
+                </div>
+                <div>
+                  <label class="text-[11px] font-bold text-[#e5c158] block mb-1">5. Se digitar 1 após o resumo (Encerrar Conversa):</label>
+                  <textarea id="tpl-msg-encerrar" rows="3" class="exec-input w-full rounded-xl p-3 text-xs resize-none"></textarea>
+                </div>
+                <div>
+                  <label class="text-[11px] font-bold text-[#e5c158] block mb-1">6. Se digitar 2 após o resumo (Chamar Advogado):</label>
+                  <textarea id="tpl-msg-advogado-pos" rows="3" class="exec-input w-full rounded-xl p-3 text-xs resize-none"></textarea>
                 </div>
               </div>
               <div class="flex justify-end">
@@ -865,7 +939,7 @@
                 </div>
 
                 <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
-                  <span class="text-[11px] text-slate-400">O robô busca exclusivamente pelos números do CPF ou do Processo.</span>
+                  <span class="text-[11px] text-slate-400">Ao receber o resumo: 1 encerra a conversa • 2 chama o advogado.</span>
                   <button type="button" id="btn-salvar-processo" class="px-6 py-3 champagne-gradient font-bold text-xs rounded-xl shadow-lg transition flex items-center space-x-2">
                     <svg class="w-4 h-4"><use href="#icon-save"/></svg>
                     <span>Salvar Pasta do Processo</span>
@@ -877,11 +951,11 @@
         </div>
 
         <!-- ================= ABA 2: MENU AUTOMÁTICO ================= -->
-        <div id="aba-fluxo" class="hidden space-y-5">
+        <div id="aba-fluxo" class="hidden space-y-5 tab-pane-anim">
           <div id="tour-fluxo-header" class="flex items-center justify-between exec-card px-6 py-4 rounded-2xl">
             <div>
               <h2 class="font-serif-legal text-base font-bold">Menu Automático do WhatsApp</h2>
-              <p class="text-xs text-slate-400 mt-0.5">Defina as opções de triagem recebidas pelos clientes.</p>
+              <p class="text-xs text-slate-400 mt-0.5">Defina as opções de triagem recebidas pelos clientes (salvamento automático ativo).</p>
             </div>
             <div class="flex space-x-2.5">
               <button id="btn-nova-etapa" class="flex items-center space-x-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-semibold rounded-xl border border-slate-700 transition">
@@ -962,13 +1036,78 @@
           </div>
         </div>
 
+        <!-- ================= ABA NOVA: VARREDURA PENDENTE (OFFLINE) ================= -->
+        <div id="aba-varredura" class="hidden space-y-5 tab-pane-anim">
+          <div id="tour-varredura-card" class="exec-card p-6 rounded-2xl space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+              <div>
+                <div class="flex items-center space-x-2.5">
+                  <h2 class="font-serif-legal text-lg font-bold">Varredura de Conversas Pendentes (Período Offline)</h2>
+                  <span class="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                    Filtro Inteligente Anti-Repetição
+                  </span>
+                </div>
+                <p class="text-xs text-slate-400 mt-1">Responde exclusivamente mensagens <strong>não lidas</strong> enviadas depois da 1ª conexão enquanto o app estava fechado e que ainda não foram respondidas pelo bot.</p>
+              </div>
+
+              <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-3 bg-black/20 border border-[#d4af37]/30 px-4 py-2.5 rounded-2xl">
+                  <div>
+                    <span class="text-xs font-bold text-[#e5c158] block">Varredura Automática ao Abrir</span>
+                    <span class="text-[10px] text-slate-400 block">Executa sozinho sempre que conectar</span>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="slider-varredura-auto" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <button id="btn-executar-varredura-pagina" class="px-5 py-3 champagne-gradient rounded-xl text-xs font-bold shadow-lg flex items-center space-x-2 transition">
+                  <svg class="w-4 h-4"><use href="#icon-radar"/></svg>
+                  <span>Buscar e Responder Pendentes Agora</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Linha do Tempo de Controle de Horários -->
+            <div class="grid grid-cols-3 gap-4">
+              <div class="p-4 rounded-2xl bg-black/20 border border-slate-800">
+                <span class="text-[11px] text-slate-400 block">1ª Conexão Histórica do Bot</span>
+                <span id="varredura-ts-primeira" class="text-sm font-bold text-[#e5c158] mt-1 block">Registrando...</span>
+                <span class="text-[10px] text-slate-500 mt-0.5 block">Ignora conversas anteriores a esta data</span>
+              </div>
+              <div class="p-4 rounded-2xl bg-black/20 border border-slate-800">
+                <span class="text-[11px] text-slate-400 block">Último Fechamento do App</span>
+                <span id="varredura-ts-desligamento" class="text-sm font-bold text-amber-300 mt-1 block">Registrando...</span>
+                <span class="text-[10px] text-slate-500 mt-0.5 block">Janela em que o bot esteve desligado</span>
+              </div>
+              <div class="p-4 rounded-2xl bg-black/20 border border-slate-800">
+                <span class="text-[11px] text-slate-400 block">Status do Scanner Offline</span>
+                <span id="varredura-status-fase" class="text-sm font-bold text-emerald-400 mt-1 block">Pronto para verificar</span>
+                <span id="varredura-contadores" class="text-[10px] text-slate-400 mt-0.5 block">0 analisadas • 0 respondidas agora</span>
+              </div>
+            </div>
+
+            <!-- Resultado Visual em Tempo Real -->
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-[#e5c158]">Conversas Pendentes Localizadas e Respondidas</h3>
+                <span class="text-[11px] text-slate-400">Verifica apenas chats com selo de não lido onde a última mensagem é do cliente</span>
+              </div>
+              <div id="varredura-lista-resultados" class="h-64 exec-input rounded-2xl p-4 overflow-y-auto space-y-2">
+                <div class="text-xs text-slate-500 text-center py-20">Clique em "Buscar e Responder Pendentes Agora" ou deixe o Slider ativo para varredura automática ao iniciar.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- ================= ABA 3: HORÁRIOS & ALMOÇO ================= -->
-        <div id="aba-agenda" class="hidden space-y-5">
+        <div id="aba-agenda" class="hidden space-y-5 tab-pane-anim">
           <div id="tour-agenda-card" class="exec-card p-6 rounded-2xl space-y-5">
             <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
               <div>
                 <h2 class="font-serif-legal text-lg font-bold">Horários de Atendimento & Intervalo de Almoço</h2>
-                <p class="text-xs text-slate-400 mt-1">Fora do horário ou no almoço, o robô apenas altera o início da mensagem com o aviso abaixo e segue o atendimento normal.</p>
+                <p class="text-xs text-slate-400 mt-1">Fora do horário ou no almoço, o robô adiciona o aviso no topo da mensagem e segue o atendimento normal.</p>
               </div>
               <button id="btn-salvar-agenda" class="flex items-center space-x-1.5 px-5 py-2.5 champagne-gradient text-xs font-bold rounded-xl shadow-md transition">
                 <svg class="w-4 h-4"><use href="#icon-save"/></svg>
@@ -988,9 +1127,9 @@
                       <span class="text-[11px] text-slate-400">Adiciona aviso de almoço no início da resposta</span>
                     </div>
                   </div>
-                  <label class="flex items-center space-x-2 cursor-pointer">
-                    <input type="checkbox" id="agenda-almoco-ativo" class="accent-[#d4af37] w-4 h-4 rounded">
-                    <span class="text-xs font-bold text-[#e5c158]">Ativar Intervalo</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="agenda-almoco-ativo" checked>
+                    <span class="toggle-slider"></span>
                   </label>
                 </div>
 
@@ -1029,24 +1168,24 @@
           </div>
         </div>
 
-        <!-- ================= ABA 4: ATENDIMENTO HUMANO ================= -->
-        <div id="aba-pausados" class="hidden space-y-5">
+        <!-- ================= ABA 4: FILA DE ESPERA HUMANA ================= -->
+        <div id="aba-pausados" class="hidden space-y-5 tab-pane-anim">
           <div id="tour-pausados-card" class="exec-card p-6 rounded-2xl space-y-4">
             <div class="border-b border-slate-800/80 pb-3">
-              <h2 class="font-serif-legal text-lg font-bold">Atendimento Humano em Espera</h2>
-              <p class="text-xs text-slate-400 mt-1">Clientes que solicitaram falar com o advogado. O robô fica silenciado para estes números por 24 horas.</p>
+              <h2 class="font-serif-legal text-lg font-bold">Fila de Espera para Atendimento do Advogado</h2>
+              <p class="text-xs text-slate-400 mt-1">Clientes que digitaram a opção de falar com advogado (no menu inicial ou digitando 2 após consultar processo). Exibe o nome salvo do contato.</p>
             </div>
             <div id="lista-pausados" class="space-y-2.5"></div>
           </div>
         </div>
 
         <!-- ================= ABA 5: HISTÓRICO DE MENSAGENS ================= -->
-        <div id="aba-terminal" class="hidden space-y-5">
+        <div id="aba-terminal" class="hidden space-y-5 tab-pane-anim">
           <div id="tour-terminal-card" class="exec-card p-6 rounded-2xl space-y-4">
             <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
               <div>
                 <h2 class="font-serif-legal text-lg font-bold">Histórico de Mensagens Recebidas</h2>
-                <p class="text-xs text-slate-400 mt-0.5">Mensagens recebidas em tempo real.</p>
+                <p class="text-xs text-slate-400 mt-0.5">Identificação automática por Nome do Contato Salvo e telefone formatado.</p>
               </div>
               <button id="btn-limpar-logs" class="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs text-slate-200 transition">
                 <svg class="w-3.5 h-3.5"><use href="#icon-trash"/></svg>
@@ -1060,11 +1199,11 @@
         </div>
 
         <!-- ================= ABA 6: CÓPIA DE SEGURANÇA (.JSON) ================= -->
-        <div id="aba-backup" class="hidden space-y-5">
+        <div id="aba-backup" class="hidden space-y-5 tab-pane-anim">
           <div id="tour-backup-card" class="exec-card p-6 rounded-2xl space-y-4">
             <div class="border-b border-slate-800/80 pb-3">
-              <h2 class="font-serif-legal text-lg font-bold">Cópia de Segurança (.JSON)</h2>
-              <p class="text-xs text-slate-400 mt-0.5">Exporte suas pastas de processos e menus.</p>
+              <h2 class="font-serif-legal text-lg font-bold">Cópia de Segurança (.JSON) & Salvamento Blindado</h2>
+              <p class="text-xs text-slate-400 mt-0.5">Além do salvamento automático contínuo em disco a cada alteração, você pode exportar uma cópia manual.</p>
             </div>
             <div class="grid grid-cols-2 gap-6 pt-2">
               <div class="exec-card p-6 rounded-2xl flex flex-col justify-between space-y-5">
@@ -1073,7 +1212,7 @@
                     <svg class="w-5 h-5"><use href="#icon-download"/></svg>
                   </div>
                   <h3 class="text-sm font-bold">Exportar Dados</h3>
-                  <p class="text-xs text-slate-400">Gera um arquivo .JSON completo com processos e menus.</p>
+                  <p class="text-xs text-slate-400">Gera um arquivo .JSON completo com processos, menus e configurações.</p>
                 </div>
                 <button id="btn-exportar-dados" class="w-full py-3 champagne-gradient font-bold text-xs rounded-xl shadow-md">Baixar Backup</button>
               </div>
@@ -1083,7 +1222,7 @@
                     <svg class="w-5 h-5"><use href="#icon-upload"/></svg>
                   </div>
                   <h3 class="text-sm font-bold">Restaurar Dados</h3>
-                  <p class="text-xs text-slate-400">Recupere suas pastas a partir de um backup.</p>
+                  <p class="text-xs text-slate-400">Recupere suas pastas a partir de um arquivo .JSON salvo anteriormente.</p>
                 </div>
                 <input type="file" id="input-importar-arquivo" accept=".json" class="hidden">
                 <button id="btn-importar-dados" class="w-full py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-bold text-xs rounded-xl transition">Escolher Arquivo (.JSON)</button>
@@ -1099,7 +1238,14 @@
   <script>
     function obterConfigPadraoFallback() {
       return {
-        varredura_automatica_inicio: false,
+        versao_config: "Beta 0.8",
+        iniciar_com_windows: true,
+        varredura_automatica_inicio: true,
+        primeiraConexaoTimestamp: 0,
+        ultimoDesligamentoTimestamp: 0,
+        ultimoInicioTimestamp: 0,
+        historicoVarreduras: [],
+        idsMensagensVarreduraRespondidas: [],
         agenda: {
           "0": { nome: "Domingo", ativo: false, abertura: "08:00", fechamento: "18:00" },
           "1": { nome: "Segunda-feira", ativo: true, abertura: "08:00", fechamento: "18:00" },
@@ -1121,7 +1267,7 @@
             opcoes: [
               { gatilho: "1", rotulo: "Consultar Andamento de Processo", tipo: "processo", destino: "", resposta: "Perfeito! Por gentileza, digite apenas o seu *CPF* ou o *Número do Processo* para localizarmos sua pasta:" },
               { gatilho: "2", rotulo: "Iniciar Nova Consulta Jurídica", tipo: "submenu", destino: "areas", resposta: "" },
-              { gatilho: "3", rotulo: "Falar com um Advogado", tipo: "humano", destino: "", resposta: "Perfeito! Um advogado da nossa equipe assumirá seu atendimento em instantes." }
+              { gatilho: "3", rotulo: "Falar diretamente com Advogado", tipo: "humano", destino: "", resposta: "Perfeito! Sua solicitação foi encaminhada e um advogado da nossa equipe já está chegando para assumir seu atendimento." }
             ]
           },
           etapas: {
@@ -1129,7 +1275,7 @@
               titulo: "Submenu: Especialidades",
               mensagem: "*Nova Consulta Jurídica*\n\nSelecione a área correspondente ao seu caso:",
               opcoes: [
-                { gatilho: "1", rotulo: "Direito Cível, Família ou Contratos", tipo: "texto", destino: "", resposta: "Compreendido. Envie um breve resumo do ocorrido para análise prévia do advogado." },
+                { gatilho: "1", rotulo: "Direito Cível, Família ou Contratos", tipo: "texto", destino: "", resposta: "Compreendido. Envie um breve relato do ocorrido para análise prévia do advogado." },
                 { gatilho: "0", rotulo: "Voltar ao Menu Inicial", tipo: "submenu", destino: "raiz", resposta: "" }
               ]
             }
@@ -1137,14 +1283,18 @@
         },
         processos: {
           mensagens: {
-            msg_com_atualizacao: "⚖️ *Andamento Processual Localizado*\n\nOlá, *{nome}*!\nReferente ao processo nº *{processo}* (CPF: *{cpf}*):\n\n📋 *Resumo da Atualização ({data}):*\n{resumo}\n\n_(Digite *0* para voltar ao Menu Principal ou *3* para falar com um advogado)_",
-            msg_ja_visto: "⚖️ *Consulta Processual*\n\nOlá, *{nome}*! Verificamos a pasta do seu processo nº *{processo}* e informamos que *não houve novas movimentações* desde a sua última consulta em *{ultima_consulta}*.\n\n📌 *Último resumo registrado ({data}):*\n{resumo}\n\nFique tranquilo(a), assim que houver novidades atualizaremos por aqui!",
-            msg_sem_atualizacao: "⚖️ *Consulta Processual*\n\nOlá, *{nome}*! Seu processo nº *{processo}* está devidamente cadastrado em nosso sistema, porém ainda não possui movimentações ou resumos lançados até o momento.\n\nNossa equipe segue acompanhando!",
-            msg_nao_encontrado: "⚠️ Não conseguimos localizar nenhum processo com o *CPF* ou *Número de Processo* informado.\n\nPor favor, envie novamente apenas os números do seu CPF ou do Processo, ou digite *0* para voltar ao Menu Inicial."
+            msg_com_atualizacao: "⚖️ *Andamento Processual Localizado*\n\nOlá, *{nome}*!\nReferente ao processo nº *{processo}* (CPF: *{cpf}*):\n\n📋 *Resumo da Atualização ({data}):*\n{resumo}\n\n━━━━━━━━━━━━━━━━━━━━\nDigite *1* para encerrar a conversa\nDigite *2* para falar com um advogado",
+            msg_ja_visto: "⚖️ *Consulta Processual*\n\nOlá, *{nome}*! Verificamos a pasta do seu processo nº *{processo}* e informamos que *não houve novas movimentações* desde a sua última consulta em *{ultima_consulta}*.\n\n📌 *Último resumo registrado ({data}):*\n{resumo}\n\n━━━━━━━━━━━━━━━━━━━━\nDigite *1* para encerrar a conversa\nDigite *2* para falar com um advogado",
+            msg_sem_atualizacao: "⚖️ *Consulta Processual*\n\nOlá, *{nome}*! Seu processo nº *{processo}* está devidamente cadastrado em nosso sistema, porém ainda não possui movimentações ou resumos lançados até o momento.\n\n━━━━━━━━━━━━━━━━━━━━\nDigite *1* para encerrar a conversa\nDigite *2* para falar com um advogado",
+            msg_nao_encontrado: "⚠️ Não conseguimos localizar nenhum processo com o *CPF* ou *Número de Processo* informado.\n\nPor favor, envie novamente apenas os números do seu CPF ou do Processo, ou digite *0* para voltar ao Menu Inicial.",
+            msg_encerrar_conversa: "✅ *Atendimento Finalizado!*\n\nAgradecemos o seu contato. Sempre que precisar consultar seu processo ou falar conosco, basta enviar uma mensagem por aqui. Tenha um excelente dia!",
+            msg_chamar_advogado_pos_proc: "👨‍⚖️ *Solicitação Recebida!*\n\nUm advogado da nossa equipe já foi notificado e *já está chegando* para assumir o seu atendimento pessoalmente. Por gentileza, aguarde alguns instantes."
           },
           lista: []
         },
         mapaNomes: {},
+        mapaTelefones: {},
+        pausadosPersistidos: {},
         metricasReais: { totalMensagens: 0, contatosAtendidos: [] }
       };
     }
@@ -1158,45 +1308,64 @@
     if (!window.api) {
       window.api = {
         obterConfig: async () => {
-          const c = localStorage.getItem('adv_bot_config');
+          const c = localStorage.getItem('adv_bot_config_backup');
           return c ? JSON.parse(c) : obterConfigPadraoFallback();
         },
         salvarConfig: async (cfg) => {
-          localStorage.setItem('adv_bot_config', JSON.stringify(cfg));
+          localStorage.setItem('adv_bot_config_backup', JSON.stringify(cfg));
           return true;
         },
+        obterVersaoApp: async () => 'Beta 0.8 (v1.8.0)',
         reiniciarBot: async () => true,
-        obterEstadoConexao: async () => ({ status: 'ready', qr: null }),
-        obterPausados: async () => [],
-        removerPausa: async () => [],
-        forcarVarreduraNaoLidas: async () => 0,
-        instalarAtualizacaoAgora: () => {},
+        obterEstadoConexao: async () => ({ status: 'ready', qr: null, subStatus: 'Conectado e Operante' }),
+        obterPausados: async () => ({}),
+        removerPausa: async () => ({}),
+        forcarVarreduraNaoLidas: async () => ({ respondidas: 0, analisadas: 0, itens: [] }),
+        obterStatusAutoStart: async () => true,
+        definirAutoStart: async () => true,
+        instalarAtualizacaoAgora: async () => {},
         aoReceberQR: () => {},
         aoMudarStatus: (cb) => { setTimeout(() => cb('ready'), 250); },
+        aoReceberSubStatus: () => {},
         aoReceberLog: () => {},
         aoAtualizarPausados: () => {},
         aoAtualizarProcessos: () => {},
+        aoReceberProgressoVarredura: () => {},
         aoReceberEventoUpdate: () => {}
       };
     }
 
     function garantirEstruturaAgenda() {
-      const padraoAgenda = obterConfigPadraoFallback().agenda;
+      const padrao = obterConfigPadraoFallback();
+      const padraoAgenda = padrao.agenda;
       if (!configGlobal.agenda || typeof configGlobal.agenda !== 'object') {
         configGlobal.agenda = JSON.parse(JSON.stringify(padraoAgenda));
-        return;
       }
       ["1", "2", "3", "4", "5", "6", "0"].forEach(diaKey => {
         if (!configGlobal.agenda[diaKey] || typeof configGlobal.agenda[diaKey] !== 'object') {
           configGlobal.agenda[diaKey] = JSON.parse(JSON.stringify(padraoAgenda[diaKey]));
         }
       });
-      if (typeof configGlobal.varredura_automatica_inicio === 'undefined') configGlobal.varredura_automatica_inicio = false;
+      if (typeof configGlobal.iniciar_com_windows === 'undefined') configGlobal.iniciar_com_windows = true;
+      if (typeof configGlobal.varredura_automatica_inicio === 'undefined') configGlobal.varredura_automatica_inicio = true;
       if (typeof configGlobal.agenda.almoco_ativo === 'undefined') configGlobal.agenda.almoco_ativo = true;
       if (!configGlobal.agenda.almoco_inicio) configGlobal.agenda.almoco_inicio = "12:00";
       if (!configGlobal.agenda.almoco_fim) configGlobal.agenda.almoco_fim = "13:30";
       if (!configGlobal.agenda.msg_almoco) configGlobal.agenda.msg_almoco = padraoAgenda.msg_almoco;
       if (!configGlobal.agenda.msg_fora_expediente) configGlobal.agenda.msg_fora_expediente = padraoAgenda.msg_fora_expediente;
+      if (!configGlobal.mapaNomes) configGlobal.mapaNomes = {};
+      if (!configGlobal.mapaTelefones) configGlobal.mapaTelefones = {};
+      if (!Array.isArray(configGlobal.historicoVarreduras)) configGlobal.historicoVarreduras = [];
+    }
+
+    function garantirEstruturaProcessos() {
+      const padrao = obterConfigPadraoFallback().processos;
+      if (!configGlobal.processos) configGlobal.processos = JSON.parse(JSON.stringify(padrao));
+      if (!configGlobal.processos.mensagens) configGlobal.processos.mensagens = JSON.parse(JSON.stringify(padrao.mensagens));
+      const m = configGlobal.processos.mensagens;
+      if (!m.msg_encerrar_conversa) m.msg_encerrar_conversa = padrao.mensagens.msg_encerrar_conversa;
+      if (!m.msg_chamar_advogado_pos_proc) m.msg_chamar_advogado_pos_proc = padrao.mensagens.msg_chamar_advogado_pos_proc;
+      if (!Array.isArray(configGlobal.processos.lista)) configGlobal.processos.lista = [];
     }
 
     function aplicarTema(tema) {
@@ -1259,7 +1428,7 @@
 
     function agendarRenderMapaVisual() {
       clearTimeout(timerMapaVisual);
-      timerMapaVisual = setTimeout(() => { renderizarMapaVisual(); }, 250);
+      timerMapaVisual = setTimeout(() => { renderizarMapaVisual(); }, 220);
     }
 
     function marcarAlteracaoPendente() {
@@ -1267,14 +1436,24 @@
       const btnSalvar = document.getElementById('btn-salvar-fluxo');
       const labelSalvar = document.getElementById('label-btn-salvar');
 
-      badge.innerText = "● Gravando...";
+      badge.innerText = "● Salvando...";
       badge.className = "text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#d4af37]/15 text-[#e5c158]";
       btnSalvar.classList.add('unsaved-glow');
       labelSalvar.innerText = "Salvar Agora ●";
 
+      localStorage.setItem('adv_bot_config_backup', JSON.stringify(configGlobal));
       clearTimeout(timerAutoSave);
-      timerAutoSave = setTimeout(() => { salvarConfiguracaoCompleta(true); }, 1000);
+      timerAutoSave = setTimeout(() => { salvarConfiguracaoCompleta(true); }, 650);
     }
+
+    window.addEventListener('beforeunload', () => {
+      try {
+        localStorage.setItem('adv_bot_config_backup', JSON.stringify(configGlobal));
+        if (window.api && window.api.salvarConfig) {
+          window.api.salvarConfig(configGlobal);
+        }
+      } catch (e) {}
+    });
 
     async function gerarHashSenha(texto) {
       try {
@@ -1284,22 +1463,17 @@
       } catch (e) { return btoa(texto); }
     }
 
-    // =========================================================================
-    // SPLASH SCREEN COM PROGRESSO REAL E DUPLA GARANTIA DE TRANSIÇÃO (SEM TRAVAR)
-    // =========================================================================
     function iniciarSplashELogin() {
       const bar = document.getElementById('splash-bar');
       const status = document.getElementById('splash-status');
       
-      // Animação progressiva da barra de carregamento
-      setTimeout(() => { if(bar) bar.style.width = '35%'; if(status) status.innerText = 'Carregando banco de dados local...'; }, 150);
-      setTimeout(() => { if(bar) bar.style.width = '70%'; if(status) status.innerText = 'Inicializando motor de atendimento...'; }, 450);
-      setTimeout(() => { if(bar) bar.style.width = '95%'; if(status) status.innerText = 'Conectando ambiente seguro...'; }, 850);
+      setTimeout(() => { if(bar) bar.style.width = '45%'; if(status) status.innerText = 'Carregando banco de dados e backups...'; }, 100);
+      setTimeout(() => { if(bar) bar.style.width = '85%'; if(status) status.innerText = 'Preparando conexão rápida do WhatsApp...'; }, 350);
+      setTimeout(() => { if(bar) bar.style.width = '100%'; }, 650);
       
-      // Dupla garantia: fecha o splash e abre o login em no máximo 1.8 segundos para nunca prender
       setTimeout(() => {
         fecharSplashEContinuar();
-      }, 1800);
+      }, 950);
     }
 
     function fecharSplashEContinuar() {
@@ -1310,22 +1484,44 @@
           splash.classList.add('hidden');
           splash.style.display = 'none';
           verificarEstadoLogin();
-        }, 400);
+        }, 320);
       }
+    }
+
+    function verificarSessao30DiasValida() {
+      try {
+        const raw = localStorage.getItem('adv_bot_session_30d');
+        if (!raw) return false;
+        const sessao = JSON.parse(raw);
+        if (sessao && sessao.expiresAt && Date.now() < sessao.expiresAt) {
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    function registrarSessao30Dias(manter30Dias) {
+      const trintaDiasMs = 30 * 24 * 60 * 60 * 1000;
+      const validade = manter30Dias ? (Date.now() + trintaDiasMs) : (Date.now() + (12 * 60 * 60 * 1000));
+      localStorage.setItem('adv_bot_session_30d', JSON.stringify({
+        loggedIn: true,
+        expiresAt: validade
+      }));
+      sessionStorage.setItem('adv_bot_logged_in', 'true');
     }
 
     function verificarEstadoLogin() {
       const contaSalva = localStorage.getItem('adv_bot_user_account');
-      const sessaoAtiva = sessionStorage.getItem('adv_bot_logged_in');
+      const sessaoAtiva = sessionStorage.getItem('adv_bot_logged_in') === 'true' || verificarSessao30DiasValida();
       const authScreen = document.getElementById('auth-screen');
 
-      if (sessaoAtiva === 'true') {
-        const dados = contaSalva ? JSON.parse(contaSalva) : { office: 'Escritório', user: 'Doutor(a)' };
+      if (contaSalva && sessaoAtiva) {
+        const dados = JSON.parse(contaSalva);
         aplicarUsuarioLogado(dados);
         authScreen.classList.add('hidden');
         authScreen.classList.remove('flex');
         
-        const jaViu = localStorage.getItem('adv_bot_tour_v6_done');
+        const jaViu = localStorage.getItem('adv_bot_tour_beta08_done');
         if (!jaViu) {
           setTimeout(() => dispararEntradaTriunfalLexBot(), 300);
         }
@@ -1344,17 +1540,17 @@
         officeBox.classList.remove('hidden');
         recBox.classList.remove('hidden');
         title.innerText = 'Configurar Escritório';
-        btnSubmit.innerText = 'Criar Conta e Entrar';
+        btnSubmit.innerText = 'Criar Conta e Ativar Login 30 Dias';
       } else {
         officeBox.classList.add('hidden');
         recBox.classList.add('hidden');
         title.innerText = 'Portal do Escritório';
-        btnSubmit.innerText = 'Desbloquear Painel';
+        btnSubmit.innerText = 'Desbloquear Painel (30 Dias)';
       }
     }
 
     function aplicarUsuarioLogado(dados) {
-      document.getElementById('header-user-info').innerText = `${dados.office || 'Escritório'} • Operador: ${dados.user}`;
+      document.getElementById('header-user-info').innerText = `${dados.office || 'Escritório'} • Operador: ${dados.user} • Auto-Login 30d`;
       document.getElementById('home-welcome-title').innerText = `Olá, ${dados.user || 'Doutor(a)'}! Bem-vindo ao ${dados.office || 'Escritório Digital'}.`;
     }
 
@@ -1363,6 +1559,7 @@
       const pass = document.getElementById('auth-pass').value.trim();
       const office = document.getElementById('auth-office').value.trim();
       const recovery = document.getElementById('auth-recovery').value.trim();
+      const manter30d = document.getElementById('auth-keep-30days').checked;
       const err = document.getElementById('auth-error');
 
       if (!user || !pass) {
@@ -1377,21 +1574,21 @@
       if (!contaSalva) {
         const novaConta = { user, passHash, recoveryKey: (recovery || 'OAB').toLowerCase(), office: office || 'Escritório de Advocacia' };
         localStorage.setItem('adv_bot_user_account', JSON.stringify(novaConta));
-        sessionStorage.setItem('adv_bot_logged_in', 'true');
+        registrarSessao30Dias(manter30d);
         aplicarUsuarioLogado(novaConta);
         document.getElementById('auth-screen').classList.add('hidden');
         document.getElementById('auth-screen').classList.remove('flex');
-        mostrarToast('Credenciais registradas!');
+        mostrarToast('Acesso salvo por 30 dias!');
         setTimeout(() => dispararEntradaTriunfalLexBot(), 300);
       } else {
         const dados = JSON.parse(contaSalva);
         if (dados.user === user && dados.passHash === passHash) {
-          sessionStorage.setItem('adv_bot_logged_in', 'true');
+          registrarSessao30Dias(manter30d);
           aplicarUsuarioLogado(dados);
           document.getElementById('auth-screen').classList.add('hidden');
           document.getElementById('auth-screen').classList.remove('flex');
           err.classList.add('hidden');
-          const jaViu = localStorage.getItem('adv_bot_tour_v6_done');
+          const jaViu = localStorage.getItem('adv_bot_tour_beta08_done');
           if (!jaViu) dispararEntradaTriunfalLexBot();
         } else {
           err.innerText = 'Usuário ou senha incorretos.';
@@ -1402,6 +1599,7 @@
 
     document.getElementById('btn-logout').addEventListener('click', () => {
       sessionStorage.removeItem('adv_bot_logged_in');
+      localStorage.removeItem('adv_bot_session_30d');
       document.getElementById('auth-pass').value = '';
       verificarEstadoLogin();
     });
@@ -1418,15 +1616,15 @@
       const conta = JSON.parse(localStorage.getItem('adv_bot_user_account') || '{}');
       if (val === 'resetar' || (conta.recoveryKey && val === conta.recoveryKey)) {
         localStorage.removeItem('adv_bot_user_account');
+        localStorage.removeItem('adv_bot_session_30d');
         modalReset.classList.add('hidden'); modalReset.classList.remove('flex');
         verificarEstadoLogin();
-        mostrarToast('Acesso redefinido!');
+        mostrarToast('Credenciais redefinidas!');
       } else {
         alert('Chave incorreta. Digite RESETAR para recriar.');
       }
     });
 
-    /* ================= TELA INICIAL ================= */
     function renderizarTelaInicial() {
       garantirEstruturaProcessos();
       garantirEstruturaAgenda();
@@ -1437,6 +1635,14 @@
       const qtdMenus = 1 + Object.keys((configGlobal.fluxo && configGlobal.fluxo.etapas) || {}).length;
       const elMenus = document.getElementById('home-card-menus');
       if (elMenus) elMenus.innerText = String(qtdMenus);
+
+      const badgeVarredura = document.getElementById('badge-varredura');
+      if (badgeVarredura) {
+        badgeVarredura.innerText = configGlobal.varredura_automatica_inicio !== false ? 'Auto' : 'Manual';
+        badgeVarredura.className = configGlobal.varredura_automatica_inicio !== false
+          ? 'px-2 py-0.5 text-[9px] rounded-full bg-emerald-500/20 text-emerald-400 font-bold'
+          : 'px-2 py-0.5 text-[9px] rounded-full bg-slate-800 text-slate-400 font-bold';
+      }
 
       const agora = new Date();
       const diaHoje = String(agora.getDay());
@@ -1477,7 +1683,6 @@
       limparFormularioProcesso();
     };
 
-    /* ================= TOUR GUIADO ================= */
     function dispararEntradaTriunfalLexBot() {
       const modalCentro = document.getElementById('lexbot-center-modal');
       modalCentro.classList.remove('hidden');
@@ -1487,7 +1692,7 @@
     document.getElementById('btn-centro-nao').addEventListener('click', () => {
       document.getElementById('lexbot-center-modal').classList.add('hidden');
       document.getElementById('lexbot-center-modal').classList.remove('flex');
-      localStorage.setItem('adv_bot_tour_v6_done', 'true');
+      localStorage.setItem('adv_bot_tour_beta08_done', 'true');
     });
 
     document.getElementById('btn-centro-sim').addEventListener('click', () => {
@@ -1497,14 +1702,15 @@
     });
 
     const passosTour = [
-      { titulo: "1. Visão Geral", texto: "Aqui você acompanha o resumo das operações, status do expediente e os últimos clientes.", aba: "inicio", alvoId: "tour-home-banner" },
-      { titulo: "2. Produtividade Real", texto: "Mostra os clientes reais atendidos e as mensagens reais processadas pelo robô.", aba: "inicio", alvoId: "tour-metrics-bar" },
-      { titulo: "3. Consultar Processo", texto: "Cadastre o CPF ou Número do Processo e o resumo. O robô busca apenas pelos números informados.", aba: "processos", alvoId: "tour-processos-card" },
-      { titulo: "4. Menu do WhatsApp", texto: "Personalize as mensagens e os submenus numéricos que o cliente recebe ao mandar mensagem.", aba: "fluxo", alvoId: "tour-seletor-etapa" },
-      { titulo: "5. Formatação", texto: "Clique para formatar textos em negrito (*texto*) ou itálico (_texto_) com facilidade.", aba: "fluxo", alvoId: "format-drawer", acaoExtra: () => alternarBarraFormatacao(true) },
-      { titulo: "6. Horários & Almoço", texto: "Defina o expediente semanal e o intervalo de almoço. Fora de horário, o robô apenas muda o começo da mensagem e segue o atendimento normal!", aba: "agenda", alvoId: "tour-agenda-card" },
-      { titulo: "7. Atendimento Humano", texto: "Clientes em espera por atendimento ficam aqui. Você pode reativar o robô a qualquer instante.", aba: "pausados", alvoId: "tour-pausados-card" },
-      { titulo: "8. Conexão do WhatsApp", texto: "Escaneie este QR Code no WhatsApp para conectar. O robô responde rápido com respostas numéricas precisas!", aba: "inicio", alvoId: "tour-qr-card" }
+      { titulo: "1. Visão Geral (Beta 0.8)", texto: "Bem-vindo à versão Beta 0.8! O sistema agora conta com auto-login de 30 dias, salvamento automático blindado e conexão ultra-rápida.", aba: "inicio", alvoId: "tour-home-banner" },
+      { titulo: "2. Produtividade em Tempo Real", texto: "Acompanhe os clientes únicos atendidos, respostas automáticas enviadas e a fila de espera do advogado.", aba: "inicio", alvoId: "tour-metrics-bar" },
+      { titulo: "3. Processos (Novas Opções 1 e 2)", texto: "Após o cliente digitar o CPF e receber o resumo do processo, ele pode digitar 1 para encerrar com mensagem de agradecimento ou 2 para chamar o advogado!", aba: "processos", alvoId: "tour-processos-card" },
+      { titulo: "4. Varredura Pendente (Offline)", texto: "NOVO! Esta página analisa apenas as mensagens não lidas enviadas enquanto o aplicativo estava fechado e que o bot ainda não respondeu. Use o Slider para deixar no automático!", aba: "varredura", alvoId: "tour-varredura-card" },
+      { titulo: "5. Menu Automático", texto: "Personalize as mensagens e submenus de atendimento. Tudo é salvo automaticamente a cada alteração.", aba: "fluxo", alvoId: "tour-seletor-etapa" },
+      { titulo: "6. Horários & Almoço", texto: "Configure o expediente semanal e o intervalo de almoço com chave seletora rápida.", aba: "agenda", alvoId: "tour-agenda-card" },
+      { titulo: "7. Fila de Espera com Nome Salvo", texto: "Quando o cliente pede para falar com o advogado, ele entra nesta fila exibindo o Nome salvo nos seus contatos do WhatsApp!", aba: "pausados", alvoId: "tour-pausados-card" },
+      { titulo: "8. Abrir com o PC", texto: "Com esta chave ativada no topo, o Advocacia Studio Pro inicia sozinho sempre que o computador é ligado.", aba: "inicio", alvoId: "tour-autostart-box" },
+      { titulo: "9. Status Detalhado & Auto-Reconexão", texto: "Acompanhe cada etapa do motor Chromium em tempo real. Se a internet oscilar de madrugada, o robô reconecta sozinho!", aba: "inicio", alvoId: "tour-qr-card" }
     ];
 
     let passoAtualTour = 0;
@@ -1517,12 +1723,12 @@
     function posicionarLexBot(alvoEl) {
       const wrapper = document.getElementById('lexbot-wrapper');
       const rect = alvoEl.getBoundingClientRect();
-      let top = rect.top + (rect.height / 2) - 120;
-      let left = rect.right + 20;
+      let top = rect.top + (rect.height / 2) - 110;
+      let left = rect.right + 18;
 
-      if (left + 420 > window.innerWidth - 16) left = rect.left - 420 - 20;
-      if (left < 16) { left = Math.max(20, rect.right - 400); top = rect.bottom + 15; }
-      top = Math.max(20, Math.min(window.innerHeight - 240, top));
+      if (left + 400 > window.innerWidth - 16) left = rect.left - 400 - 18;
+      if (left < 16) { left = Math.max(20, rect.right - 380); top = rect.bottom + 15; }
+      top = Math.max(20, Math.min(window.innerHeight - 230, top));
 
       wrapper.style.bottom = 'auto'; wrapper.style.right = 'auto';
       wrapper.style.top = `${top}px`; wrapper.style.left = `${left}px`;
@@ -1563,9 +1769,9 @@
       document.getElementById('tour-backdrop').classList.remove('active');
       document.getElementById('lexbot-bubble').classList.add('hidden');
       const wrapper = document.getElementById('lexbot-wrapper');
-      wrapper.style.top = 'auto'; wrapper.style.left = 'auto'; wrapper.style.bottom = '24px'; wrapper.style.right = '24px';
-      localStorage.setItem('adv_bot_tour_v6_done', 'true');
-      mostrarToast('Tour concluído!');
+      wrapper.style.top = 'auto'; wrapper.style.left = 'auto'; wrapper.style.bottom = '20px'; wrapper.style.right = '22px';
+      localStorage.setItem('adv_bot_tour_beta08_done', 'true');
+      mostrarToast('Tour Beta 0.8 concluído!');
     }
 
     document.getElementById('btn-lexbot-next').addEventListener('click', () => {
@@ -1580,7 +1786,6 @@
       if (tourAtivo) finalizarTour(); else iniciarTourGuiado();
     });
 
-    /* ================= FORMATAÇÃO E MAPA VISUAL ================= */
     window.formatarTexto = function(tipo) {
       const textarea = document.getElementById('input-etapa-msg');
       const start = textarea.selectionStart; const end = textarea.selectionEnd;
@@ -1654,10 +1859,12 @@
     }
 
     window.ativarAba = function(abaNome) {
-      ['inicio', 'processos', 'fluxo', 'agenda', 'pausados', 'terminal', 'backup'].forEach(a => {
+      ['inicio', 'processos', 'fluxo', 'varredura', 'agenda', 'pausados', 'terminal', 'backup'].forEach(a => {
         const d = document.getElementById('aba-' + a);
         const b = document.getElementById('nav-btn-' + a);
-        if (d) d.classList.toggle('hidden', a !== abaNome);
+        if (d) {
+          d.classList.toggle('hidden', a !== abaNome);
+        }
         if (b) {
           b.className = a === abaNome 
             ? "w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold champagne-gradient flex items-center justify-between shadow-sm transition" 
@@ -1666,12 +1873,14 @@
       });
       if (abaNome === 'inicio') renderizarTelaInicial();
       if (abaNome === 'processos') renderizarModuloProcessos();
+      if (abaNome === 'varredura') renderizarPaginaVarredura();
       if (abaNome === 'agenda') renderizarAgendaSemanal();
     };
 
     document.getElementById('nav-btn-inicio').addEventListener('click', () => ativarAba('inicio'));
     document.getElementById('nav-btn-fluxo').addEventListener('click', () => ativarAba('fluxo'));
     document.getElementById('nav-btn-processos').addEventListener('click', () => ativarAba('processos'));
+    document.getElementById('nav-btn-varredura').addEventListener('click', () => ativarAba('varredura'));
     document.getElementById('nav-btn-agenda').addEventListener('click', () => ativarAba('agenda'));
     document.getElementById('nav-btn-pausados').addEventListener('click', async () => {
       ativarAba('pausados');
@@ -1679,6 +1888,67 @@
     });
     document.getElementById('nav-btn-terminal').addEventListener('click', () => ativarAba('terminal'));
     document.getElementById('nav-btn-backup').addEventListener('click', () => ativarAba('backup'));
+
+    function formatarTimestampLegivel(tsSegundos) {
+      if (!tsSegundos || tsSegundos <= 0) return 'Aguardando 1ª conexão...';
+      return new Date(tsSegundos * 1000).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'medium' });
+    }
+
+    function renderizarPaginaVarredura() {
+      garantirEstruturaAgenda();
+      const slider = document.getElementById('slider-varredura-auto');
+      if (slider) slider.checked = Boolean(configGlobal.varredura_automatica_inicio !== false);
+
+      document.getElementById('varredura-ts-primeira').innerText = formatarTimestampLegivel(configGlobal.primeiraConexaoTimestamp);
+      document.getElementById('varredura-ts-desligamento').innerText = configGlobal.ultimoDesligamentoTimestamp > 0
+        ? formatarTimestampLegivel(configGlobal.ultimoDesligamentoTimestamp)
+        : 'Sessão atual ativa';
+
+      const container = document.getElementById('varredura-lista-resultados');
+      const hist = configGlobal.historicoVarreduras || [];
+      if (hist.length > 0 && container.innerText.includes('Clique em')) {
+        const ultima = hist[0];
+        document.getElementById('varredura-contadores').innerText = `Última execução (${ultima.data}): ${ultima.analisadas} analisada(s) • ${ultima.respondidas} respondida(s)`;
+        if (Array.isArray(ultima.itens) && ultima.itens.length > 0) {
+          container.innerHTML = '';
+          ultima.itens.forEach(item => {
+            const div = document.createElement('div');
+            div.className = "p-3.5 exec-card rounded-xl flex items-center justify-between text-xs border-l-4 border-emerald-400";
+            div.innerHTML = `
+              <div>
+                <span class="font-bold text-[#e5c158] block">${item.exibicao}</span>
+                <span class="text-slate-300 text-[11px]">"${item.msg}"</span>
+              </div>
+              <div class="text-right">
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-bold text-[10px] block">${item.status}</span>
+                <span class="text-[10px] text-slate-500 mt-0.5 block">${item.horaMsg}</span>
+              </div>
+            `;
+            container.appendChild(div);
+          });
+        }
+      }
+    }
+
+    document.getElementById('slider-varredura-auto').addEventListener('change', (e) => {
+      configGlobal.varredura_automatica_inicio = e.target.checked;
+      marcarAlteracaoPendente();
+      renderizarTelaInicial();
+      mostrarToast(e.target.checked ? 'Varredura automática ao abrir ativada!' : 'Varredura automática desativada.');
+    });
+
+    document.getElementById('btn-executar-varredura-pagina').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-executar-varredura-pagina');
+      btn.disabled = true;
+      document.getElementById('varredura-status-fase').innerText = 'Iniciando busca de não lidas...';
+      mostrarToast('Varrendo conversas pendentes...');
+      if (window.api && window.api.forcarVarreduraNaoLidas) {
+        const res = await window.api.forcarVarreduraNaoLidas();
+        const qtd = res && typeof res.respondidas === 'number' ? res.respondidas : 0;
+        mostrarToast(qtd > 0 ? `${qtd} conversa(s) offline respondida(s)!` : 'Nenhuma conversa pendente sem resposta.');
+      }
+      btn.disabled = false;
+    });
 
     function obterObjetoEtapaAtual() {
       if (etapaSelecionada === 'raiz') return configGlobal.fluxo.raiz;
@@ -1793,7 +2063,7 @@
       const nome = document.getElementById('input-nome-submenu').value.trim();
       if (!nome) return;
       const id = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "_");
-      configGlobal.fluxo.etapas[id] = { titulo: `Submenu: ${nome}`, mensagem: `*${nome}*\\n\\nComo podemos lhe orientar?`, opcoes: [{ gatilho: "0", rotulo: "Voltar ao Início", tipo: "submenu", destino: "raiz", resposta: "" }] };
+      configGlobal.fluxo.etapas[id] = { titulo: `Submenu: ${nome}`, mensagem: `*${nome}*\n\nComo podemos lhe orientar?`, opcoes: [{ gatilho: "0", rotulo: "Voltar ao Início", tipo: "submenu", destino: "raiz", resposta: "" }] };
       modalSub.classList.add('hidden'); modalSub.classList.remove('flex');
       etapaSelecionada = id; popularSeletorDeEtapas(); carregarEtapaNoEditor(id); marcarAlteracaoPendente();
     });
@@ -1804,14 +2074,6 @@
       etapaSelecionada = 'raiz'; popularSeletorDeEtapas(); carregarEtapaNoEditor('raiz'); marcarAlteracaoPendente();
     });
 
-    /* ================= MÓDULO DE PROCESSOS ================= */
-    function garantirEstruturaProcessos() {
-      const padrao = obterConfigPadraoFallback().processos;
-      if (!configGlobal.processos) configGlobal.processos = padrao;
-      if (!configGlobal.processos.mensagens) configGlobal.processos.mensagens = padrao.mensagens;
-      if (!Array.isArray(configGlobal.processos.lista)) configGlobal.processos.lista = [];
-    }
-
     function carregarTemplatesProcessosNosInputs() {
       garantirEstruturaProcessos();
       const m = configGlobal.processos.mensagens;
@@ -1819,6 +2081,8 @@
       document.getElementById('tpl-msg-ja-visto').value = m.msg_ja_visto || '';
       document.getElementById('tpl-msg-sem-atualizacao').value = m.msg_sem_atualizacao || '';
       document.getElementById('tpl-msg-nao-encontrado').value = m.msg_nao_encontrado || '';
+      document.getElementById('tpl-msg-encerrar').value = m.msg_encerrar_conversa || '';
+      document.getElementById('tpl-msg-advogado-pos').value = m.msg_chamar_advogado_pos_proc || '';
     }
 
     document.getElementById('btn-toggle-msg-processos').addEventListener('click', () => {
@@ -1833,6 +2097,8 @@
       configGlobal.processos.mensagens.msg_ja_visto = document.getElementById('tpl-msg-ja-visto').value;
       configGlobal.processos.mensagens.msg_sem_atualizacao = document.getElementById('tpl-msg-sem-atualizacao').value;
       configGlobal.processos.mensagens.msg_nao_encontrado = document.getElementById('tpl-msg-nao-encontrado').value;
+      configGlobal.processos.mensagens.msg_encerrar_conversa = document.getElementById('tpl-msg-encerrar').value;
+      configGlobal.processos.mensagens.msg_chamar_advogado_pos_proc = document.getElementById('tpl-msg-advogado-pos').value;
       salvarConfiguracaoCompleta(false);
       document.getElementById('painel-msg-processos').classList.add('hidden');
     });
@@ -2005,7 +2271,6 @@
       });
     }
 
-    /* ================= HORÁRIOS & ALMOÇO ================= */
     function carregarConfiguracaoAgendaNosCampos() {
       garantirEstruturaAgenda();
       const a = configGlobal.agenda;
@@ -2015,9 +2280,13 @@
       document.getElementById('agenda-msg-almoco').value = a.msg_almoco || '';
       document.getElementById('agenda-msg-fora').value = a.msg_fora_expediente || '';
 
-      const checkAuto = document.getElementById('check-varredura-auto');
-      if (checkAuto) {
-        checkAuto.checked = Boolean(configGlobal.varredura_automatica_inicio);
+      const checkAutoStart = document.getElementById('check-iniciar-windows');
+      if (checkAutoStart) {
+        checkAutoStart.checked = Boolean(configGlobal.iniciar_com_windows !== false);
+      }
+      const sliderVarredura = document.getElementById('slider-varredura-auto');
+      if (sliderVarredura) {
+        sliderVarredura.checked = Boolean(configGlobal.varredura_automatica_inicio !== false);
       }
     }
 
@@ -2069,35 +2338,44 @@
       marcarAlteracaoPendente();
     });
 
-    const checkVarreduraAuto = document.getElementById('check-varredura-auto');
-    if (checkVarreduraAuto) {
-      checkVarreduraAuto.addEventListener('change', (e) => {
-        configGlobal.varredura_automatica_inicio = e.target.checked;
-        marcarAlteracaoPendente();
-        mostrarToast(e.target.checked ? 'Varredura automática ativada!' : 'Varredura automática desativada.');
-      });
-    }
+    document.getElementById('check-iniciar-windows').addEventListener('change', async (e) => {
+      configGlobal.iniciar_com_windows = e.target.checked;
+      if (window.api && window.api.definirAutoStart) {
+        await window.api.definirAutoStart(e.target.checked);
+      }
+      marcarAlteracaoPendente();
+      mostrarToast(e.target.checked ? 'Início automático com o PC ativado!' : 'Início com o PC desativado.');
+    });
 
-    /* ================= FILA HUMANA ================= */
     function renderizarPausados(mapa) {
       const container = document.getElementById('lista-pausados');
       const chaves = Object.keys(mapa || {});
       document.getElementById('badge-pausados').innerText = String(chaves.length);
       atualizarPainelMetricas(chaves.length);
-      container.innerHTML = chaves.length === 0 ? '<div class="exec-card p-10 rounded-2xl text-center text-xs text-slate-400">Nenhum cliente na fila humana no momento.</div>' : '';
-      chaves.forEach(num => {
-        const numLimpo = String(num).replace(/\D/g, '');
-        const nomeSalvo = (configGlobal.mapaNomes && configGlobal.mapaNomes[numLimpo]) || '';
-        const rotulo = nomeSalvo ? `${nomeSalvo} (+${numLimpo})` : `+${numLimpo}`;
+      container.innerHTML = chaves.length === 0 ? '<div class="exec-card p-10 rounded-2xl text-center text-xs text-slate-400">Nenhum cliente aguardando advogado no momento.</div>' : '';
+      
+      chaves.forEach(chave => {
+        const item = mapa[chave];
+        const numLimpo = String(chave).replace(/\D/g, '');
+        const nomeSalvo = (typeof item === 'object' && item.nome)
+          ? item.nome
+          : ((configGlobal.mapaNomes && configGlobal.mapaNomes[numLimpo]) || '');
+        const telFormatado = (typeof item === 'object' && item.telefone)
+          ? item.telefone
+          : ((configGlobal.mapaTelefones && configGlobal.mapaTelefones[numLimpo]) || `+${numLimpo}`);
+
+        const tituloExibicao = nomeSalvo ? `${nomeSalvo}` : telFormatado;
+        const subtituloTel = nomeSalvo ? `Telefone: ${telFormatado}` : 'Contato aguardando atendimento';
 
         const div = document.createElement('div');
-        div.className = "exec-card p-4 rounded-xl flex items-center justify-between text-xs";
+        div.className = "exec-card p-4 rounded-xl flex items-center justify-between text-xs border-l-4 border-amber-400";
         div.innerHTML = `
           <div>
-            <span class="font-bold text-white block">${rotulo}</span>
-            <span class="text-[10px] text-amber-400">Robô pausado por 24h para atendimento humano</span>
+            <span class="font-bold text-white text-sm block">${tituloExibicao}</span>
+            <span class="text-[11px] text-[#e5c158] block">${subtituloTel}</span>
+            <span class="text-[10px] text-amber-400">Robô pausado para atendimento pessoal do advogado</span>
           </div>
-          <button onclick="reativarCliente('${num}')" class="px-4 py-2 champagne-gradient font-bold rounded-xl transition shadow flex items-center space-x-1.5">
+          <button onclick="reativarCliente('${chave}')" class="px-4 py-2 champagne-gradient font-bold rounded-xl transition shadow flex items-center space-x-1.5">
             <svg class="w-3.5 h-3.5"><use href="#icon-refresh"/></svg>
             <span>Reativar Robô Agora</span>
           </button>
@@ -2110,26 +2388,34 @@
       if (window.api && window.api.removerPausa) {
         const novosPausados = await window.api.removerPausa(num);
         renderizarPausados(novosPausados);
-        mostrarToast("Robô reativado!");
+        mostrarToast("Robô reativado para este contato!");
       }
     };
 
     async function salvarConfiguracaoCompleta(silencioso = false) {
       garantirEstruturaAgenda();
+      garantirEstruturaProcessos();
       localStorage.setItem('adv_bot_config_backup', JSON.stringify(configGlobal));
       if (window.api && window.api.salvarConfig) await window.api.salvarConfig(configGlobal);
-      document.getElementById('badge-autosave').innerText = "✓ Salvo";
+      document.getElementById('badge-autosave').innerText = "✓ Auto-Save Ativo";
       document.getElementById('badge-autosave').className = "text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
       document.getElementById('btn-salvar-fluxo').classList.remove('unsaved-glow');
       document.getElementById('label-btn-salvar').innerText = "Salvar Menu";
       renderizarTelaInicial();
-      if (!silencioso) mostrarToast('Alterações salvas!');
+      if (!silencioso) mostrarToast('Alterações salvas com segurança!');
     }
 
-    function aplicarStatusConexaoNaUI(st, qrUrl = null) {
+    function aplicarStatusConexaoNaUI(st, qrUrl = null, subDetalhe = null) {
       const txtEl = document.getElementById('status-text');
+      const subEl = document.getElementById('substatus-text');
+      const qrSubEl = document.getElementById('qr-substatus-text');
       const dotEl = document.getElementById('status-dot');
       const qrBox = document.getElementById('qr-box');
+
+      if (subDetalhe) {
+        if (subEl) subEl.innerText = subDetalhe;
+        if (qrSubEl) qrSubEl.innerText = subDetalhe;
+      }
 
       if (qrUrl) {
         qrBox.innerHTML = `<img src="${qrUrl}" class="w-28 h-28 rounded-lg object-contain bg-white p-1"/>`;
@@ -2137,16 +2423,23 @@
 
       if (st === 'ready') {
         txtEl.innerText = 'Conectado';
+        if (!subDetalhe && subEl) subEl.innerText = 'Monitoramento ativo em tempo real';
+        if (qrSubEl) qrSubEl.innerText = 'Sessão blindada ativa';
         dotEl.className = 'w-2 h-2 rounded-full bg-emerald-400';
         qrBox.innerHTML = `<div class="text-emerald-400 text-xs font-bold text-center space-y-1"><svg class="w-8 h-8 mx-auto"><use href="#icon-shield"/></svg><span class="block">Aparelho Ativo</span></div>`;
       } else if (st === 'authenticated') {
-        txtEl.innerText = 'Sincronizando...';
+        txtEl.innerText = 'Autenticado';
+        if (!subDetalhe && subEl) subEl.innerText = 'Carregando conversas...';
         dotEl.className = 'w-2 h-2 rounded-full bg-sky-400 animate-pulse';
       } else if (st === 'waiting_qr') {
-        txtEl.innerText = 'Aguardando QR Code';
+        txtEl.innerText = 'Leitura de QR Code';
+        if (!subDetalhe && subEl) subEl.innerText = 'Escaneie no celular para conectar';
         dotEl.className = 'w-2 h-2 rounded-full bg-[#e5c158] animate-pulse';
+      } else if (st === 'initializing') {
+        txtEl.innerText = 'Iniciando Motor...';
+        dotEl.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
       } else {
-        txtEl.innerText = 'Reconectando...';
+        txtEl.innerText = 'Auto-Reconexão...';
         dotEl.className = 'w-2 h-2 rounded-full bg-rose-500 animate-pulse';
       }
     }
@@ -2157,24 +2450,17 @@
       document.getElementById('logs-box').innerHTML = '<div class="text-slate-500 text-xs text-center py-16">Histórico limpo.</div>';
     });
 
-    document.getElementById('btn-varrer-nao-lidas').addEventListener('click', async () => {
-      mostrarToast('Analisando mensagens...');
-      if (window.api && window.api.forcarVarreduraNaoLidas) {
-        const qtd = await window.api.forcarVarreduraNaoLidas();
-        mostrarToast(qtd > 0 ? `${qtd} conversa(s) respondida(s)!` : 'Nenhuma mensagem pendente.');
-      }
-    });
-
     document.getElementById('btn-reconnect').addEventListener('click', async () => {
-      mostrarToast('Reiniciando WhatsApp...');
-      aplicarStatusConexaoNaUI('initializing');
+      mostrarToast('Reiniciando motor do WhatsApp...');
+      aplicarStatusConexaoNaUI('initializing', null, 'Reiniciando motor Chromium...');
       if (window.api && window.api.reiniciarBot) await window.api.reiniciarBot();
     });
 
     const dispararInstalacaoUpdate = async () => {
+      await salvarConfiguracaoCompleta(true);
       const txtUpdate = document.getElementById('texto-update-app');
       const btnInstalar = document.getElementById('btn-instalar-update');
-      if (txtUpdate) txtUpdate.innerText = 'Instalando atualização... O app reiniciará em instantes!';
+      if (txtUpdate) txtUpdate.innerText = 'Dados salvos! Instalando atualização... O app reiniciará em instantes!';
       if (btnInstalar) {
         btnInstalar.disabled = true;
         btnInstalar.innerText = 'Atualizando...';
@@ -2192,8 +2478,8 @@
     });
 
     document.getElementById('btn-exportar-dados').addEventListener('click', () => {
-      const blob = new Blob([JSON.stringify({ versao: "1.0.4", conta: JSON.parse(localStorage.getItem('adv_bot_user_account')||'{}'), config: configGlobal }, null, 2)], { type: "application/json" });
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Backup_Advocacia_${new Date().toISOString().slice(0,10)}.json`; a.click();
+      const blob = new Blob([JSON.stringify({ versao: "Beta 0.8 (1.8.0)", conta: JSON.parse(localStorage.getItem('adv_bot_user_account')||'{}'), config: configGlobal }, null, 2)], { type: "application/json" });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Backup_Advocacia_Beta08_${new Date().toISOString().slice(0,10)}.json`; a.click();
       mostrarToast("Backup baixado com sucesso!");
     });
     document.getElementById('btn-importar-dados').addEventListener('click', () => document.getElementById('input-importar-arquivo').click());
@@ -2209,10 +2495,10 @@
             garantirEstruturaAgenda();
             garantirEstruturaProcessos();
             localStorage.setItem('adv_bot_config_backup', JSON.stringify(configGlobal));
-            if(window.api) window.api.salvarConfig(configGlobal);
+            if(window.api) await window.api.salvarConfig(configGlobal);
           }
           popularSeletorDeEtapas(); carregarEtapaNoEditor('raiz'); renderizarAgendaSemanal(); renderizarModuloProcessos(); renderizarTelaInicial();
-          mostrarToast("Backup restaurado!");
+          mostrarToast("Backup restaurado com sucesso!");
         } catch(err) { alert("Arquivo inválido."); }
       };
       r.readAsText(f);
@@ -2222,7 +2508,6 @@
       const temaSalvo = localStorage.getItem('adv_bot_theme') || 'dark';
       aplicarTema(temaSalvo);
 
-      // Inicia a splash screen garantindo a exibição do carregamento
       iniciarSplashELogin();
 
       try {
@@ -2241,27 +2526,28 @@
       carregarEtapaNoEditor('raiz');
       renderizarAgendaSemanal();
       renderizarModuloProcessos();
+      renderizarPaginaVarredura();
       renderizarTelaInicial();
-      renderizarPausados({});
-      atualizarPainelMetricas(0);
 
       if (configGlobal.processos.lista.length > 0) {
         selecionarProcessoNaLista(configGlobal.processos.lista[0].id);
       }
 
       if (window.api) {
+        if (window.api.obterPausados) {
+          const pausadosIniciais = await window.api.obterPausados();
+          renderizarPausados(pausadosIniciais || {});
+        }
+
         if (window.api.obterEstadoConexao) {
           const est = await window.api.obterEstadoConexao();
           if (est) {
-            aplicarStatusConexaoNaUI(est.status, est.qr);
-            if (est.status === 'ready' || est.status === 'authenticated') {
-              fecharSplashEContinuar();
-            }
+            aplicarStatusConexaoNaUI(est.status, est.qr, est.subStatus);
           }
         }
 
         window.api.aoReceberQR((url) => {
-          aplicarStatusConexaoNaUI('waiting_qr', url);
+          aplicarStatusConexaoNaUI('waiting_qr', url, 'QR Code pronto! Escaneie pelo WhatsApp.');
           fecharSplashEContinuar();
         });
 
@@ -2272,15 +2558,57 @@
           }
         });
 
+        if (window.api.aoReceberSubStatus) {
+          window.api.aoReceberSubStatus((info) => {
+            if (info) aplicarStatusConexaoNaUI(info.status, null, info.detalhe);
+          });
+        }
+
         window.api.aoAtualizarPausados((l) => renderizarPausados(l));
         
         if (window.api.aoAtualizarProcessos) {
           window.api.aoAtualizarProcessos((cfg) => {
             configGlobal = cfg;
             garantirEstruturaAgenda();
+            garantirEstruturaProcessos();
             renderizarModuloProcessos();
             renderizarTelaInicial();
             if (idProcessoSelecionado) selecionarProcessoNaLista(idProcessoSelecionado);
+          });
+        }
+
+        if (window.api.aoReceberProgressoVarredura) {
+          window.api.aoReceberProgressoVarredura((dados) => {
+            if (!dados) return;
+            const elFase = document.getElementById('varredura-status-fase');
+            const elCont = document.getElementById('varredura-contadores');
+            const boxRes = document.getElementById('varredura-lista-resultados');
+
+            if (elFase) elFase.innerText = dados.fase || 'Processando...';
+            if (elCont) elCont.innerText = `${dados.analisadas || 0} conversa(s) analisada(s) • ${dados.respondidas || 0} respondida(s)`;
+
+            if (Array.isArray(dados.itens) && boxRes) {
+              if (dados.itens.length === 0 && !dados.emAndamento) {
+                boxRes.innerHTML = '<div class="text-xs text-slate-400 text-center py-16">✓ Nenhuma conversa não lida pendente do período offline estava sem resposta.</div>';
+              } else if (dados.itens.length > 0) {
+                boxRes.innerHTML = '';
+                dados.itens.forEach(item => {
+                  const div = document.createElement('div');
+                  div.className = "p-3.5 exec-card rounded-xl flex items-center justify-between text-xs border-l-4 border-emerald-400";
+                  div.innerHTML = `
+                    <div>
+                      <span class="font-bold text-[#e5c158] block">${item.exibicao}</span>
+                      <span class="text-slate-300 text-[11px]">"${item.msg}"</span>
+                    </div>
+                    <div class="text-right">
+                      <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-bold text-[10px] block">${item.status}</span>
+                      <span class="text-[10px] text-slate-500 mt-0.5 block">${item.horaMsg}</span>
+                    </div>
+                  `;
+                  boxRes.appendChild(div);
+                });
+              }
+            }
           });
         }
 
@@ -2295,16 +2623,16 @@
               banner.classList.remove('hidden');
               banner.classList.add('flex');
               const pct = typeof dados.progresso === 'number' ? ` (${dados.progresso}%)` : '';
-              txtUpdate.innerText = `Baixando nova atualização ${dados.versao ? 'v' + dados.versao : ''}${pct} em segundo plano...`;
+              txtUpdate.innerText = `Baixando atualização ${dados.nomeRelease || ('v' + dados.versao)}${pct} em segundo plano...`;
               btnInstalar.classList.add('hidden');
             } else if (dados.status === 'ready') {
               banner.classList.remove('hidden');
               banner.classList.add('flex');
-              txtUpdate.innerText = `Nova versão ${dados.versao ? 'v' + dados.versao : ''} pronta! Clique ao lado para reiniciar.`;
+              txtUpdate.innerText = `Nova versão ${dados.nomeRelease || ('v' + dados.versao)} pronta! Seus dados estão salvos.`;
               btnInstalar.classList.remove('hidden');
               btnHeader.classList.remove('hidden');
               btnHeader.classList.add('flex');
-              mostrarToast('Atualização pronta!');
+              mostrarToast('Atualização pronta para instalar!');
             }
           });
         }
@@ -2317,14 +2645,26 @@
             atualizarPainelMetricas();
           }
 
-          const rotuloExibicao = log.exibicao || log.nome || log.numero;
+          const rotuloExibicao = log.nome ? `${log.nome} (${log.numero})` : (log.exibicao || log.numero);
+          const tagOffline = log.origemOffline ? '<span class="ml-2 px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-bold">Varredura Offline</span>' : '';
+
           const box = document.getElementById('logs-box');
           if (box.innerText.includes('Nenhuma') || box.innerText.includes('limpo')) box.innerHTML = '';
           const div = document.createElement('div');
           div.className = "p-3.5 exec-card rounded-xl flex items-center justify-between text-xs";
-          div.innerHTML = `<span class="text-[#e5c158] font-bold">${rotuloExibicao}</span><span class="truncate mx-2">${log.msg}</span><span class="text-slate-500">${log.hora}</span>`;
+          div.innerHTML = `<div class="flex items-center"><span class="text-[#e5c158] font-bold">${rotuloExibicao}</span>${tagOffline}</div><span class="truncate mx-3 flex-1 text-slate-200">${log.msg}</span><span class="text-slate-500">${log.hora}</span>`;
           box.prepend(div);
           while(box.children.length > 100) box.removeChild(box.lastElementChild);
+
+          const homeLogs = document.getElementById('home-ultimos-logs');
+          if (homeLogs) {
+            if (homeLogs.innerText.includes('Aguardando')) homeLogs.innerHTML = '';
+            const itemHome = document.createElement('div');
+            itemHome.className = "p-2.5 rounded-xl exec-input flex items-center justify-between text-xs";
+            itemHome.innerHTML = `<span class="font-bold text-[#e5c158] truncate max-w-[180px]">${log.nome || log.exibicao}</span><span class="truncate mx-2 flex-1 text-slate-300">${log.msg}</span><span class="text-[10px] text-slate-500">${log.hora}</span>`;
+            homeLogs.prepend(itemHome);
+            while(homeLogs.children.length > 4) homeLogs.removeChild(homeLogs.lastElementChild);
+          }
         });
       }
     });
