@@ -1,6 +1,6 @@
 {
   "name": "advocacia-studio-pro",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Advocacia Studio Pro - Suite Executiva de Atendimento e Processos",
   "main": "main.js",
   "author": "Escritorio Digital",
@@ -19,8 +19,10 @@
       "index.html",
       "icon.png",
       "icon.ico",
-      "package.json"
+      "package.json",
+      "node_modules/**/*"
     ],
+    "asar": true,
     "win": {
       "target": "nsis",
       "icon": "icon.ico",
