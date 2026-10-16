@@ -3,11 +3,8 @@ const path = require('path');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode');
 const fs = require('fs');
-
-let autoUpdater = null;
-try {
-    autoUpdater = require('electron-updater').autoUpdater;
-} catch (e) {}
+const https = require('https');
+const { spawn } = require('child_process');
 
 let mainWindow;
 let client = null;
@@ -21,9 +18,14 @@ let iniciandoBot = false;
 let reconectando = false;
 let varrendoNaoLidas = false;
 let instalandoUpdate = false;
+let baixandoUpdate = false;
+let caminhoInstaladorBaixado = null;
 let statusAtualBot = 'initializing';
 let ultimoQrDataUrl = '';
 let timerGravacaoDisco = null;
+
+const GITHUB_OWNER = 'danireid123';
+const GITHUB_REPO = 'advocacia-studio-pro';
 
 const CONFIG_PATH = path.join(app.getPath('userData'), 'config.json');
 const AUTH_DIR = path.join(app.getPath('userData'), 'wwebjs_auth_session');
@@ -419,7 +421,7 @@ async function varrerMensagensNaoLidas() {
             } catch (errChat) {}
         }
     } catch (errVarredura) {
-        console.error("[AVISO VARREDURA]: Sincronização de conversas em andamento.");
+        console.error("[AVISO VARREDURA]: Sincronização em andamento.");
     } finally {
         varrendoNaoLidas = false;
     }
@@ -639,59 +641,179 @@ async function processarMensagemEntrada(msg, veioDaVarredura = false) {
     }
 }
 
-// AUTO-UPDATER 100% INTERNO E SILENCIOSO (SEM ABRIR NAVEGADOR / GITHUB)
-function configurarAutoUpdater() {
-    if (!app.isPackaged || !autoUpdater) return;
+// =========================================================================
+// MOTOR DE AUTO-UPDATE DIRETO VIA GITHUB API (NÃO TRAVA EM 0% / SEM BLOCKMAP)
+// =========================================================================
+
+function compararVersoes(vNova, vAtual) {
+    const limpar = (v) => String(v || '').replace(/^v/i, '').trim().split('.').map(n => parseInt(n, 10) || 0);
+    const p1 = limpar(vNova);
+    const p2 = limpar(vAtual);
+    for (let i = 0; i < Math.max(p1.length, p2.length); i++) {
+        const n1 = p1[i] || 0;
+        const n2 = p2[i] || 0;
+        if (n1 > n2) return 1;
+        if (n1 < n2) return -1;
+    }
+    return 0;
+}
+
+function requisitarJsonGitHub(url) {
+    return new Promise((resolve, reject) => {
+        https.get(url, {
+            headers: {
+                'User-Agent': 'Advocacia-Studio-Pro-Updater',
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        }, (res) => {
+            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                return requisitarJsonGitHub(res.headers.location).then(resolve).catch(reject);
+            }
+            if (res.statusCode !== 200) {
+                return reject(new Error(`Status HTTP ${res.statusCode}`));
+            }
+            let raw = '';
+            res.on('data', chunk => raw += chunk);
+            res.on('end', () => {
+                try { resolve(JSON.parse(raw)); } catch (e) { reject(e); }
+            });
+        }).on('error', reject);
+    });
+}
+
+function baixarArquivoComProgresso(url, destinoPath, onProgress) {
+    return new Promise((resolve, reject) => {
+        const fazerDownload = (linkAtual) => {
+            https.get(linkAtual, {
+                headers: { 'User-Agent': 'Advocacia-Studio-Pro-Updater' }
+            }, (res) => {
+                // Segue redirecionamentos da CDN da Amazon/GitHub
+                if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                    return fazerDownload(res.headers.location);
+                }
+                if (res.statusCode !== 200) {
+                    return reject(new Error(`Falha no download: HTTP ${res.statusCode}`));
+                }
+
+                const totalBytes = parseInt(res.headers['content-length'] || '0', 10);
+                let baixadosBytes = 0;
+                let ultimoPctEnviado = -1;
+
+                const fileStream = fs.createWriteStream(destinoPath);
+
+                res.on('data', (chunk) => {
+                    baixadosBytes += chunk.length;
+                    if (totalBytes > 0) {
+                        const pct = Math.min(99, Math.round((baixadosBytes / totalBytes) * 100));
+                        if (pct !== ultimoPctEnviado) {
+                            ultimoPctEnviado = pct;
+                            onProgress(pct);
+                        }
+                    }
+                });
+
+                res.pipe(fileStream);
+
+                fileStream.on('finish', () => {
+                    fileStream.close(() => resolve(destinoPath));
+                });
+
+                fileStream.on('error', (err) => {
+                    try { fs.unlinkSync(destinoPath); } catch (e) {}
+                    reject(err);
+                });
+            }).on('error', reject);
+        };
+
+        fazerDownload(url);
+    });
+}
+
+async function verificarEBaixarAtualizacaoGitHub() {
+    if (baixandoUpdate || instalandoUpdate || caminhoInstaladorBaixado) return { disponivel: false };
 
     try {
-        autoUpdater.autoDownload = true;
-        autoUpdater.autoInstallOnAppQuit = true;
+        const versaoAtual = app.getVersion();
+        const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/latest`;
+        const release = await requisitarJsonGitHub(apiUrl);
 
-        autoUpdater.on('update-available', (info) => {
+        if (!release || !release.tag_name) return { disponivel: false };
+
+        const versaoRemota = String(release.tag_name).replace(/^v/i, '').trim();
+
+        // Verifica se a versão do GitHub é maior que a versão instalada
+        if (compararVersoes(versaoRemota, versaoAtual) <= 0) {
+            return { disponivel: false };
+        }
+
+        // Procura o arquivo .exe nos Assets da Release
+        const assets = Array.isArray(release.assets) ? release.assets : [];
+        const assetExe = assets.find(a => a.name && a.name.toLowerCase().endsWith('.exe') && !a.name.toLowerCase().includes('blockmap'));
+
+        if (!assetExe || !assetExe.browser_download_url) {
+            console.log("[AUTO-UPDATE] Nova release encontrada, mas nenhum arquivo .exe anexado.");
+            return { disponivel: false };
+        }
+
+        baixandoUpdate = true;
+        const pastaTemp = app.getPath('temp');
+        const destinoExe = path.join(pastaTemp, `AdvocaciaStudioPro-Update-${versaoRemota}.exe`);
+
+        if (fs.existsSync(destinoExe)) {
+            try { fs.unlinkSync(destinoExe); } catch (e) {}
+        }
+
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('bot-update-status', {
+                status: 'downloading',
+                versao: versaoRemota,
+                progresso: 1
+            });
+        }
+
+        await baixarArquivoComProgresso(assetExe.browser_download_url, destinoExe, (pct) => {
             if (mainWindow && !mainWindow.isDestroyed()) {
                 mainWindow.webContents.send('bot-update-status', {
                     status: 'downloading',
-                    versao: info ? info.version : '',
-                    progresso: 0
+                    versao: versaoRemota,
+                    progresso: pct
                 });
             }
         });
 
-        autoUpdater.on('download-progress', (progressObj) => {
-            if (mainWindow && !mainWindow.isDestroyed()) {
-                mainWindow.webContents.send('bot-update-status', {
-                    status: 'downloading',
-                    progresso: Math.round(progressObj.percent || 0)
-                });
-            }
-        });
+        caminhoInstaladorBaixado = destinoExe;
+        baixandoUpdate = false;
 
-        autoUpdater.on('update-downloaded', (info) => {
-            if (mainWindow && !mainWindow.isDestroyed()) {
-                mainWindow.webContents.send('bot-update-status', {
-                    status: 'ready',
-                    versao: info ? info.version : '',
-                    progresso: 100
-                });
-            }
-        });
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('bot-update-status', {
+                status: 'ready',
+                versao: versaoRemota,
+                progresso: 100
+            });
+        }
 
-        autoUpdater.on('error', (err) => {
-            console.error("[AUTO-UPDATE ERRO]:", err ? err.message : err);
-        });
+        return { disponivel: true, versao: versaoRemota };
+    } catch (err) {
+        baixandoUpdate = false;
+        console.error("[AUTO-UPDATE AVISO]:", err.message);
+        return { disponivel: false };
+    }
+}
 
-        // Verifica ao abrir e depois a cada 30 minutos
-        autoUpdater.checkForUpdates().catch(() => {});
-        setInterval(() => {
-            if (!instalandoUpdate) {
-                autoUpdater.checkForUpdates().catch(() => {});
-            }
-        }, 30 * 60 * 1000);
-    } catch (e) {}
+function configurarAutoUpdater() {
+    setTimeout(() => {
+        verificarEBaixarAtualizacaoGitHub();
+    }, 3000);
+
+    setInterval(() => {
+        verificarEBaixarAtualizacaoGitHub();
+    }, 15 * 60 * 1000);
 }
 
 async function executarInstalacaoSilenciosaUpdate() {
-    if (!autoUpdater || instalandoUpdate) return false;
+    if (instalandoUpdate || !caminhoInstaladorBaixado || !fs.existsSync(caminhoInstaladorBaixado)) {
+        return false;
+    }
     instalandoUpdate = true;
 
     try {
@@ -703,9 +825,33 @@ async function executarInstalacaoSilenciosaUpdate() {
     } catch (e) {}
 
     setTimeout(() => {
-        // isSilent = true (atualiza sem assistente de telas), isForceRunAfter = true (reabre o app atualizado sozinho)
-        autoUpdater.quitAndInstall(true, true);
+        try {
+            const caminhoExeApp = process.execPath;
+            // Cria um script .bat invisível que instala silenciosamente (/S) e já reabre o app atualizado
+            const batPath = path.join(app.getPath('temp'), 'aplicar_update_advocacia.bat');
+            const conteudoBat = [
+                '@echo off',
+                'timeout /t 2 /nobreak > NUL',
+                `start /wait "" "${caminhoInstaladorBaixado}" /S`,
+                `start "" "${caminhoExeApp}"`,
+                `del "${batPath}"`
+            ].join('\r\n');
+
+            fs.writeFileSync(batPath, conteudoBat, 'utf-8');
+
+            const child = spawn('cmd.exe', ['/c', batPath], {
+                detached: true,
+                stdio: 'ignore',
+                windowsHide: true
+            });
+            child.unref();
+        } catch (errSpawn) {
+            console.error("[ERRO AO EXECUTAR INSTALADOR]:", errSpawn.message);
+        }
+
+        app.quit();
     }, 400);
+
     return true;
 }
 
@@ -726,7 +872,6 @@ function createWindow() {
         autoHideMenuBar: true
     });
 
-    // Impede que cliques acidentais abram janelas externas para o GitHub
     mainWindow.webContents.setWindowOpenHandler(() => {
         return { action: 'deny' };
     });
@@ -883,13 +1028,7 @@ ipcMain.handle('forcar-varredura-nao-lidas', async () => {
 });
 
 ipcMain.handle('verificar-atualizacao-manual', async () => {
-    if (!app.isPackaged || !autoUpdater) return { disponivel: false };
-    try {
-        const res = await autoUpdater.checkForUpdates();
-        return { disponivel: Boolean(res && res.updateInfo) };
-    } catch (e) {
-        return { disponivel: false };
-    }
+    return await verificarEBaixarAtualizacaoGitHub();
 });
 
 ipcMain.handle('instalar-atualizacao-agora', async () => {
