@@ -210,7 +210,117 @@ function atualizarStatusUI(novoStatus) {
 }
 
 // =========================================================================
-// MOTOR DE AUTO-UPDATE DIRETO VIA GITHUB API (SEM TRAVAR EM 0%)
+// PROCESSAMENTO E RESPOSTA SEGURA DE MENSAGENS DO ROBÔ
+// =========================================================================
+async function enviarMensagemSegura(msgObj, chatId, texto) {
+    if (!client) return;
+    try {
+        await client.sendMessage(chatId, texto, { sendSeen: true });
+    } catch (err1) {
+        try {
+            if (msgObj && typeof msgObj.reply === 'function') {
+                await msgObj.reply(texto, chatId, { sendSeen: true });
+            }
+        } catch (e) {}
+    }
+}
+
+function montarTextoEtapa(etapa) {
+    let txt = (etapa.mensagem || '') + "\n\n";
+    (etapa.opcoes || []).forEach(op => {
+        txt += `*${op.gatilho}* - ${op.rotulo}\n`;
+    });
+    return txt.trim();
+}
+
+async function processarMensagemEntrada(msg) {
+    try {
+        if (!msg || msg.fromMe || msg.isStatus || msg.broadcast) return;
+        if (!msg.from || msg.from.includes('@g.us') || msg.from.includes('@newsletter') || msg.from.includes('@broadcast')) return;
+
+        const textoOriginal = String(msg.body || '').trim();
+        if (!textoOriginal) return;
+
+        const config = carregarConfig();
+        const identidade = resolverIdentidadeRapida(msg, config);
+        const remetenteChave = identidade.chaveCliente;
+        const gatilhoDigitado = extrairGatilhoLimpo(textoOriginal);
+
+        // Verifica se o contato está pausado (atendimento humano)
+        const tempoPausa = contatosPausados[remetenteChave] || contatosPausados[msg.from];
+        if (tempoPausa && (Date.now() - tempoPausa < 24 * 60 * 60 * 1000)) {
+            return; // Robô silenciado para este cliente
+        }
+
+        // Atualiza métricas reais
+        if (!config.metricasReais) config.metricasReais = { totalMensagens: 0, contatosAtendidos: [] };
+        config.metricasReais.totalMensagens += 1;
+        if (!config.metricasReais.contatosAtendidos.includes(remetenteChave)) {
+            config.metricasReais.contatosAtendidos.push(remetenteChave);
+        }
+        salvarConfigDisco(config, false);
+
+        // Envia log para a UI em tempo real
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('bot-log', {
+                numero: identidade.telefoneFormatado,
+                nome: identidade.nomeCliente || '',
+                exibicao: identidade.exibicao,
+                msg: textoOriginal,
+                hora: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                metricasReais: {
+                    totalMensagens: config.metricasReais.totalMensagens,
+                    totalContatos: config.metricasReais.contatosAtendidos.length
+                }
+            });
+        }
+
+        const responderCliente = async (txt) => {
+            await enviarMensagemSegura(msg, msg.from, txt);
+        };
+
+        // Tratamento de saudações e menu raiz
+        const saudacoes = ["oi", "olá", "ola", "bom dia", "boa tarde", "boa noite", "menu", "inicio", "início", "ajuda"];
+        if (saudacoes.some(s => gatilhoDigitado === s || gatilhoDigitado.startsWith(s + " "))) {
+            estadosUsuarios[remetenteChave] = 'raiz';
+            await responderCliente(montarTextoEtapa(config.fluxo.raiz));
+            return;
+        }
+
+        const etapaAtualKey = estadosUsuarios[remetenteChave] || 'raiz';
+        const etapaAtual = etapaAtualKey === 'raiz' ? config.fluxo.raiz : (config.fluxo.etapas[etapaAtualKey] || config.fluxo.raiz);
+        const opcaoEscolhida = (etapaAtual.opcoes || []).find(op => String(op.gatilho).trim().toLowerCase() === gatilhoDigitado);
+
+        if (opcaoEscolhida) {
+            if (opcaoEscolhida.tipo === 'humano') {
+                contatosPausados[remetenteChave] = Date.now();
+                delete estadosUsuarios[remetenteChave];
+                emitirPausados();
+                await responderCliente(opcaoEscolhida.resposta || "Um advogado atenderá você em instantes.");
+                return;
+            }
+            if (opcaoEscolhida.tipo === 'submenu') {
+                const dest = opcaoEscolhida.destino || 'raiz';
+                estadosUsuarios[remetenteChave] = dest;
+                const proxEtapa = dest === 'raiz' ? config.fluxo.raiz : config.fluxo.etapas[dest];
+                await responderCliente(montarTextoEtapa(proxEtapa || config.fluxo.raiz));
+                return;
+            }
+            if (opcaoEscolhida.resposta) {
+                await responderCliente(opcaoEscolhida.resposta);
+                return;
+            }
+        }
+
+        // Padrão caso não digite opção válida
+        await responderCliente(montarTextoEtapa(config.fluxo.raiz));
+    } catch (e) {
+        console.error("[ERRO PROCESSAR MSG]:", e.message);
+    }
+}
+
+// =========================================================================
+// MOTOR DE AUTO-UPDATE DIRETO VIA GITHUB API
 // =========================================================================
 function compararVersoes(vNova, vAtual) {
     const limpar = (v) => String(v || '').replace(/^v/i, '').trim().split('.').map(n => parseInt(n, 10) || 0);
@@ -227,9 +337,7 @@ function compararVersoes(vNova, vAtual) {
 
 function requisitarJsonGitHub(url) {
     return new Promise((resolve, reject) => {
-        https.get(url, {
-            headers: { 'User-Agent': 'Advocacia-Studio-Pro-Updater', 'Accept': 'application/vnd.github.v3+json' }
-        }, (res) => {
+        https.get(url, { headers: { 'User-Agent': 'Advocacia-Studio-Pro-Updater', 'Accept': 'application/vnd.github.v3+json' } }, (res) => {
             if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
                 return requisitarJsonGitHub(res.headers.location).then(resolve).catch(reject);
             }
@@ -259,10 +367,7 @@ function baixarArquivoComProgresso(url, destinoPath, onProgress) {
                     baixadosBytes += chunk.length;
                     if (totalBytes > 0) {
                         const pct = Math.min(99, Math.round((baixadosBytes / totalBytes) * 100));
-                        if (pct !== ultimoPct) {
-                            ultimoPct = pct;
-                            onProgress(pct);
-                        }
+                        if (pct !== ultimoPct) { ultimoPct = pct; onProgress(pct); }
                     }
                 });
 
@@ -427,6 +532,11 @@ async function iniciarWhatsApp(forcarReinicio = false) {
             reconectando = true;
             setTimeout(() => { reconectando = false; iniciarWhatsApp(true); }, 3000);
         }
+    });
+
+    // OUVINTE DE MENSAGENS ESSENCIAL RESTAURADO E ATIVO
+    client.on('message', async (msg) => {
+        await processarMensagemEntrada(msg);
     });
 
     try {
