@@ -849,6 +849,18 @@ function configurarAutoUpdater() {
 
 async function executarInstalacaoSilenciosaUpdate() {
     if (instalandoUpdate || !caminhoInstaladorBaixado || !fs.existsSync(caminhoInstaladorBaixado)) return false;
+
+    try {
+        const stat = fs.statSync(caminhoInstaladorBaixado);
+        if (stat.size < 20 * 1024 * 1024) {
+            console.error('[Update] Arquivo baixado muito pequeno/corrompido:', stat.size);
+            caminhoInstaladorBaixado = '';
+            return false;
+        }
+    } catch (e) {
+        return false;
+    }
+
     instalandoUpdate = true;
 
     try {
@@ -867,8 +879,14 @@ async function executarInstalacaoSilenciosaUpdate() {
             const batPath = path.join(app.getPath('temp'), 'aplicar_update.bat');
             const conteudoBat = [
                 '@echo off',
-                'timeout /t 2 /nobreak > NUL',
+                'timeout /t 3 /nobreak > NUL',
+                'taskkill /F /IM "Advocacia Studio Pro.exe" > NUL 2>&1',
+                'taskkill /F /IM "chrome.exe" > NUL 2>&1',
+                'timeout /t 1 /nobreak > NUL',
                 `start /wait "" "${caminhoInstaladorBaixado}" /S`,
+                'if errorlevel 1 (',
+                `    start /wait "" "${caminhoInstaladorBaixado}"`,
+                ')',
                 `start "" "${process.execPath}"`,
                 `del "${batPath}"`
             ].join('\r\n');
