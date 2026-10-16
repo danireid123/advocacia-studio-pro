@@ -28,10 +28,15 @@ const GITHUB_OWNER = 'danireid123';
 const GITHUB_REPO = 'advocacia-studio-pro';
 
 const CONFIG_PATH = path.join(app.getPath('userData'), 'config.json');
-const AUTH_DIR = path.join(app.getPath('userData'), 'wwebjs_auth_session');
+// Nova pasta de sessão limpa (_v2) para eliminar travamentos de sessões antigas no PC do cliente
+const AUTH_DIR = path.join(app.getPath('userData'), 'wwebjs_auth_session_v2');
+const CACHE_DIR = path.join(app.getPath('userData'), 'wwebjs_cache_local');
 
 if (!fs.existsSync(AUTH_DIR)) {
     fs.mkdirSync(AUTH_DIR, { recursive: true });
+}
+if (!fs.existsSync(CACHE_DIR)) {
+    fs.mkdirSync(CACHE_DIR, { recursive: true });
 }
 
 function obterCaminhoIcone() {
@@ -43,12 +48,17 @@ function obterCaminhoIcone() {
 }
 
 function obterCaminhoNavegador() {
+    const progFiles = process.env['PROGRAMFILES'] || 'C:\\Program Files';
+    const progFilesX86 = process.env['PROGRAMFILES(X86)'] || 'C:\\Program Files (x86)';
+    const localAppData = process.env.LOCALAPPDATA || '';
+
     const caminhosWindows = [
-        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-        path.join(process.env.LOCALAPPDATA || '', 'Google\\Chrome\\Application\\chrome.exe'),
-        'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
-        'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe'
+        path.join(progFiles, 'Google\\Chrome\\Application\\chrome.exe'),
+        path.join(progFilesX86, 'Google\\Chrome\\Application\\chrome.exe'),
+        path.join(localAppData, 'Google\\Chrome\\Application\\chrome.exe'),
+        path.join(progFilesX86, 'Microsoft\\Edge\\Application\\msedge.exe'),
+        path.join(progFiles, 'Microsoft\\Edge\\Application\\msedge.exe'),
+        path.join(localAppData, 'Microsoft\\Edge\\Application\\msedge.exe')
     ];
     for (const caminho of caminhosWindows) {
         if (caminho && fs.existsSync(caminho)) return caminho;
@@ -58,9 +68,12 @@ function obterCaminhoNavegador() {
 
 function limparLocksTravados() {
     try {
+        const pastaSessao = path.join(AUTH_DIR, 'session-adv_studio_client');
         const possiveisLocks = [
-            path.join(AUTH_DIR, 'session-adv_studio_client', 'SingletonLock'),
-            path.join(AUTH_DIR, 'session-adv_studio_client', 'lockfile')
+            path.join(pastaSessao, 'SingletonLock'),
+            path.join(pastaSessao, 'lockfile'),
+            path.join(pastaSessao, 'Default', 'SingletonLock'),
+            path.join(pastaSessao, 'Default', 'lockfile')
         ];
         for (const arq of possiveisLocks) {
             if (fs.existsSync(arq)) {
@@ -209,19 +222,65 @@ function atualizarStatusUI(novoStatus) {
     }
 }
 
+function converterHoraParaMinutos(horaStr) {
+    const partes = String(horaStr || '00:00').split(':');
+    return (parseInt(partes[0], 10) || 0) * 60 + (parseInt(partes[1], 10) || 0);
+}
+
+function obterPrefixoHorario(config, remetenteChave) {
+    try {
+        const agenda = config.agenda;
+        if (!agenda) return '';
+
+        const ultimoAviso = avisoForaHorarioRecente[remetenteChave] || 0;
+        if (Date.now() - ultimoAviso < 30 * 60 * 1000) return '';
+
+        const agora = new Date();
+        const diaSemana = String(agora.getDay());
+        const minutosAgora = agora.getHours() * 60 + agora.getMinutes();
+
+        const confDia = agenda[diaSemana];
+        if (!confDia || !confDia.ativo) {
+            avisoForaHorarioRecente[remetenteChave] = Date.now();
+            return (agenda.msg_fora_expediente || '').trim() + '\n\n';
+        }
+
+        const minAbertura = converterHoraParaMinutos(confDia.abertura || '08:00');
+        const minFechamento = converterHoraParaMinutos(confDia.fechamento || '18:00');
+
+        if (minutosAgora < minAbertura || minutosAgora >= minFechamento) {
+            avisoForaHorarioRecente[remetenteChave] = Date.now();
+            return (agenda.msg_fora_expediente || '').trim() + '\n\n';
+        }
+
+        if (agenda.almoco_ativo) {
+            const minAlmocoIni = converterHoraParaMinutos(agenda.almoco_inicio || '12:00');
+            const minAlmocoFim = converterHoraParaMinutos(agenda.almoco_fim || '13:30');
+            if (minutosAgora >= minAlmocoIni && minutosAgora < minAlmocoFim) {
+                avisoForaHorarioRecente[remetenteChave] = Date.now();
+                return (agenda.msg_almoco || '').trim() + '\n\n';
+            }
+        }
+    } catch (e) {}
+    return '';
+}
+
 // =========================================================================
-// PROCESSAMENTO E RESPOSTA SEGURA DE MENSAGENS DO ROBÔ
+// PROCESSAMENTO E RESPOSTA SEGURA DE MENSAGENS DO ROBÔ (CORRIGIDO sendSeen: false)
 // =========================================================================
 async function enviarMensagemSegura(msgObj, chatId, texto) {
-    if (!client) return;
+    if (!client || !texto) return;
     try {
-        await client.sendMessage(chatId, texto, { sendSeen: true });
+        // sendSeen: false evita o bug fatal 'markedUnread' nas versões atuais do WhatsApp Web
+        await client.sendMessage(chatId, texto, { sendSeen: false });
     } catch (err1) {
         try {
             if (msgObj && typeof msgObj.reply === 'function') {
-                await msgObj.reply(texto, chatId, { sendSeen: true });
+                await msgObj.reply(texto, chatId, { sendSeen: false });
             }
-        } catch (e) {}
+        } catch (err2) {
+            console.error('[ERRO ENVIO MSG]:', err2.message);
+        }
     }
 }
 
@@ -233,13 +292,71 @@ function montarTextoEtapa(etapa) {
     return txt.trim();
 }
 
-async function processarMensagemEntrada(msg) {
+function buscarProcessoPorNumero(config, digitosBusca) {
+    if (!config.processos || !Array.isArray(config.processos.lista)) return null;
+    if (!digitosBusca || digitosBusca.length < 5) return null;
+
+    return config.processos.lista.find(p => {
+        const cpfLimpo = apenasNumeros(p.cpf);
+        const numLimpo = apenasNumeros(p.numero);
+        return (cpfLimpo && cpfLimpo === digitosBusca) ||
+               (numLimpo && numLimpo === digitosBusca) ||
+               (cpfLimpo && cpfLimpo.length >= 5 && digitosBusca.includes(cpfLimpo)) ||
+               (numLimpo && numLimpo.length >= 5 && digitosBusca.includes(numLimpo));
+    });
+}
+
+function formatarMensagemProcesso(config, proc, remetenteChave) {
+    const tpls = (config.processos && config.processos.mensagens) || criarConfigPadrao().processos.mensagens;
+    const temResumo = Boolean(proc.temAtualizacao && proc.resumo && proc.resumo.trim());
+
+    if (!proc.consultasPorContato) proc.consultasPorContato = {};
+    const ultimaConsulta = proc.consultasPorContato[remetenteChave];
+    const agoraTexto = new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+
+    let modelo = tpls.msg_sem_atualizacao;
+    if (temResumo) {
+        if (ultimaConsulta && !proc._resetarVistos) {
+            modelo = tpls.msg_ja_visto;
+        } else {
+            modelo = tpls.msg_com_atualizacao;
+        }
+    }
+
+    proc.consultasPorContato[remetenteChave] = agoraTexto;
+    proc._resetarVistos = false;
+    salvarConfigDisco(config, true);
+
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('bot-processos-sync', config);
+    }
+
+    return String(modelo || '')
+        .replace(/\{nome\}/g, proc.nome || 'Cliente')
+        .replace(/\{cpf\}/g, proc.cpf || '-')
+        .replace(/\{processo\}/g, proc.numero || '-')
+        .replace(/\{resumo\}/g, proc.resumo || 'Sem detalhes adicionais.')
+        .replace(/\{data\}/g, proc.dataAtualizacaoTexto || agoraTexto)
+        .replace(/\{ultima_consulta\}/g, ultimaConsulta || agoraTexto);
+}
+
+async function processarMensagemEntrada(msg, ignorarFiltroTempo = false) {
     try {
-        if (!msg || msg.fromMe || msg.isStatus || msg.broadcast) return;
-        if (!msg.from || msg.from.includes('@g.us') || msg.from.includes('@newsletter') || msg.from.includes('@broadcast')) return;
+        if (!msg || msg.fromMe || msg.isStatus || msg.broadcast) return false;
+        if (!msg.from || msg.from.includes('@g.us') || msg.from.includes('@newsletter') || msg.from.includes('@broadcast')) return false;
+
+        // Evita processar a mesma mensagem duas vezes
+        const msgId = (msg.id && msg.id._serialized) ? msg.id._serialized : `${msg.from}_${msg.timestamp}_${msg.body}`;
+        if (mensagensJaProcessadas.has(msgId)) return false;
+        mensagensJaProcessadas.add(msgId);
+
+        // Ignora mensagens antigas anteriores à conexão (exceto na varredura de não lidas)
+        if (!ignorarFiltroTempo && msg.timestamp && momentoConexao > 0 && msg.timestamp < (momentoConexao - 15)) {
+            return false;
+        }
 
         const textoOriginal = String(msg.body || '').trim();
-        if (!textoOriginal) return;
+        if (!textoOriginal) return false;
 
         const config = carregarConfig();
         const identidade = resolverIdentidadeRapida(msg, config);
@@ -249,7 +366,7 @@ async function processarMensagemEntrada(msg) {
         // Verifica se o contato está pausado (atendimento humano)
         const tempoPausa = contatosPausados[remetenteChave] || contatosPausados[msg.from];
         if (tempoPausa && (Date.now() - tempoPausa < 24 * 60 * 60 * 1000)) {
-            return; // Robô silenciado para este cliente
+            return false;
         }
 
         // Atualiza métricas reais
@@ -275,20 +392,39 @@ async function processarMensagemEntrada(msg) {
             });
         }
 
+        const prefixoHorario = obterPrefixoHorario(config, remetenteChave);
         const responderCliente = async (txt) => {
-            await enviarMensagemSegura(msg, msg.from, txt);
+            await enviarMensagemSegura(msg, msg.from, prefixoHorario + txt);
         };
 
-        // Tratamento de saudações e menu raiz
+        // 1. Atalho universal "0" ou Saudações -> Menu Principal
         const saudacoes = ["oi", "olá", "ola", "bom dia", "boa tarde", "boa noite", "menu", "inicio", "início", "ajuda"];
-        if (saudacoes.some(s => gatilhoDigitado === s || gatilhoDigitado.startsWith(s + " "))) {
+        if (gatilhoDigitado === "0" || saudacoes.some(s => gatilhoDigitado === s || gatilhoDigitado.startsWith(s + " "))) {
             estadosUsuarios[remetenteChave] = 'raiz';
             await responderCliente(montarTextoEtapa(config.fluxo.raiz));
-            return;
+            return true;
         }
 
-        const etapaAtualKey = estadosUsuarios[remetenteChave] || 'raiz';
-        const etapaAtual = etapaAtualKey === 'raiz' ? config.fluxo.raiz : (config.fluxo.etapas[etapaAtualKey] || config.fluxo.raiz);
+        const estadoAtual = estadosUsuarios[remetenteChave] || 'raiz';
+
+        // 2. Se o cliente está na etapa de consulta de processo por CPF/CNJ
+        if (estadoAtual === 'aguardando_processo') {
+            const digitos = apenasNumeros(textoOriginal);
+            const procAchado = buscarProcessoPorNumero(config, digitos);
+            if (procAchado) {
+                estadosUsuarios[remetenteChave] = 'raiz';
+                const textoProc = formatarMensagemProcesso(config, procAchado, remetenteChave);
+                await responderCliente(textoProc);
+                return true;
+            } else {
+                const msgNaoEncontrado = (config.processos && config.processos.mensagens && config.processos.mensagens.msg_nao_encontrado) || criarConfigPadrao().processos.mensagens.msg_nao_encontrado;
+                await responderCliente(msgNaoEncontrado);
+                return true;
+            }
+        }
+
+        // 3. Verifica opções do menu atual
+        const etapaAtual = estadoAtual === 'raiz' ? config.fluxo.raiz : (config.fluxo.etapas[estadoAtual] || config.fluxo.raiz);
         const opcaoEscolhida = (etapaAtual.opcoes || []).find(op => String(op.gatilho).trim().toLowerCase() === gatilhoDigitado);
 
         if (opcaoEscolhida) {
@@ -297,26 +433,68 @@ async function processarMensagemEntrada(msg) {
                 delete estadosUsuarios[remetenteChave];
                 emitirPausados();
                 await responderCliente(opcaoEscolhida.resposta || "Um advogado atenderá você em instantes.");
-                return;
+                return true;
+            }
+            if (opcaoEscolhida.tipo === 'processo') {
+                estadosUsuarios[remetenteChave] = 'aguardando_processo';
+                await responderCliente(opcaoEscolhida.resposta || "Por favor, digite apenas o seu *CPF* ou o *Número do Processo*:");
+                return true;
             }
             if (opcaoEscolhida.tipo === 'submenu') {
                 const dest = opcaoEscolhida.destino || 'raiz';
                 estadosUsuarios[remetenteChave] = dest;
                 const proxEtapa = dest === 'raiz' ? config.fluxo.raiz : config.fluxo.etapas[dest];
                 await responderCliente(montarTextoEtapa(proxEtapa || config.fluxo.raiz));
-                return;
+                return true;
             }
             if (opcaoEscolhida.resposta) {
                 await responderCliente(opcaoEscolhida.resposta);
-                return;
+                return true;
             }
         }
 
-        // Padrão caso não digite opção válida
+        // 4. Se digitou um CPF/Processo diretamente mesmo sem estar na etapa
+        const digitosDiretos = apenasNumeros(textoOriginal);
+        if (digitosDiretos.length >= 9) {
+            const procDireto = buscarProcessoPorNumero(config, digitosDiretos);
+            if (procDireto) {
+                const textoProc = formatarMensagemProcesso(config, procDireto, remetenteChave);
+                await responderCliente(textoProc);
+                return true;
+            }
+        }
+
+        // 5. Fallback: envia o menu principal
+        estadosUsuarios[remetenteChave] = 'raiz';
         await responderCliente(montarTextoEtapa(config.fluxo.raiz));
+        return true;
     } catch (e) {
         console.error("[ERRO PROCESSAR MSG]:", e.message);
+        return false;
     }
+}
+
+async function varrerMensagensNaoLidas() {
+    if (!client || statusAtualBot !== 'ready' || varrendoNaoLidas) return 0;
+    varrendoNaoLidas = true;
+    let respondidas = 0;
+    try {
+        const chats = await client.getChats();
+        for (const chat of chats) {
+            if (chat.unreadCount > 0 && !chat.isGroup) {
+                const msgs = await chat.fetchMessages({ limit: 5 });
+                if (msgs && msgs.length > 0) {
+                    const ultimaMsg = msgs[msgs.length - 1];
+                    if (ultimaMsg && !ultimaMsg.fromMe) {
+                        const ok = await processarMensagemEntrada(ultimaMsg, true);
+                        if (ok) respondidas++;
+                    }
+                }
+            }
+        }
+    } catch (e) {}
+    varrendoNaoLidas = false;
+    return respondidas;
 }
 
 // =========================================================================
@@ -481,6 +659,12 @@ app.whenReady().then(() => {
     configurarAutoUpdater();
 });
 
+app.on('before-quit', async () => {
+    if (client) {
+        try { await client.destroy(); } catch (e) {}
+    }
+});
+
 async function iniciarWhatsApp(forcarReinicio = false) {
     if (iniciandoBot && !forcarReinicio) return;
     iniciandoBot = true;
@@ -492,6 +676,7 @@ async function iniciarWhatsApp(forcarReinicio = false) {
     }
     limparLocksTravados();
 
+    // Sem --single-process para não travar a sincronização no Windows!
     const puppeteerConfig = {
         headless: true,
         takeoverOnConflict: true,
@@ -502,9 +687,11 @@ async function iniciarWhatsApp(forcarReinicio = false) {
             '--disable-accelerated-2d-canvas',
             '--disable-gpu',
             '--no-first-run',
-            '--no-zygote',
-            '--single-process',
-            '--disable-extensions'
+            '--disable-extensions',
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-renderer-backgrounding',
+            '--disable-features=CalculateNativeWinOcclusion'
         ]
     };
 
@@ -518,6 +705,10 @@ async function iniciarWhatsApp(forcarReinicio = false) {
             clientId: "adv_studio_client", 
             dataPath: AUTH_DIR 
         }),
+        // Desativa escrita de cache na pasta raiz do sistema para não travar após o QR Code
+        webVersionCache: {
+            type: 'none'
+        },
         puppeteer: puppeteerConfig
     });
 
@@ -543,6 +734,11 @@ async function iniciarWhatsApp(forcarReinicio = false) {
         ultimoQrDataUrl = '';
         momentoConexao = Math.floor(Date.now() / 1000);
         atualizarStatusUI('ready');
+
+        const cfg = carregarConfig();
+        if (cfg.varredura_automatica_inicio) {
+            setTimeout(() => { varrerMensagensNaoLidas(); }, 3000);
+        }
     });
 
     client.on('disconnected', () => {
@@ -555,8 +751,9 @@ async function iniciarWhatsApp(forcarReinicio = false) {
         }
     });
 
+    // Escuta todas as mensagens recebidas de clientes
     client.on('message', async (msg) => {
-        await processarMensagemEntrada(msg);
+        await processarMensagemEntrada(msg, false);
     });
 
     try {
@@ -572,6 +769,7 @@ ipcMain.handle('obter-versao-app', () => app.getVersion());
 ipcMain.handle('obter-estado-conexao', () => ({ status: statusAtualBot, qr: ultimoQrDataUrl }));
 ipcMain.handle('salvar-config', (e, nc) => { salvarConfigDisco(nc, true); return true; });
 ipcMain.handle('reiniciar-bot', () => { iniciarWhatsApp(true); return true; });
+ipcMain.handle('forcar-varredura-nao-lidas', async () => await varrerMensagensNaoLidas());
 ipcMain.handle('verificar-atualizacao-manual', async () => await verificarEBaixarAtualizacaoGitHub());
 ipcMain.handle('instalar-atualizacao-agora', async () => await executarInstalacaoSilenciosaUpdate());
 ipcMain.handle('obter-pausados', () => contatosPausados);
