@@ -742,9 +742,8 @@ async function varrerMensagensNaoLidas(clienteEspecifico = null) {
     const config = carregarConfig();
     const listaIgnorados = carregarContatosIgnorados();
     const agoraMs = Date.now();
-    const primeiraConexao = config.primeiraConexaoTimestamp || momentoConexao;
     const corte24h = Math.floor((agoraMs - MAX_AGE_MS) / 1000);
-    const janelaCorteMinima = Math.max(corte24h, primeiraConexao > 0 ? primeiraConexao : (momentoConexao - 86400));
+    const janelaCorteMinima = corte24h;
 
     let analisadas = 0;
     let respondidas = 0;
@@ -988,10 +987,9 @@ async function executarInstalacaoSilenciosaUpdate() {
             const batPath = path.join(app.getPath('temp'), 'aplicar_update.bat');
             const conteudoBat = [
                 '@echo off',
-                'timeout /t 3 /nobreak > NUL',
+                'timeout /t 1 /nobreak > NUL',
                 'taskkill /F /IM "Advocacia Studio Pro.exe" > NUL 2>&1',
                 'taskkill /F /IM "chrome.exe" > NUL 2>&1',
-                'timeout /t 1 /nobreak > NUL',
                 `start /wait "" "${caminhoInstaladorBaixado}" /S`,
                 'if errorlevel 1 (',
                 `    start /wait "" "${caminhoInstaladorBaixado}"`,
@@ -1005,7 +1003,7 @@ async function executarInstalacaoSilenciosaUpdate() {
             child.unref();
         } catch (e) {}
         app.quit();
-    }, 400);
+    }, 200);
     return true;
 }
 
@@ -1015,7 +1013,7 @@ function createWindow() {
         height: 900,
         minWidth: 1100,
         minHeight: 720,
-        title: 'Advocacia Studio Pro • Beta 0.8 (v1.8.1)',
+        title: 'Advocacia Studio Pro • Beta 0.8 (v1.8.2)',
         icon: obterIconeNativo(),
         backgroundColor: '#0b0f17',
         webPreferences: {
@@ -1113,12 +1111,9 @@ async function iniciarWhatsApp(forcarReinicio = false) {
             '--disable-dev-shm-usage',
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
-            '--no-zygote',
             '--disable-gpu',
-            '--disable-software-rasterizer',
             '--disable-extensions',
             '--mute-audio',
-            '--js-flags="--max-old-space-size=256"',
             '--no-default-browser-check',
             '--disable-sync',
             '--disable-translate',
@@ -1126,8 +1121,7 @@ async function iniciarWhatsApp(forcarReinicio = false) {
             '--blink-settings=imagesEnabled=false',
             '--disable-background-timer-throttling',
             '--disable-backgrounding-occluded-windows',
-            '--disable-renderer-backgrounding',
-            '--disable-features=CalculateNativeWinOcclusion,TranslateUI'
+            '--disable-renderer-backgrounding'
         ]
     };
 
@@ -1149,13 +1143,44 @@ async function iniciarWhatsApp(forcarReinicio = false) {
         puppeteer: puppeteerConfig
     });
 
+    let watchdog99Timer = null;
+
     client.on('loading_screen', (percent, message) => {
         atualizarStatusUI('authenticated', `Carregando conversas (${percent || 0}%): ${message || 'Sincronizando WhatsApp...'}`);
+
+        // WATCHDOG ANTI-TRAVAMENTO 99%:
+        // Evita o congelamento no estágio final de carregamento avaliando se a tela principal já renderizou
+        if (percent >= 90) {
+            clearTimeout(watchdog99Timer);
+            watchdog99Timer = setTimeout(async () => {
+                if (statusAtualBot !== 'ready' && client && client.pupPage) {
+                    try {
+                        const synced = await client.pupPage.evaluate(() => {
+                            try {
+                                const pane = document.querySelector('#pane-side') || document.querySelector('[data-testid="chat-list"]');
+                                const socket = window.require && window.require('WAWebSocketModel')?.Socket;
+                                if (pane || (socket && socket.state === 'CONNECTED')) {
+                                    if (typeof window.onAppStateHasSyncedEvent === 'function') {
+                                        window.onAppStateHasSyncedEvent();
+                                        return true;
+                                    }
+                                }
+                            } catch (e) {}
+                            return false;
+                        });
+                        if (synced) {
+                            atualizarStatusUI('authenticated', 'Finalizando sincronização rápida...');
+                        }
+                    } catch (e) {}
+                }
+            }, 3500);
+        }
     });
 
     client.on('qr', async (qr) => {
         iniciandoBot = false;
         tentativasReconexao = 0;
+        clearTimeout(watchdog99Timer);
         try {
             ultimoQrDataUrl = await qrcode.toDataURL(qr);
             atualizarStatusUI('waiting_qr', 'QR Code gerado! Aguardando leitura pelo celular...');
@@ -1173,6 +1198,7 @@ async function iniciarWhatsApp(forcarReinicio = false) {
 
     client.on('auth_failure', () => {
         iniciandoBot = false;
+        clearTimeout(watchdog99Timer);
         atualizarStatusUI('disconnected', 'Falha de autenticação. Reiniciando sessão...');
         agendarReconexaoBackoff();
     });
@@ -1182,6 +1208,7 @@ async function iniciarWhatsApp(forcarReinicio = false) {
         reconectando = false;
         tentativasReconexao = 0;
         ultimoQrDataUrl = '';
+        clearTimeout(watchdog99Timer);
         momentoConexao = Math.floor(Date.now() / 1000);
 
         const cfg = carregarConfig();

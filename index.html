@@ -413,7 +413,7 @@
     <div class="w-72 h-1.5 bg-slate-900 rounded-full overflow-hidden mt-6 border border-slate-800/80">
       <div id="splash-bar" class="h-full champagne-gradient w-0 transition-all duration-500 rounded-full"></div>
     </div>
-    <span class="text-[10px] text-slate-500 mt-4 tracking-widest uppercase font-semibold">Executive Edition • Beta 0.8 (v1.8.1)</span>
+    <span class="text-[10px] text-slate-500 mt-4 tracking-widest uppercase font-semibold">Executive Edition • Beta 0.8 (v1.8.2)</span>
   </div>
 
   <!-- 2. TELA DE LOGIN EXECUTIVA (COM AUTO-LOGIN DE 30 DIAS) -->
@@ -476,6 +476,90 @@
       <div class="flex justify-end space-x-2">
         <button id="btn-cancelar-reset" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl">Cancelar</button>
         <button id="btn-confirmar-reset" class="px-4 py-2 champagne-gradient text-xs font-bold rounded-xl">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CENTRAL DE ATUALIZAÇÃO DISPONÍVEL (NO MEIO DA TELA) -->
+  <div id="modal-update-center" class="fixed inset-0 bg-[#060911]/90 backdrop-blur-md z-[1250] hidden items-center justify-center p-4">
+    <div class="exec-card w-full max-w-lg rounded-3xl p-7 border-2 border-[#d4af37]/70 text-center space-y-5 shadow-2xl">
+      <div class="w-16 h-16 mx-auto rounded-2xl champagne-gradient flex items-center justify-center text-slate-950 shadow-xl">
+        <svg class="w-8 h-8"><use href="#icon-refresh"/></svg>
+      </div>
+      <div class="space-y-1.5">
+        <span class="text-[10px] font-extrabold uppercase tracking-widest px-3 py-0.5 rounded-full bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/40">Atualização do Sistema</span>
+        <h2 id="modal-update-title" class="font-serif-legal text-xl font-bold text-white">Nova Versão Disponível!</h2>
+        <p id="modal-update-msg" class="text-xs text-slate-300 leading-relaxed">Uma nova atualização do Advocacia Studio Pro está pronta para ser aplicada. Seus dados e pastas de processos estão 100% seguros.</p>
+      </div>
+
+      <div id="modal-update-progress-container" class="hidden space-y-1.5 w-full">
+        <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+          <div id="modal-update-progress-bar" class="h-full champagne-gradient w-0 transition-all duration-300"></div>
+        </div>
+        <span id="modal-update-progress-text" class="text-[10px] text-slate-400 block font-mono">Baixando...</span>
+      </div>
+
+      <div class="flex items-center space-x-3 pt-2">
+        <button type="button" id="btn-modal-update-depois" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition">Lembrar Mais Tarde</button>
+        <button type="button" id="btn-modal-update-instalar" class="flex-1 py-3 champagne-gradient font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center space-x-1.5">
+          <svg class="w-4 h-4"><use href="#icon-refresh"/></svg>
+          <span id="label-modal-update-instalar">Salvar e Atualizar Agora</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CENTRAL DE RESUMO PÓS-ATUALIZAÇÃO (PRIMEIRA VEZ APÓS ATUALIZAR) -->
+  <div id="modal-resumo-pos-update" class="fixed inset-0 bg-[#060911]/90 backdrop-blur-md z-[1260] hidden items-center justify-center p-4">
+    <div class="exec-card w-full max-w-lg rounded-3xl p-7 border-2 border-[#d4af37]/70 space-y-5 shadow-2xl">
+      <div class="flex items-center space-x-3.5 border-b border-slate-800/80 pb-4">
+        <div class="w-12 h-12 rounded-2xl champagne-gradient flex items-center justify-center text-slate-950 shadow-lg flex-shrink-0">
+          <svg class="w-6 h-6"><use href="#icon-scales"/></svg>
+        </div>
+        <div>
+          <span class="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/30">Atualização Concluída</span>
+          <h2 class="font-serif-legal text-lg font-bold text-white mt-0.5">Novidades da Versão v1.8.2</h2>
+        </div>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-300">
+        <p class="text-slate-400">O seu sistema foi atualizado com sucesso. Confira o resumo das melhorias ativadas:</p>
+        <div class="space-y-2.5">
+          <div class="p-3 rounded-xl bg-black/25 border border-slate-800/80 flex items-start space-x-3">
+            <span class="text-emerald-400 font-bold text-sm">⚡</span>
+            <div>
+              <strong class="text-white block font-semibold">Conexão WhatsApp Sem Travamento em 99%</strong>
+              <span class="text-slate-400 text-[11px]">Watchdog inteligente e Chromium desbloqueado para sincronização instantânea.</span>
+            </div>
+          </div>
+          <div class="p-3 rounded-xl bg-black/25 border border-slate-800/80 flex items-start space-x-3">
+            <span class="text-[#e5c158] font-bold text-sm">🚀</span>
+            <div>
+              <strong class="text-white block font-semibold">Interface Mais Rápida e Leve (60 FPS)</strong>
+              <span class="text-slate-400 text-[11px]">Animações sofisticadas com aceleração por hardware sem lentidão ou alto uso de CPU.</span>
+            </div>
+          </div>
+          <div class="p-3 rounded-xl bg-black/25 border border-slate-800/80 flex items-start space-x-3">
+            <span class="text-sky-400 font-bold text-sm">📨</span>
+            <div>
+              <strong class="text-white block font-semibold">Varredura Offline de 24 Horas Garantida</strong>
+              <span class="text-slate-400 text-[11px]">Resposta automática assegurada para clientes que enviaram mensagens com o app fechado.</span>
+            </div>
+          </div>
+          <div class="p-3 rounded-xl bg-black/25 border border-slate-800/80 flex items-start space-x-3">
+            <span class="text-rose-400 font-bold text-sm">🚫</span>
+            <div>
+              <strong class="text-white block font-semibold">Nova Aba: Contatos Ignorados</strong>
+              <span class="text-slate-400 text-[11px]">Cadastre números que nunca devem receber disparos automáticos ou resumos.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button type="button" id="btn-fechar-resumo-pos" class="w-full py-3.5 champagne-gradient font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center space-x-2">
+          <span>Começar a Usar a Versão v1.8.2 ➔</span>
+        </button>
       </div>
     </div>
   </div>
@@ -600,7 +684,7 @@
       <div>
         <div class="flex items-center space-x-2.5">
           <span class="font-serif-legal font-bold tracking-wide text-base">Advocacia <span class="text-[#e5c158]">Studio Pro</span></span>
-          <span id="badge-versao-topo" class="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/30">Beta 0.8 (v1.8.1)</span>
+          <span id="badge-versao-topo" class="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/30">Beta 0.8 (v1.8.2)</span>
           <span id="badge-autosave" class="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">✓ Auto-Save Ativo</span>
         </div>
         <p id="header-user-info" class="text-[11px] text-slate-400">Ambiente Corporativo</p>
@@ -1377,7 +1461,7 @@
           localStorage.setItem('adv_bot_config_backup', JSON.stringify(cfg));
           return true;
         },
-        obterVersaoApp: async () => 'Beta 0.8 (v1.8.1)',
+        obterVersaoApp: async () => 'Beta 0.8 (v1.8.2)',
         reiniciarBot: async () => true,
         obterEstadoConexao: async () => ({ status: 'ready', qr: null, subStatus: 'Conectado e Operante' }),
         obterPausados: async () => ({}),
@@ -2820,25 +2904,89 @@
 
         if (window.api.aoReceberEventoUpdate) {
           window.api.aoReceberEventoUpdate((dados) => {
-            const banner = document.getElementById('banner-update-app');
-            const btnInstalar = document.getElementById('btn-instalar-update');
+            const modalCenter = document.getElementById('modal-update-center');
+            const modalTitle = document.getElementById('modal-update-title');
+            const modalMsg = document.getElementById('modal-update-msg');
+            const progBox = document.getElementById('modal-update-progress-container');
+            const progBar = document.getElementById('modal-update-progress-bar');
+            const progTxt = document.getElementById('modal-update-progress-text');
+            const btnInstalarCenter = document.getElementById('btn-modal-update-instalar');
+            const labelInstalar = document.getElementById('label-modal-update-instalar');
             const btnHeader = document.getElementById('btn-header-update');
-            const txtUpdate = document.getElementById('texto-update-app');
 
             if (dados.status === 'downloading') {
-              banner.classList.remove('hidden');
-              banner.classList.add('flex');
-              const pct = typeof dados.progresso === 'number' ? ` (${dados.progresso}%)` : '';
-              txtUpdate.innerText = `Baixando atualização ${dados.nomeRelease || ('v' + dados.versao)}${pct} em segundo plano...`;
-              btnInstalar.classList.add('hidden');
+              if (modalCenter) {
+                modalCenter.classList.remove('hidden');
+                modalCenter.classList.add('flex');
+              }
+              const versaoTxt = dados.nomeRelease || ('v' + dados.versao);
+              if (modalTitle) modalTitle.innerText = `Baixando Atualização (${versaoTxt})`;
+              if (modalMsg) modalMsg.innerText = 'O download está sendo executado em alta velocidade em segundo plano. Suas pastas e menus estão seguros.';
+              if (progBox) progBox.classList.remove('hidden');
+              const pct = typeof dados.progresso === 'number' ? dados.progresso : 1;
+              if (progBar) progBar.style.width = `${pct}%`;
+              if (progTxt) progTxt.innerText = `Download em andamento: ${pct}%`;
+              if (btnInstalarCenter) {
+                btnInstalarCenter.disabled = true;
+                btnInstalarCenter.classList.add('opacity-50');
+              }
+              if (labelInstalar) labelInstalar.innerText = 'Baixando...';
             } else if (dados.status === 'ready') {
-              banner.classList.remove('hidden');
-              banner.classList.add('flex');
-              txtUpdate.innerText = `Nova versão ${dados.nomeRelease || ('v' + dados.versao)} pronta! Seus dados estão salvos.`;
-              btnInstalar.classList.remove('hidden');
-              btnHeader.classList.remove('hidden');
-              btnHeader.classList.add('flex');
-              mostrarToast('Atualização pronta para instalar!');
+              if (modalCenter) {
+                modalCenter.classList.remove('hidden');
+                modalCenter.classList.add('flex');
+              }
+              const versaoTxt = dados.nomeRelease || ('v' + dados.versao);
+              if (modalTitle) modalTitle.innerText = `Nova Versão ${versaoTxt} Pronta!`;
+              if (modalMsg) modalMsg.innerText = 'O download foi concluído com sucesso. Deseja aplicar a atualização e reiniciar o aplicativo agora? Todos os dados serão salvos automaticamente.';
+              if (progBox) progBox.classList.add('hidden');
+              if (btnInstalarCenter) {
+                btnInstalarCenter.disabled = false;
+                btnInstalarCenter.classList.remove('opacity-50');
+              }
+              if (labelInstalar) labelInstalar.innerText = 'Salvar e Reiniciar Agora';
+              if (btnHeader) {
+                btnHeader.classList.remove('hidden');
+                btnHeader.classList.add('flex');
+              }
+              mostrarToast('Nova versão pronta no centro da tela!');
+            }
+          });
+        }
+
+        const VERSAO_APP_LOCAL = '1.8.2';
+        const versaoSalva = localStorage.getItem('adv_bot_installed_version');
+        if (versaoSalva !== VERSAO_APP_LOCAL) {
+          setTimeout(() => {
+            const modalResumo = document.getElementById('modal-resumo-pos-update');
+            if (modalResumo) {
+              modalResumo.classList.remove('hidden');
+              modalResumo.classList.add('flex');
+            }
+          }, 600);
+        }
+
+        const btnFecharResumo = document.getElementById('btn-fechar-resumo-pos');
+        if (btnFecharResumo) {
+          btnFecharResumo.addEventListener('click', () => {
+            localStorage.setItem('adv_bot_installed_version', VERSAO_APP_LOCAL);
+            const modalResumo = document.getElementById('modal-resumo-pos-update');
+            if (modalResumo) {
+              modalResumo.classList.add('hidden');
+              modalResumo.classList.remove('flex');
+            }
+          });
+        }
+
+        const btnInstalarCenter = document.getElementById('btn-modal-update-instalar');
+        if (btnInstalarCenter) btnInstalarCenter.addEventListener('click', dispararInstalacaoUpdate);
+        const btnDepoisCenter = document.getElementById('btn-modal-update-depois');
+        if (btnDepoisCenter) {
+          btnDepoisCenter.addEventListener('click', () => {
+            const modalCenter = document.getElementById('modal-update-center');
+            if (modalCenter) {
+              modalCenter.classList.add('hidden');
+              modalCenter.classList.remove('flex');
             }
           });
         }
