@@ -492,14 +492,33 @@ async function iniciarWhatsApp(forcarReinicio = false) {
     }
     limparLocksTravados();
 
+    const puppeteerConfig = {
+        headless: true,
+        takeoverOnConflict: true,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--disable-gpu',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-extensions'
+        ]
+    };
+
+    const browserPath = obterCaminhoNavegador();
+    if (browserPath) {
+        puppeteerConfig.executablePath = browserPath;
+    }
+
     client = new Client({
-        authStrategy: new LocalAuth({ clientId: "adv_studio_client", dataPath: AUTH_DIR }),
-        puppeteer: {
-            headless: true,
-            takeoverOnConflict: true,
-            executablePath: obterCaminhoNavegador(),
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
-        }
+        authStrategy: new LocalAuth({ 
+            clientId: "adv_studio_client", 
+            dataPath: AUTH_DIR 
+        }),
+        puppeteer: puppeteerConfig
     });
 
     client.on('qr', async (qr) => {
@@ -507,7 +526,9 @@ async function iniciarWhatsApp(forcarReinicio = false) {
         try {
             ultimoQrDataUrl = await qrcode.toDataURL(qr);
             atualizarStatusUI('waiting_qr');
-            if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('bot-qr', ultimoQrDataUrl);
+            if (mainWindow && !mainWindow.isDestroyed()) {
+                mainWindow.webContents.send('bot-qr', ultimoQrDataUrl);
+            }
         } catch (e) {}
     });
 
@@ -534,7 +555,6 @@ async function iniciarWhatsApp(forcarReinicio = false) {
         }
     });
 
-    // OUVINTE DE MENSAGENS ESSENCIAL RESTAURADO E ATIVO
     client.on('message', async (msg) => {
         await processarMensagemEntrada(msg);
     });
