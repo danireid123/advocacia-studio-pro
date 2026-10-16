@@ -216,9 +216,9 @@
       position: fixed;
       z-index: 1000;
       transition: top 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
-                  left 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
-                  bottom 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
-                  right 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+                left 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
+                bottom 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
+                right 0.45s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     #tour-backdrop {
@@ -341,7 +341,7 @@
     </symbol>
   </svg>
 
-  <!-- 1. SPLASH SCREEN -->
+  <!-- 1. SPLASH SCREEN COM GARANTIA DE ABERTURA -->
   <div id="splash-screen" class="fixed inset-0 bg-[#080b12] z-[1200] flex flex-col items-center justify-center transition-opacity duration-700">
     <div class="relative mb-7">
       <div class="w-24 h-24 rounded-3xl champagne-gradient flex items-center justify-center text-slate-950 shadow-2xl">
@@ -415,11 +415,7 @@
     </div>
   </div>
 
-<<<<<<< HEAD
   <!-- 3. ENTRADA DO LEXBOT (GRANDE E DESTACADO) -->
-=======
-  <!-- 3. ENTRADA DO LEXBOT (MAIOR E MAIS VISÍVEL) -->
->>>>>>> 61c3c0a
   <div id="lexbot-center-modal" class="fixed inset-0 bg-[#060911]/90 backdrop-blur-md z-[9999] hidden items-center justify-center p-4">
     <div class="exec-card w-full max-w-md rounded-3xl p-8 border-2 border-[#d4af37]/60 text-center space-y-5 mascot-center-entry shadow-2xl">
       <div class="w-36 h-36 mx-auto mascot-float flex items-center justify-center bg-[#111827] rounded-3xl border-2 border-[#d4af37]/50 p-3 shadow-inner">
@@ -451,7 +447,7 @@
 
   <div id="tour-backdrop"></div>
 
-  <!-- 4. LEXBOT FLUTUANTE (MEDALHÃO GRANDE) -->
+  <!-- 4. LEXBOT FLUTUANTE -->
   <div id="lexbot-wrapper" style="bottom: 24px; right: 24px;" class="flex items-center pointer-events-none">
     <div id="lexbot-bubble" class="pointer-events-auto mr-3 w-88 max-w-[380px] exec-card border border-[#d4af37]/40 rounded-2xl p-5 hidden relative">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-2.5">
@@ -487,11 +483,7 @@
           <polygon points="56,84 64,84 67,104 60,109 53,104" fill="#d4af37"/>
         </svg>
       </div>
-<<<<<<< HEAD
       <span class="-mt-2 px-3 py-0.5 rounded-full champagne-gradient text-[10px] font-extrabold uppercase tracking-wider shadow-lg border border-white/20">
-=======
-      <span class=" -mt-2 px-3 py-0.5 rounded-full champagne-gradient text-[10px] font-extrabold uppercase tracking-wider shadow-lg border border-white/20">
->>>>>>> 61c3c0a
         Ajuda LexBot
       </span>
     </button>
@@ -543,14 +535,7 @@
       <div>
         <div class="flex items-center space-x-2.5">
           <span class="font-serif-legal font-bold tracking-wide text-base">Advocacia <span class="text-[#e5c158]">Studio Pro</span></span>
-<<<<<<< HEAD
           <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/30">v1.0.4</span>
-=======
-          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">v1.0.2</span>
-          <span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center">
-            <svg class="w-3 h-3 mr-1"><use href="#icon-shield"/></svg> Anti-Grupos Ativo
-          </span>
->>>>>>> 61c3c0a
           <span id="badge-autosave" class="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-slate-800/80 text-slate-400">✓ Salvo</span>
         </div>
         <p id="header-user-info" class="text-[11px] text-slate-400">Ambiente Corporativo</p>
@@ -1045,7 +1030,7 @@
           </div>
         </div>
 
-        <!-- ================= ABA 4: ATENDIMENTO HUMANO (FILA DO ADVOGADO) ================= -->
+        <!-- ================= ABA 4: ATENDIMENTO HUMANO ================= -->
         <div id="aba-pausados" class="hidden space-y-5">
           <div id="tour-pausados-card" class="exec-card p-6 rounded-2xl space-y-4">
             <div class="border-b border-slate-800/80 pb-3">
@@ -1133,7 +1118,7 @@
         fluxo: {
           raiz: {
             titulo: "Menu Principal (Boas-Vindas)",
-            mensagem: "⚖️ *Escritório de Advocacia*\\n\\nOlá! Seja muito bem-vindo(a) ao nosso atendimento digital.\\n\\nComo podemos auxiliar você hoje?",
+            mensagem: "⚖️ *Escritório de Advocacia*\n\nOlá! Seja muito bem-vindo(a) ao nosso atendimento digital.\n\nComo podemos auxiliar você hoje?",
             opcoes: [
               { gatilho: "1", rotulo: "Consultar Andamento de Processo", tipo: "processo", destino: "", resposta: "Perfeito! Por gentileza, digite apenas o seu *CPF* ou o *Número do Processo* para localizarmos sua pasta:" },
               { gatilho: "2", rotulo: "Iniciar Nova Consulta Jurídica", tipo: "submenu", destino: "areas", resposta: "" },
@@ -1143,7 +1128,7 @@
           etapas: {
             "areas": {
               titulo: "Submenu: Especialidades",
-              mensagem: "*Nova Consulta Jurídica*\\n\\nSelecione a área correspondente ao seu caso:",
+              mensagem: "*Nova Consulta Jurídica*\n\nSelecione a área correspondente ao seu caso:",
               opcoes: [
                 { gatilho: "1", rotulo: "Direito Cível, Família ou Contratos", tipo: "texto", destino: "", resposta: "Compreendido. Envie um breve resumo do ocorrido para análise prévia do advogado." },
                 { gatilho: "0", rotulo: "Voltar ao Menu Inicial", tipo: "submenu", destino: "raiz", resposta: "" }
@@ -1304,17 +1289,22 @@
       const bar = document.getElementById('splash-bar');
       const status = document.getElementById('splash-status');
       
-      setTimeout(() => { bar.style.width = '45%'; status.innerText = 'Carregando módulos...'; }, 200);
-      setTimeout(() => { bar.style.width = '85%'; status.innerText = 'Iniciando WhatsApp...'; }, 500);
+      setTimeout(() => { bar.style.width = '60%'; status.innerText = 'Carregando módulos...'; }, 200);
+      setTimeout(() => { bar.style.width = '90%'; status.innerText = 'Iniciando ambiente seguro...'; }, 700);
+      
+      // Garantia absoluta de 1.2 segundos para fechar o splash e nunca travar em loop
       setTimeout(() => {
         bar.style.width = '100%';
         const splash = document.getElementById('splash-screen');
-        splash.style.opacity = '0';
-        setTimeout(() => {
-          splash.classList.add('hidden');
-          verificarEstadoLogin();
-        }, 300);
-      }, 800);
+        if (splash) {
+          splash.style.opacity = '0';
+          setTimeout(() => {
+            splash.classList.add('hidden');
+            splash.style.display = 'none';
+            verificarEstadoLogin();
+          }, 300);
+        }
+      }, 1200);
     }
 
     function verificarEstadoLogin() {
@@ -2184,7 +2174,6 @@
       if (window.api && window.api.reiniciarBot) await window.api.reiniciarBot();
     });
 
-<<<<<<< HEAD
     const dispararInstalacaoUpdate = async () => {
       const txtUpdate = document.getElementById('texto-update-app');
       const btnInstalar = document.getElementById('btn-instalar-update');
@@ -2193,28 +2182,6 @@
         btnInstalar.disabled = true;
         btnInstalar.innerText = 'Atualizando... Aguarde';
       }
-=======
-    document.getElementById('btn-check-update').addEventListener('click', async () => {
-      mostrarToast('Verificando atualizações no GitHub...');
-      if (window.api && window.api.verificarAtualizacaoManual) {
-        const res = await window.api.verificarAtualizacaoManual();
-        if (res && res.disponivel) {
-          mostrarToast('Nova atualização encontrada!');
-        } else {
-          mostrarToast('Seu aplicativo já está na versão mais recente!');
-        }
-      }
-    });
-
-    const dispararInstalacaoUpdate = async () => {
-      const txtUpdate = document.getElementById('texto-update-app');
-      const btnInstalar = document.getElementById('btn-instalar-update');
-      if (txtUpdate) txtUpdate.innerText = 'Encerrando sessão com segurança e instalando atualização... O aplicativo reiniciará sozinho em instantes!';
-      if (btnInstalar) {
-        btnInstalar.disabled = true;
-        btnInstalar.innerText = 'Atualizando... Aguarde';
-      }
->>>>>>> 61c3c0a
       mostrarToast('Instalando atualização automaticamente... O app já vai reiniciar!');
       if (window.api && window.api.instalarAtualizacaoAgora) {
         await window.api.instalarAtualizacaoAgora();
