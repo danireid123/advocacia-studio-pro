@@ -128,12 +128,14 @@ function isContactIgnored(fromNumber, ignoredList) {
     const cleanNumber = String(fromNumber || '').replace(/\D/g, '');
     if (!cleanNumber) return false;
     const list = Array.isArray(ignoredList) ? ignoredList : carregarContatosIgnorados();
-    return list.some(item => {
-        const itemNum = typeof item === 'object' && item !== null ? (item.numero || item.telefone || '') : item;
-        const cleanItem = String(itemNum || '').replace(/\D/g, '');
-        if (!cleanItem || cleanItem.length < 4) return false;
-        return cleanNumber.includes(cleanItem) || cleanItem.includes(cleanNumber);
-    });
+    if (!Array.isArray(list) || list.length === 0) return false;
+    return list
+        .map(item => {
+            const itemNum = typeof item === 'object' && item !== null ? (item.numero || item.telefone || '') : item;
+            return String(itemNum || '').replace(/\D/g, '');
+        })
+        .filter(item => item.length >= 4) // ignora entradas vazias ou curtas
+        .some(item => cleanNumber.includes(item));
 }
 
 function obterIconeNativo() {
@@ -594,15 +596,8 @@ async function adicionarOuAtualizarItemTriagemDeMsg(msg, config) {
         }
 
         const msgId = (msg.id && (msg.id._serialized || msg.id.id)) ? (msg.id._serialized || msg.id.id) : `${chatId}_${msg.timestamp || Math.floor(Date.now() / 1000)}`;
-        if (handledOfflineMsgIds.has(msgId) || mensagensJaProcessadas.has(msgId)) return false;
-        if (Array.isArray(config.idsMensagensVarreduraRespondidas) && config.idsMensagensVarreduraRespondidas.includes(msgId)) return false;
-
         const msgTimestampSec = msg.timestamp || Math.floor(Date.now() / 1000);
         const msgTimestampMs = msgTimestampSec * 1000;
-        if ((Date.now() - msgTimestampMs) > MAX_AGE_MS) return false;
-
-        const tsTriado = (config.ultimoTimestampTriadoPorChat && config.ultimoTimestampTriadoPorChat[chatId]) || 0;
-        if (tsTriado > 0 && msgTimestampSec <= tsTriado) return false;
 
         // Se o advogado ativou a resposta automática imediata de mensagens offline:
         if (config.responder_offline_automaticamente === true) {
@@ -644,7 +639,7 @@ async function adicionarOuAtualizarItemTriagemDeMsg(msg, config) {
 
         offlineTriageList.sort((a, b) => b.timestamp - a.timestamp);
         if (mainWindow && !mainWindow.isDestroyed()) {
-            mainWindow.webContents.send('offline-triage-updated', offlineTriageList);
+            mainWindow.webContents.send('offline-triage-updated', offlineTriageList); mainWindow.webContents.send('triage:updated', offlineTriageList);
         }
         return true;
     } catch (e) {
@@ -940,6 +935,8 @@ async function extrairCandidatosStoreDireto(cli) {
                             result.push({
                                 chatId,
                                 unreadCount,
+                                markedUnread: Boolean(c.markedUnread),
+                                hasUnread: Boolean(c.hasUnread),
                                 chatTimestamp: Number(c.t || 0),
                                 contactName,
                                 phoneNumber,
@@ -989,6 +986,8 @@ async function extrairCandidatosStoreDireto(cli) {
         fallbackList.push({
             chatId,
             unreadCount: typeof chat.unreadCount === 'number' ? chat.unreadCount : 0,
+            markedUnread: Boolean(chat.markedUnread),
+            hasUnread: Boolean(chat.hasUnread),
             chatTimestamp: Number(chat.timestamp || 0),
             contactName: chat.name || rawUser,
             phoneNumber: rawUser,
@@ -1002,7 +1001,7 @@ async function extrairCandidatosStoreDireto(cli) {
 async function scanOfflineMessagesToTriage(targetClient, win) {
     const cli = targetClient || client;
     const targetWin = win || mainWindow;
-    if (!cli || statusAtualBot !== 'ready') {
+    if (!cli || (!cli.pupPage && statusAtualBot !== 'ready')) {
         console.log('[Triagem Offline] WhatsApp ainda não está pronto para varredura.');
         return offlineTriageList;
     }
@@ -1040,68 +1039,24 @@ async function scanOfflineMessagesToTriage(targetClient, win) {
                     continue;
                 }
 
-                // Verifica se o cliente já está pausado na Fila de Espera Humana
                 const cleanNum = apenasNumeros(chatId);
-                const regPausa = contatosPausados[chatId] || (cleanNum && contatosPausados[cleanNum]) || contatosPausados[rawUser];
-                const tsPausa = typeof regPausa === 'object' ? regPausa.timestamp : regPausa;
-                if (tsPausa && (now - tsPausa < MAX_AGE_MS)) {
-                    continue;
-                }
-
                 const messages = Array.isArray(chatData.messages) ? chatData.messages : [];
-                if (messages.length === 0) continue;
 
-                // Se a última mensagem da conversa foi enviada pelo próprio escritório (fromMe === true),
-                // significa que o advogado já respondeu pelo celular ou o bot já atendeu!
-                const lastMsg = messages[messages.length - 1];
-                if (!lastMsg || lastMsg.fromMe) continue;
-
-                // DUPLO CRITÉRIO DE DETECÇÃO OFFLINE:
-                // Critério A: Conversa marcada como não lida no WhatsApp (unreadCount > 0 ou unreadCount === -1 para marcada manualmente como não lida)
-                // Critério B: Mesmo que unreadCount === 0 (ex: o advogado estava com o celular aberto ou a conversa estava focada ao fechar),
-                //             a última mensagem é do cliente (!lastMsg.fromMe) E foi enviada enquanto o bot estava desligado
-                //             (timestamp >= cutoffOfflineWindowSec e <= momentoConexao + 30) E ainda não foi respondida/triada!
-                const isUnreadFlagged = (unreadCount > 0 || unreadCount === -1);
-                const lastMsgTimeSec = Number(lastMsg.timestamp || chatData.chatTimestamp || 0);
-                const isUnansweredFromOfflineWindow = (
-                    unreadCount === 0 &&
-                    lastMsgTimeSec > 0 &&
-                    lastMsgTimeSec >= cutoffOfflineWindowSec &&
-                    (momentoConexao === 0 || lastMsgTimeSec <= (momentoConexao + 60))
+                // REGRA DE NEGÓCIO: bolinha verde / marcado como não lido => SEMPRE entra na triagem (sem travas temporais)
+                const isUnreadFlagged = (
+                    (typeof unreadCount === 'number' && (unreadCount > 0 || unreadCount === -1)) ||
+                    Boolean(chatData.markedUnread) ||
+                    Boolean(chatData.hasUnread)
                 );
+                if (!isUnreadFlagged) continue;
 
-                if (!isUnreadFlagged && !isUnansweredFromOfflineWindow) {
-                    continue;
-                }
-
-                const tsTriadoChat = (config.ultimoTimestampTriadoPorChat && config.ultimoTimestampTriadoPorChat[chatId]) || 0;
-
-                // Coleta as últimas mensagens seguidas enviadas pelo cliente (de trás para frente até encontrar uma fromMe)
-                const trailingClientMsgs = [];
-                for (let i = messages.length - 1; i >= 0; i--) {
-                    const m = messages[i];
-                    if (!m || m.fromMe) break;
-                    trailingClientMsgs.unshift(m);
-                    if (isUnreadFlagged && unreadCount > 0 && trailingClientMsgs.length >= Math.max(unreadCount, 5)) {
-                        break;
-                    }
-                }
-
-                // Filtra pelas mensagens dentro de 24h e ainda não processadas/ignoradas
-                const unreadIncoming = trailingClientMsgs.filter(m => {
-                    if (m.fromMe) return false;
-                    const msgId = m.id || `${chatId}_${m.timestamp}`;
-                    if (handledOfflineMsgIds.has(msgId) || mensagensJaProcessadas.has(msgId)) return false;
-                    if (Array.isArray(config.idsMensagensVarreduraRespondidas) && config.idsMensagensVarreduraRespondidas.includes(msgId)) return false;
-                    const msgTimeSec = Number(m.timestamp || chatData.chatTimestamp || 0);
-                    if (tsTriadoChat > 0 && msgTimeSec > 0 && msgTimeSec <= tsTriadoChat) return false;
-                    const msgTimeMs = msgTimeSec * 1000;
-                    return msgTimeMs > 0 && (now - msgTimeMs) <= MAX_AGE_MS;
-                });
-
-                if (unreadIncoming.length === 0) continue;
-
-                const latestUnread = unreadIncoming[unreadIncoming.length - 1];
+                // Mensagens recebidas do cliente (mais recentes por último)
+                const incomingMsgs = messages.filter(m => m && !m.fromMe);
+                const qtdNaoLidas = (typeof unreadCount === 'number' && unreadCount > 0) ? unreadCount : 1;
+                const unreadIncoming = incomingMsgs.slice(-Math.max(qtdNaoLidas, 1));
+                const latestUnread = unreadIncoming.length > 0
+                    ? unreadIncoming[unreadIncoming.length - 1]
+                    : { id: `${chatId}_${chatData.chatTimestamp || nowSec}`, body: '', timestamp: chatData.chatTimestamp || nowSec, isCiphertext: false };
                 const latestMsgId = latestUnread.id || `${chatId}_${latestUnread.timestamp}`;
                 const msgTimestampSec = Number(latestUnread.timestamp || chatData.chatTimestamp || nowSec);
                 const msgTimestampMs = msgTimestampSec * 1000;
@@ -1173,30 +1128,12 @@ async function scanOfflineMessagesToTriage(targetClient, win) {
             }
         }
 
-        // Preserva itens que tenham chegado via evento client.on('message') e que ainda não foram decididos
-        for (const itemAntigo of offlineTriageList) {
-            if (!itemAntigo || !itemAntigo.chatId) continue;
-            if (handledOfflineMsgIds.has(itemAntigo.msgId)) continue;
-            const jaEstaNaNova = newTriageItems.some(n => n.chatId === itemAntigo.chatId);
-            if (!jaEstaNaNova && (now - itemAntigo.timestamp) <= MAX_AGE_MS) {
-                // Verifica se o escritório não respondeu esse chat recentemente
-                const chatCorrespondente = rawChats.find(rc => rc.chatId === itemAntigo.chatId);
-                const msgsChat = chatCorrespondente && Array.isArray(chatCorrespondente.messages) ? chatCorrespondente.messages : [];
-                const ultimaDoChat = msgsChat.length > 0 ? msgsChat[msgsChat.length - 1] : null;
-                if (!ultimaDoChat || !ultimaDoChat.fromMe) {
-                    newTriageItems.push({
-                        ...itemAntigo,
-                        relativeTime: formatRelativeTime(itemAntigo.timestamp)
-                    });
-                }
-            }
-        }
-
         // Ordena das mais recentes para as mais antigas
         offlineTriageList = newTriageItems.sort((a, b) => b.timestamp - a.timestamp);
 
         if (targetWin && !targetWin.isDestroyed()) {
             targetWin.webContents.send('offline-triage-updated', offlineTriageList);
+            targetWin.webContents.send('triage:updated', offlineTriageList);
         }
 
         console.log(`[Triagem Offline] ${offlineTriageList.length} conversa(s) aguardando decisão do advogado.`);
@@ -1379,7 +1316,7 @@ function createWindow() {
         height: 900,
         minWidth: 1100,
         minHeight: 720,
-        title: 'Advocacia Studio Pro • Beta 0.8 (v1.8.4)',
+        title: 'Advocacia Studio Pro • Beta 0.8 (v1.8.5)',
         icon: obterIconeNativo(),
         backgroundColor: '#0b0f17',
         webPreferences: {
@@ -1757,11 +1694,11 @@ async function atenderItemTriagemComBot(itemAlvo, chatIdFallback, msgIdFallback)
 // ==========================================
 // HANDLERS DA CENTRAL DE TRIAGEM OFFLINE (24H)
 // ==========================================
-ipcMain.handle('triage:get-list', async () => offlineTriageList);
+ipcMain.handle('triage:get-list', async () => await scanOfflineMessagesToTriage(client, mainWindow));
 
 ipcMain.handle('triage:rescan', async () => await scanOfflineMessagesToTriage(client, mainWindow));
 
-ipcMain.handle('triage:decision', async (event, { chatId, msgId, action }) => {
+async function executarAcaoTriagem(event, { chatId, msgId, action }) {
     try {
         if (action === 'bot-all') {
             const copiaItens = [...offlineTriageList];
@@ -1770,7 +1707,7 @@ ipcMain.handle('triage:decision', async (event, { chatId, msgId, action }) => {
             }
             offlineTriageList = [];
             if (mainWindow && !mainWindow.isDestroyed()) {
-                mainWindow.webContents.send('offline-triage-updated', offlineTriageList);
+                mainWindow.webContents.send('offline-triage-updated', offlineTriageList); mainWindow.webContents.send('triage:updated', offlineTriageList);
             }
             return { success: true, action: 'bot-all', list: offlineTriageList };
         }
@@ -1785,7 +1722,7 @@ ipcMain.handle('triage:decision', async (event, { chatId, msgId, action }) => {
             await atenderItemTriagemComBot(item, chatId, msgId);
             offlineTriageList = offlineTriageList.filter(i => i.chatId !== chatId);
             if (mainWindow && !mainWindow.isDestroyed()) {
-                mainWindow.webContents.send('offline-triage-updated', offlineTriageList);
+                mainWindow.webContents.send('offline-triage-updated', offlineTriageList); mainWindow.webContents.send('triage:updated', offlineTriageList);
             }
             return { success: true, action: 'bot', list: offlineTriageList };
         }
@@ -1823,7 +1760,7 @@ ipcMain.handle('triage:decision', async (event, { chatId, msgId, action }) => {
 
             offlineTriageList = offlineTriageList.filter(i => i.chatId !== chatId);
             if (mainWindow && !mainWindow.isDestroyed()) {
-                mainWindow.webContents.send('offline-triage-updated', offlineTriageList);
+                mainWindow.webContents.send('offline-triage-updated', offlineTriageList); mainWindow.webContents.send('triage:updated', offlineTriageList);
             }
             return { success: true, action: 'waitlist', list: offlineTriageList };
         }
@@ -1837,7 +1774,7 @@ ipcMain.handle('triage:decision', async (event, { chatId, msgId, action }) => {
             }
             offlineTriageList = offlineTriageList.filter(i => i.chatId !== chatId);
             if (mainWindow && !mainWindow.isDestroyed()) {
-                mainWindow.webContents.send('offline-triage-updated', offlineTriageList);
+                mainWindow.webContents.send('offline-triage-updated', offlineTriageList); mainWindow.webContents.send('triage:updated', offlineTriageList);
             }
             return { success: true, action: 'ignore', list: offlineTriageList };
         }
@@ -1847,4 +1784,6 @@ ipcMain.handle('triage:decision', async (event, { chatId, msgId, action }) => {
         console.error('[Triagem Decision Erro]', err);
         return { success: false, erro: err.message };
     }
-});
+}
+ipcMain.handle('triage:decision', executarAcaoTriagem);
+ipcMain.handle('triage:execute-action', executarAcaoTriagem);

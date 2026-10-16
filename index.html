@@ -413,7 +413,7 @@
     <div class="w-72 h-1.5 bg-slate-900 rounded-full overflow-hidden mt-6 border border-slate-800/80">
       <div id="splash-bar" class="h-full champagne-gradient w-0 transition-all duration-500 rounded-full"></div>
     </div>
-    <span class="text-[10px] text-slate-500 mt-4 tracking-widest uppercase font-semibold">Executive Edition • Beta 0.8 (v1.8.4)</span>
+    <span class="text-[10px] text-slate-500 mt-4 tracking-widest uppercase font-semibold">Executive Edition • Beta 0.8 (v1.8.5)</span>
   </div>
 
   <!-- 2. TELA DE LOGIN EXECUTIVA (COM AUTO-LOGIN DE 30 DIAS) -->
@@ -518,7 +518,7 @@
         </div>
         <div>
           <span class="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/30">Atualização Concluída</span>
-          <h2 class="font-serif-legal text-lg font-bold text-white mt-0.5">Novidades da Versão v1.8.4</h2>
+          <h2 class="font-serif-legal text-lg font-bold text-white mt-0.5">Novidades da Versão v1.8.5</h2>
         </div>
       </div>
 
@@ -528,15 +528,15 @@
           <div class="p-3 rounded-xl bg-black/25 border border-slate-800/80 flex items-start space-x-3">
             <span class="text-[#e5c158] font-bold text-sm">⚡</span>
             <div>
-              <strong class="text-white block font-semibold">Leitura Direta do Store.Chat (Sem Travamento)</strong>
-              <span class="text-slate-400 text-[11px]">Inspeção direta das mensagens em memória sem depender de loadEarlierMsgs, detectando 100% das conversas offline.</span>
+              <strong class="text-white block font-semibold">Central de Triagem Universal de Não Lidas</strong>
+              <span class="text-slate-400 text-[11px]">Toda conversa com bolinha verde / marcada como não lida aparece na triagem, sem travas de horário.</span>
             </div>
           </div>
           <div class="p-3 rounded-xl bg-black/25 border border-slate-800/80 flex items-start space-x-3">
             <span class="text-emerald-400 font-bold text-sm">📡</span>
             <div>
-              <strong class="text-white block font-semibold">Captura Multi-Estágio & Mensagens Offline Tardias</strong>
-              <span class="text-slate-400 text-[11px]">Mensagens recebidas com o app fechado que chegam após abrir o bot vão direto para a Triagem (ou auto-resposta).</span>
+              <strong class="text-white block font-semibold">Controle Manual com Triplo Direcionamento</strong>
+              <span class="text-slate-400 text-[11px]">Para cada conversa: Mandar Bot Atender, Lista de Espera ou Ignorar (limpa a bolinha verde).</span>
             </div>
           </div>
           <div class="p-3 rounded-xl bg-black/25 border border-slate-800/80 flex items-start space-x-3">
@@ -558,7 +558,7 @@
 
       <div class="pt-2">
         <button type="button" id="btn-fechar-resumo-pos" class="w-full py-3.5 champagne-gradient font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center space-x-2">
-          <span>Começar a Usar a Versão v1.8.4 ➔</span>
+          <span>Começar a Usar a Versão v1.8.5 ➔</span>
         </button>
       </div>
     </div>
@@ -684,7 +684,7 @@
       <div>
         <div class="flex items-center space-x-2.5">
           <span class="font-serif-legal font-bold tracking-wide text-base">Advocacia <span class="text-[#e5c158]">Studio Pro</span></span>
-          <span id="badge-versao-topo" class="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/30">Beta 0.8 (v1.8.4)</span>
+          <span id="badge-versao-topo" class="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/30">Beta 0.8 (v1.8.5)</span>
           <span id="badge-autosave" class="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">✓ Auto-Save Ativo</span>
         </div>
         <p id="header-user-info" class="text-[11px] text-slate-400">Ambiente Corporativo</p>
@@ -751,7 +751,7 @@
               <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-flow"/></svg><span>Menu Automático do WhatsApp</span></div>
             </button>
             <button id="nav-btn-varredura" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
-              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-radar"/></svg><span>Triagem Offline (24h)</span></div>
+              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-radar"/></svg><span>Central de Triagem</span></div>
               <span id="badge-varredura" class="px-2 py-0.5 text-[9px] rounded-full bg-amber-500/20 text-amber-300 font-bold">0 pendente(s)</span>
             </button>
             <button id="nav-btn-agenda" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
@@ -1157,7 +1157,7 @@
             <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
               <div>
                 <div class="flex items-center space-x-2.5">
-                  <h2 class="font-serif-legal text-lg font-bold">Central de Triagem Offline (Últimas 24h)</h2>
+                  <h2 class="font-serif-legal text-lg font-bold">Central de Triagem - Mensagens Não Lidas</h2>
                   <span id="badge-triagem-cont" class="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
                     0 pendente(s)
                   </span>
@@ -1183,7 +1183,7 @@
 
                 <button id="btn-revarrer-triagem" type="button" class="px-4 py-2.5 champagne-gradient rounded-xl text-xs font-bold shadow-lg flex items-center space-x-2 transition hover:opacity-95">
                   <svg class="w-4 h-4"><use href="#icon-refresh"/></svg>
-                  <span id="label-revarrer-triagem">Atualizar Varredura Agora</span>
+                  <span id="label-revarrer-triagem">Varredura Manual</span>
                 </button>
               </div>
             </div>
@@ -2185,9 +2185,9 @@
     }
 
     async function carregarListaTriagem() {
-      if (window.api && window.api.getOfflineTriageList) {
+      if (window.api && window.api.getTriageList) {
         try {
-          const lista = await window.api.getOfflineTriageList();
+          const lista = await window.api.getTriageList();
           renderizarListaTriagem(lista);
         } catch (e) {}
       }
@@ -2237,8 +2237,8 @@
     async function atenderTodasTriagemAgora() {
       try {
         mostrarToast('Acionando robô para responder todas as conversas pendentes...');
-        if (window.api && window.api.sendTriageDecision) {
-          const res = await window.api.sendTriageDecision({ action: 'bot-all' });
+        if (window.api && window.api.executeTriageAction) {
+          const res = await window.api.executeTriageAction({ action: 'bot-all' });
           renderizarListaTriagem((res && res.list) || []);
           mostrarToast('Todas as conversas pendentes foram respondidas pelo robô!');
         }
@@ -2346,8 +2346,8 @@
           travarBotoes();
           btnBot.innerHTML = '<span>Processando...</span>';
           try {
-            if (window.api && window.api.sendTriageDecision) {
-              await window.api.sendTriageDecision({ chatId: item.chatId, msgId: item.msgId, action: 'bot' });
+            if (window.api && window.api.executeTriageAction) {
+              await window.api.executeTriageAction({ chatId: item.chatId, msgId: item.msgId, action: 'bot' });
             }
             mostrarToast(`Bot acionado para atender ${item.contactName}!`);
             card.remove();
@@ -2363,8 +2363,8 @@
           travarBotoes();
           btnWaitlist.innerHTML = '<span>Movendo...</span>';
           try {
-            if (window.api && window.api.sendTriageDecision) {
-              await window.api.sendTriageDecision({ chatId: item.chatId, msgId: item.msgId, action: 'waitlist' });
+            if (window.api && window.api.executeTriageAction) {
+              await window.api.executeTriageAction({ chatId: item.chatId, msgId: item.msgId, action: 'waitlist' });
             }
             mostrarToast(`${item.contactName} transferido para a Fila de Espera!`);
             card.remove();
@@ -2380,8 +2380,8 @@
           travarBotoes();
           btnIgnore.innerHTML = '<span>Ignorando...</span>';
           try {
-            if (window.api && window.api.sendTriageDecision) {
-              await window.api.sendTriageDecision({ chatId: item.chatId, msgId: item.msgId, action: 'ignore' });
+            if (window.api && window.api.executeTriageAction) {
+              await window.api.executeTriageAction({ chatId: item.chatId, msgId: item.msgId, action: 'ignore' });
             }
             mostrarToast(`Mensagem de ${item.contactName} ignorada.`);
             card.remove();
@@ -2428,7 +2428,7 @@
           mostrarToast('Erro na varredura: ' + e.message);
         } finally {
           btnRevarrer.disabled = false;
-          if (lbl) lbl.innerText = 'Atualizar Varredura Agora';
+          if (lbl) lbl.innerText = 'Varredura Manual';
         }
       });
     }
@@ -3167,19 +3167,19 @@
           });
         }
 
-        if (window.api && window.api.onOfflineTriageUpdated) {
-          window.api.onOfflineTriageUpdated((list) => {
+        if (window.api && window.api.onTriageUpdated) {
+          window.api.onTriageUpdated((list) => {
             renderizarListaTriagem(list);
           });
         }
 
-        if (window.api && window.api.getOfflineTriageList) {
-          window.api.getOfflineTriageList().then(list => {
+        if (window.api && window.api.getTriageList) {
+          window.api.getTriageList().then(list => {
             if (Array.isArray(list)) renderizarListaTriagem(list);
           }).catch(() => {});
         }
 
-        const VERSAO_APP_LOCAL = '1.8.4';
+        const VERSAO_APP_LOCAL = '1.8.5';
         const versaoSalva = localStorage.getItem('adv_bot_installed_version');
         if (versaoSalva !== VERSAO_APP_LOCAL) {
           setTimeout(() => {

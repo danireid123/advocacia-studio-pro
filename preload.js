@@ -20,6 +20,9 @@ contextBridge.exposeInMainWorld('api', {
     getOfflineTriageList: () => ipcRenderer.invoke('triage:get-list'),
     rescanOfflineTriage: () => ipcRenderer.invoke('triage:rescan'),
     sendTriageDecision: (payload) => ipcRenderer.invoke('triage:decision', payload),
+    getTriageList: () => ipcRenderer.invoke('triage:get-list'),
+    executeTriageAction: (data) => ipcRenderer.invoke('triage:execute-action', data),
+    onTriageUpdated: (callback) => ipcRenderer.on('triage:updated', (_, data) => callback(data)),
 
     aoReceberQR: (callback) => ipcRenderer.on('bot-qr', (_e, qr) => callback(qr)),
     aoMudarStatus: (callback) => ipcRenderer.on('bot-status', (_e, st) => callback(st)),
