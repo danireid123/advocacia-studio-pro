@@ -428,26 +428,26 @@
     </div>
   </div>
 
-  <!-- 3. ENTRADA DO LEXBOT -->
+  <!-- 3. ENTRADA DO LEXBOT (MAIOR E MAIS VISÍVEL) -->
   <div id="lexbot-center-modal" class="fixed inset-0 bg-[#060911]/90 backdrop-blur-md z-[9999] hidden items-center justify-center p-4">
-    <div class="exec-card w-full max-w-md rounded-3xl p-8 border border-[#d4af37]/40 text-center space-y-5 mascot-center-entry">
-      <div class="w-24 h-24 mx-auto mascot-float flex items-center justify-center">
-        <svg viewBox="0 0 120 120" class="w-full h-full">
-          <line x1="60" y1="12" x2="60" y2="26" stroke="#e5c158" stroke-width="4" stroke-linecap="round"/>
-          <circle cx="60" cy="10" r="5" fill="#e5c158"/>
-          <rect x="26" y="26" width="68" height="58" rx="18" fill="#131c2e" stroke="#e5c158" stroke-width="3"/>
-          <rect x="34" y="36" width="52" height="30" rx="10" fill="#090d16" stroke="#334155" stroke-width="1.5"/>
+    <div class="exec-card w-full max-w-md rounded-3xl p-8 border-2 border-[#d4af37]/60 text-center space-y-5 mascot-center-entry shadow-2xl">
+      <div class="w-36 h-36 mx-auto mascot-float flex items-center justify-center bg-[#111827] rounded-3xl border-2 border-[#d4af37]/50 p-3 shadow-inner">
+        <svg viewBox="18 6 84 106" class="w-full h-full">
+          <line x1="60" y1="10" x2="60" y2="24" stroke="#e5c158" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="60" cy="9" r="6.5" fill="#f3e5ab"/>
+          <rect x="22" y="24" width="76" height="60" rx="20" fill="#131c2e" stroke="#e5c158" stroke-width="4"/>
+          <rect x="30" y="34" width="60" height="34" rx="12" fill="#090d16" stroke="#d4af37" stroke-width="2"/>
           <g class="mascot-eye">
-            <circle cx="48" cy="51" r="5.5" fill="#e5c158"/><circle cx="72" cy="51" r="5.5" fill="#e5c158"/>
-            <circle cx="49.5" cy="49.5" r="1.8" fill="#ffffff"/><circle cx="73.5" cy="49.5" r="1.8" fill="#ffffff"/>
+            <circle cx="46" cy="51" r="7" fill="#e5c158"/><circle cx="74" cy="51" r="7" fill="#e5c158"/>
+            <circle cx="48" cy="49" r="2.5" fill="#ffffff"/><circle cx="76" cy="49" r="2.5" fill="#ffffff"/>
           </g>
-          <path d="M 52 60 Q 60 67 68 60" fill="none" stroke="#e5c158" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M 45 84 L 75 84 L 82 108 L 38 108 Z" fill="#1e293b" stroke="#e5c158" stroke-width="2"/>
-          <polygon points="57,84 63,84 65,102 60,106 55,102" fill="#d4af37"/>
+          <path d="M 50 61 Q 60 68 70 61" fill="none" stroke="#e5c158" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 40 84 L 80 84 L 88 110 L 32 110 Z" fill="#1e293b" stroke="#e5c158" stroke-width="3"/>
+          <polygon points="56,84 64,84 67,104 60,109 53,104" fill="#d4af37"/>
         </svg>
       </div>
       <div class="space-y-2">
-        <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#d4af37]/15 text-[#f3e5ab] border border-[#d4af37]/30">Assistente LexBot</span>
+        <span class="text-[11px] font-extrabold uppercase tracking-widest px-3.5 py-1 rounded-full bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/40">Assistente Jurídico LexBot</span>
         <h3 class="font-serif-legal text-xl font-bold">Bem-vindo(a) ao seu Escritório Digital!</h3>
         <p class="text-xs text-slate-300 leading-relaxed">Gostaria de fazer um tour rápido de 1 minuto para conhecer o painel, a consulta de processos por CPF/CNJ e os horários de expediente?</p>
       </div>
@@ -480,22 +480,25 @@
       </div>
     </div>
 
-    <button id="btn-lexbot-avatar" class="pointer-events-auto group relative focus:outline-none" title="Abrir Tour LexBot">
-      <div class="w-16 h-16 mascot-float flex items-center justify-center transition-transform group-hover:scale-105">
-        <svg viewBox="0 0 120 120" class="w-full h-full">
-          <line x1="60" y1="12" x2="60" y2="26" stroke="#e5c158" stroke-width="4" stroke-linecap="round"/>
-          <circle cx="60" cy="10" r="5" fill="#e5c158"/>
-          <rect x="26" y="26" width="68" height="58" rx="18" fill="#131c2e" stroke="#e5c158" stroke-width="3.5"/>
-          <rect x="34" y="36" width="52" height="30" rx="10" fill="#090d16" stroke="#334155" stroke-width="1.5"/>
+    <button id="btn-lexbot-avatar" class="pointer-events-auto group relative focus:outline-none flex flex-col items-center" title="Abrir Guia e Ajuda LexBot">
+      <div class="w-24 h-24 rounded-3xl bg-[#111827]/95 border-2 border-[#d4af37] shadow-[0_10px_30px_rgba(212,175,55,0.4)] mascot-float flex items-center justify-center p-2.5 transition-transform duration-200 group-hover:scale-110 group-hover:border-[#f3e5ab]">
+        <svg viewBox="18 6 84 106" class="w-full h-full">
+          <line x1="60" y1="10" x2="60" y2="24" stroke="#e5c158" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="60" cy="9" r="6.5" fill="#f3e5ab"/>
+          <rect x="22" y="24" width="76" height="60" rx="20" fill="#131c2e" stroke="#e5c158" stroke-width="4"/>
+          <rect x="30" y="34" width="60" height="34" rx="12" fill="#090d16" stroke="#d4af37" stroke-width="2"/>
           <g class="mascot-eye">
-            <circle cx="48" cy="51" r="5.5" fill="#e5c158"/><circle cx="72" cy="51" r="5.5" fill="#e5c158"/>
-            <circle cx="49.5" cy="49.5" r="1.8" fill="#ffffff"/><circle cx="73.5" cy="49.5" r="1.8" fill="#ffffff"/>
+            <circle cx="46" cy="51" r="7" fill="#e5c158"/><circle cx="74" cy="51" r="7" fill="#e5c158"/>
+            <circle cx="48" cy="49" r="2.5" fill="#ffffff"/><circle cx="76" cy="49" r="2.5" fill="#ffffff"/>
           </g>
-          <path d="M 52 60 Q 60 66 68 60" fill="none" stroke="#e5c158" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M 45 84 L 75 84 L 82 108 L 38 108 Z" fill="#1e293b" stroke="#e5c158" stroke-width="2"/>
-          <polygon points="57,84 63,84 65,102 60,106 55,102" fill="#d4af37"/>
+          <path d="M 50 61 Q 60 68 70 61" fill="none" stroke="#e5c158" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 40 84 L 80 84 L 88 110 L 32 110 Z" fill="#1e293b" stroke="#e5c158" stroke-width="3"/>
+          <polygon points="56,84 64,84 67,104 60,109 53,104" fill="#d4af37"/>
         </svg>
       </div>
+      <span class=" -mt-2 px-3 py-0.5 rounded-full champagne-gradient text-[10px] font-extrabold uppercase tracking-wider shadow-lg border border-white/20">
+        Ajuda LexBot
+      </span>
     </button>
   </div>
 
@@ -545,7 +548,7 @@
       <div>
         <div class="flex items-center space-x-2.5">
           <span class="font-serif-legal font-bold tracking-wide text-base">Advocacia <span class="text-[#e5c158]">Studio Pro</span></span>
-          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">v1.0.5</span>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">v1.0.2</span>
           <span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center">
             <svg class="w-3 h-3 mr-1"><use href="#icon-shield"/></svg> Anti-Grupos Ativo
           </span>
@@ -2165,18 +2168,27 @@
 
     document.getElementById('btn-check-update').addEventListener('click', async () => {
       mostrarToast('Verificando atualizações no GitHub...');
-      if (window.api && window.api.verificarAtualizacao) {
-        const res = await window.api.verificarAtualizacao();
-        if (res && !res.sucesso && res.erro) {
-          mostrarToast(`Aviso: ${res.erro}`);
+      if (window.api && window.api.verificarAtualizacaoManual) {
+        const res = await window.api.verificarAtualizacaoManual();
+        if (res && res.disponivel) {
+          mostrarToast('Nova atualização encontrada!');
+        } else {
+          mostrarToast('Seu aplicativo já está na versão mais recente!');
         }
       }
     });
 
-    const dispararInstalacaoUpdate = () => {
-      mostrarToast('Reiniciando aplicativo para aplicar a nova versão...');
+    const dispararInstalacaoUpdate = async () => {
+      const txtUpdate = document.getElementById('texto-update-app');
+      const btnInstalar = document.getElementById('btn-instalar-update');
+      if (txtUpdate) txtUpdate.innerText = 'Encerrando sessão com segurança e instalando atualização... O aplicativo reiniciará sozinho em instantes!';
+      if (btnInstalar) {
+        btnInstalar.disabled = true;
+        btnInstalar.innerText = 'Atualizando... Aguarde';
+      }
+      mostrarToast('Instalando atualização automaticamente... O app já vai reiniciar!');
       if (window.api && window.api.instalarAtualizacaoAgora) {
-        window.api.instalarAtualizacaoAgora();
+        await window.api.instalarAtualizacaoAgora();
       }
     };
 
@@ -2270,30 +2282,20 @@
             const btnHeader = document.getElementById('btn-header-update');
             const txtUpdate = document.getElementById('texto-update-app');
 
-            if (dados.status === 'checking') {
-              mostrarToast('Consultando atualizações no GitHub...');
-            } else if (dados.status === 'latest') {
-              mostrarToast('Seu aplicativo já está na versão mais recente!');
-            } else if (dados.status === 'downloading') {
+            if (dados.status === 'downloading') {
               banner.classList.remove('hidden');
               banner.classList.add('flex');
-              const prog = (dados.progresso !== undefined && dados.progresso > 0) ? ` (${dados.progresso}%)` : '';
-              txtUpdate.innerText = `Baixando nova atualização v${dados.versao || ''}${prog} em segundo plano...`;
+              const pct = typeof dados.progresso === 'number' ? ` (${dados.progresso}%)` : '';
+              txtUpdate.innerText = `Baixando nova atualização ${dados.versao ? 'v' + dados.versao : ''}${pct} automaticamente em segundo plano...`;
               btnInstalar.classList.add('hidden');
-              mostrarToast(`Baixando atualização v${dados.versao || ''}${prog}...`);
             } else if (dados.status === 'ready') {
               banner.classList.remove('hidden');
               banner.classList.add('flex');
-              txtUpdate.innerText = `Nova versão v${dados.versao || ''} pronta! Clique ao lado para reiniciar:`;
+              txtUpdate.innerText = `Nova versão ${dados.versao ? 'v' + dados.versao : ''} pronta! Clique ao lado para reiniciar o aplicativo já atualizado.`;
               btnInstalar.classList.remove('hidden');
               btnHeader.classList.remove('hidden');
               btnHeader.classList.add('flex');
-              mostrarToast('Atualização baixada! Clique no botão para reiniciar e atualizar.');
-            } else if (dados.status === 'error') {
-              console.warn('[UPDATE WARNING]:', dados.erro);
-              if (dados.erro && !dados.erro.includes('net::ERR_INTERNET_DISCONNECTED')) {
-                mostrarToast(`Aviso de Atualização: ${dados.erro}`);
-              }
+              mostrarToast('Atualização pronta para instalar!');
             }
           });
         }

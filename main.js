@@ -1,9 +1,8 @@
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode');
 const fs = require('fs');
-const https = require('https');
 
 let autoUpdater = null;
 try {
@@ -21,6 +20,7 @@ let momentoConexao = 0;
 let iniciandoBot = false;
 let reconectando = false;
 let varrendoNaoLidas = false;
+let instalandoUpdate = false;
 let statusAtualBot = 'initializing';
 let ultimoQrDataUrl = '';
 let timerGravacaoDisco = null;
@@ -30,6 +30,14 @@ const AUTH_DIR = path.join(app.getPath('userData'), 'wwebjs_auth_session');
 
 if (!fs.existsSync(AUTH_DIR)) {
     fs.mkdirSync(AUTH_DIR, { recursive: true });
+}
+
+function obterCaminhoIcone() {
+    const icoPath = path.join(__dirname, 'icon.ico');
+    const pngPath = path.join(__dirname, 'icon.png');
+    if (fs.existsSync(icoPath)) return icoPath;
+    if (fs.existsSync(pngPath)) return pngPath;
+    return undefined;
 }
 
 function obterCaminhoNavegador() {
@@ -66,7 +74,6 @@ function limparLocksTravados() {
 
 function criarConfigPadrao() {
     return {
-        // Varredura Automática desligada por padrão como solicitado
         varredura_automatica_inicio: false,
         agenda: {
             "0": { nome: "Domingo", ativo: false, abertura: "08:00", fechamento: "18:00" },
@@ -201,7 +208,6 @@ function resolverIdentidadeRapida(msg, config) {
     const numeroLimpo = apenasNumeros(parteId);
 
     let nomeInstantaneo = (msg._data && (msg._data.notifyName || msg._data.pushname)) || '';
-
     const chaveUnica = numeroLimpo || parteId;
 
     if (config.mapaNomes && config.mapaNomes[chaveUnica]) {
@@ -353,14 +359,12 @@ async function enviarMensagemSegura(msgObj, chatId, texto) {
     }
 }
 
-// VARREDURA SEGURA (SEM EXCEÇÕES DO WHATSAPP WEB)
 async function varrerMensagensNaoLidas() {
     if (!client || statusAtualBot !== 'ready' || varrendoNaoLidas) return 0;
     varrendoNaoLidas = true;
     let respondidas = 0;
 
     try {
-        // Proteção contra chamadas prematuras
         if (typeof client.getChats !== 'function') {
             varrendoNaoLidas = false;
             return 0;
@@ -396,11 +400,7 @@ async function varrerMensagensNaoLidas() {
                 if (!Array.isArray(msgs) || msgs.length === 0) continue;
 
                 const ultimaMsgGeral = msgs[msgs.length - 1];
-
-                // Se nós já respondemos nessa conversa pelo celular ou PC, pula!
-                if (ultimaMsgGeral.fromMe) {
-                    continue;
-                }
+                if (ultimaMsgGeral.fromMe) continue;
 
                 const textoBody = String(ultimaMsgGeral.body || '').trim();
                 if (!textoBody) continue;
@@ -419,14 +419,13 @@ async function varrerMensagensNaoLidas() {
             } catch (errChat) {}
         }
     } catch (errVarredura) {
-        console.error("[AVISO VARREDURA]: Sincronização de conversas ainda em andamento no WhatsApp.");
+        console.error("[AVISO VARREDURA]: Sincronização de conversas em andamento.");
     } finally {
         varrendoNaoLidas = false;
     }
     return respondidas;
 }
 
-// NÚCLEO DE ATENDIMENTO DO BOT
 async function processarMensagemEntrada(msg, veioDaVarredura = false) {
     try {
         if (!msg || msg.fromMe || msg.isStatus || msg.broadcast) return;
@@ -454,7 +453,6 @@ async function processarMensagemEntrada(msg, veioDaVarredura = false) {
         const remetenteChave = identidade.chaveCliente;
         const gatilhoDigitado = extrairGatilhoLimpo(textoOriginal);
 
-        // 1. Pausa Humana
         const tempoPausa = contatosPausados[remetenteChave] || contatosPausados[msg.from];
         if (tempoPausa) {
             if (Date.now() - tempoPausa < 24 * 60 * 60 * 1000) {
@@ -466,14 +464,12 @@ async function processarMensagemEntrada(msg, veioDaVarredura = false) {
             }
         }
 
-        // 2. Captura Nome
         const matchNome = textoOriginal.match(/(?:meu nome é|meu nome e|me chamo|sou o|sou a|aqui é o|aqui é a)\s+([A-ZÁÉÍÓÚÂÊÔÃÕÇ][a-záéíóúâêôãõç]+(?:\s+[A-ZÁÉÍÓÚÂÊÔÃÕÇ][a-záéíóúâêôãõç]+){0,2})/i);
         if (matchNome && matchNome[1]) {
             identidade.nomeCliente = matchNome[1].trim();
             config.mapaNomes[remetenteChave] = identidade.nomeCliente;
         }
 
-        // 3. Métricas
         if (!config.metricasReais) config.metricasReais = { totalMensagens: 0, contatosAtendidos: [] };
         config.metricasReais.totalMensagens += 1;
         if (!config.metricasReais.contatosAtendidos.includes(remetenteChave)) {
@@ -481,7 +477,6 @@ async function processarMensagemEntrada(msg, veioDaVarredura = false) {
         }
         salvarConfigDisco(config, false);
 
-        // 4. Log
         if (mainWindow && !mainWindow.isDestroyed()) {
             mainWindow.webContents.send('bot-log', {
                 numero: identidade.telefoneFormatado,
@@ -496,7 +491,6 @@ async function processarMensagemEntrada(msg, veioDaVarredura = false) {
             });
         }
 
-        // 5. Horário / Almoço: Não salva separado. Apenas adiciona aviso no início e responde normal!
         let prefixoForaDeHorario = "";
         const statusAgenda = checarStatusAgenda(config);
         if (!statusAgenda.aberto) {
@@ -519,7 +513,6 @@ async function processarMensagemEntrada(msg, veioDaVarredura = false) {
             await enviarMensagemSegura(msg, msg.from, prefixoForaDeHorario + textoResposta);
         };
 
-        // 6. Saudações ou "0"
         const saudacoes = ["oi", "olá", "ola", "bom dia", "boa tarde", "boa noite", "menu", "inicio", "início", "ajuda"];
         if (saudacoes.some(s => gatilhoDigitado === s || gatilhoDigitado.startsWith(s + " ")) || (estadosUsuarios[remetenteChave] === '__aguardando_processo__' && gatilhoDigitado === '0')) {
             estadosUsuarios[remetenteChave] = 'raiz';
@@ -527,7 +520,6 @@ async function processarMensagemEntrada(msg, veioDaVarredura = false) {
             return;
         }
 
-        // 7. Opções Numéricas do Menu Atual (1, 2, 3...)
         const etapaAtualKey = (estadosUsuarios[remetenteChave] && estadosUsuarios[remetenteChave] !== '__aguardando_processo__')
             ? estadosUsuarios[remetenteChave]
             : 'raiz';
@@ -572,7 +564,6 @@ async function processarMensagemEntrada(msg, veioDaVarredura = false) {
             }
         }
 
-        // 8. Consulta de Processo por CPF ou Número CNJ
         const digitosRecebidos = apenasNumeros(textoOriginal);
         const pareceCpfOuProcesso = digitosRecebidos.length >= 5;
 
@@ -641,7 +632,6 @@ async function processarMensagemEntrada(msg, veioDaVarredura = false) {
             }
         }
 
-        // 9. Menu Inicial
         estadosUsuarios[remetenteChave] = 'raiz';
         await responderCliente(montarTextoEtapa(config.fluxo.raiz));
     } catch (errProcesso) {
@@ -649,257 +639,85 @@ async function processarMensagemEntrada(msg, veioDaVarredura = false) {
     }
 }
 
-let ultimaInfoUpdate = null;
-let arquivoInstaladorBaixado = null;
-let baixandoUpdate = false;
-
-function baixarEInstalarAtualizacaoNativa(exeUrl, versao) {
-    if (!exeUrl || baixandoUpdate) return;
-    baixandoUpdate = true;
-
-    const os = require('os');
-    const tempDir = app.getPath ? app.getPath('temp') : os.tmpdir();
-    const destPath = path.join(tempDir, `Advocacia-Studio-Pro-Setup-${versao}.exe`);
-
-    if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.webContents.send('bot-update-status', {
-            status: 'downloading',
-            versao: versao,
-            progresso: 0
-        });
-    }
-
-    function realizarDownload(urlAtual) {
-        https.get(urlAtual, { headers: { 'User-Agent': 'AdvocaciaStudioPro-Updater' } }, (res) => {
-            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-                return realizarDownload(res.headers.location);
-            }
-
-            if (res.statusCode !== 200) {
-                console.error('[UPDATER NATIVO] Erro ao baixar executável, status:', res.statusCode);
-                baixandoUpdate = false;
-                if (mainWindow && !mainWindow.isDestroyed()) {
-                    mainWindow.webContents.send('bot-update-status', {
-                        status: 'error',
-                        erro: `Erro no download do executável (HTTP ${res.statusCode})`
-                    });
-                }
-                return;
-            }
-
-            const totalBytes = parseInt(res.headers['content-length'] || '0', 10);
-            let downloadedBytes = 0;
-            const fileStream = fs.createWriteStream(destPath);
-
-            res.on('data', (chunk) => {
-                downloadedBytes += chunk.length;
-                if (totalBytes > 0) {
-                    const pct = Math.round((downloadedBytes / totalBytes) * 100);
-                    if (mainWindow && !mainWindow.isDestroyed()) {
-                        mainWindow.webContents.send('bot-update-status', {
-                            status: 'downloading',
-                            versao: versao,
-                            progresso: pct
-                        });
-                    }
-                }
-            });
-
-            res.pipe(fileStream);
-
-            fileStream.on('finish', () => {
-                fileStream.close();
-                baixandoUpdate = false;
-                arquivoInstaladorBaixado = destPath;
-                console.log('[UPDATER NATIVO] Download concluído com sucesso em:', destPath);
-
-                if (mainWindow && !mainWindow.isDestroyed()) {
-                    mainWindow.webContents.send('bot-update-status', {
-                        status: 'ready',
-                        versao: versao
-                    });
-                }
-            });
-
-            fileStream.on('error', (errStream) => {
-                baixandoUpdate = false;
-                console.error('[UPDATER NATIVO FILE ERROR]:', errStream.message);
-            });
-        }).on('error', (errReq) => {
-            baixandoUpdate = false;
-            console.error('[UPDATER NATIVO REQ ERROR]:', errReq.message);
-        });
-    }
-
-    realizarDownload(exeUrl);
-}
-
-function checarAtualizacaoGitHubDireta(disparoManual = false) {
-    try {
-        const versaoAtual = app.getVersion ? app.getVersion() : require('./package.json').version;
-        if (disparoManual && mainWindow && !mainWindow.isDestroyed()) {
-            mainWindow.webContents.send('bot-update-status', { status: 'checking' });
-        }
-
-        const options = {
-            hostname: 'api.github.com',
-            path: '/repos/danireid123/advocacia-studio-pro/releases/latest',
-            headers: {
-                'User-Agent': 'AdvocaciaStudioPro-App'
-            }
-        };
-
-        https.get(options, (res) => {
-            let data = '';
-            res.on('data', chunk => { data += chunk; });
-            res.on('end', () => {
-                try {
-                    if (res.statusCode !== 200) {
-                        if (disparoManual && mainWindow && !mainWindow.isDestroyed()) {
-                            mainWindow.webContents.send('bot-update-status', {
-                                status: 'error',
-                                erro: `GitHub retornou status ${res.statusCode}`
-                            });
-                        }
-                        return;
-                    }
-                    const json = JSON.parse(data);
-                    const tag = json.tag_name ? json.tag_name.replace(/^v/, '') : '';
-                    if (!tag) return;
-
-                    const vAtualNums = String(versaoAtual).split('.').map(n => parseInt(n) || 0);
-                    const vNovaNums = String(tag).split('.').map(n => parseInt(n) || 0);
-
-                    let temNova = false;
-                    for (let i = 0; i < 3; i++) {
-                        const nova = vNovaNums[i] || 0;
-                        const atual = vAtualNums[i] || 0;
-                        if (nova > atual) { temNova = true; break; }
-                        if (nova < atual) break;
-                    }
-
-                    if (temNova) {
-                        console.log(`[ATUALIZACAO] Nova versão v${tag} encontrada! Versão instalada: v${versaoAtual}`);
-                        const exeAsset = json.assets && Array.isArray(json.assets)
-                            ? json.assets.find(a => a.name && a.name.endsWith('.exe'))
-                            : null;
-
-                        ultimaInfoUpdate = {
-                            versao: tag,
-                            url: json.html_url || 'https://github.com/danireid123/advocacia-studio-pro/releases/latest',
-                            exeUrl: exeAsset ? exeAsset.browser_download_url : null
-                        };
-
-                        if (ultimaInfoUpdate.exeUrl) {
-                            // Inicia o download silencioso imediatamente em segundo plano
-                            baixarEInstalarAtualizacaoNativa(ultimaInfoUpdate.exeUrl, tag);
-                        } else {
-                            if (mainWindow && !mainWindow.isDestroyed()) {
-                                mainWindow.webContents.send('bot-update-status', {
-                                    status: 'ready',
-                                    versao: tag,
-                                    url: ultimaInfoUpdate.url
-                                });
-                            }
-                        }
-                    } else {
-                        console.log(`[ATUALIZACAO] App na versão mais recente (v${versaoAtual})`);
-                        if (disparoManual && mainWindow && !mainWindow.isDestroyed()) {
-                            mainWindow.webContents.send('bot-update-status', {
-                                status: 'latest',
-                                versao: versaoAtual
-                            });
-                        }
-                    }
-                } catch (errJson) {
-                    console.error('[ERRO PARSE GITHUB RELEASE]:', errJson.message);
-                }
-            });
-        }).on('error', (errReq) => {
-            console.error('[ERRO REQUISICAO GITHUB]:', errReq.message);
-            if (disparoManual && mainWindow && !mainWindow.isDestroyed()) {
-                mainWindow.webContents.send('bot-update-status', {
-                    status: 'error',
-                    erro: 'Não foi possível conectar ao GitHub'
-                });
-            }
-        });
-    } catch (errGeral) {
-        console.error('[ERRO CHECAGEM GITHUB]:', errGeral.message);
-    }
-}
-
+// AUTO-UPDATER 100% INTERNO E SILENCIOSO (SEM ABRIR NAVEGADOR / GITHUB)
 function configurarAutoUpdater() {
-    // 1. Checagem direta rápida via GitHub API (garante 100% de detecção em qualquer modo)
-    setTimeout(() => {
-        checarAtualizacaoGitHubDireta(false);
-    }, 2000);
-
-    if (!autoUpdater) return;
+    if (!app.isPackaged || !autoUpdater) return;
 
     try {
         autoUpdater.autoDownload = true;
         autoUpdater.autoInstallOnAppQuit = true;
-        autoUpdater.forceDevUpdateConfig = true;
-        
-        try {
-            autoUpdater.setFeedURL({
-                provider: 'github',
-                owner: 'danireid123',
-                repo: 'advocacia-studio-pro'
-            });
-        } catch (e) {}
-
-        autoUpdater.on('checking-for-update', () => {
-            console.log('[AUTO-UPDATER] Verificando atualizações no GitHub...');
-        });
 
         autoUpdater.on('update-available', (info) => {
-            console.log('[AUTO-UPDATER] Nova versão detectada:', info ? info.version : '');
             if (mainWindow && !mainWindow.isDestroyed()) {
                 mainWindow.webContents.send('bot-update-status', {
                     status: 'downloading',
-                    versao: info ? info.version : ''
+                    versao: info ? info.version : '',
+                    progresso: 0
                 });
             }
         });
 
-        autoUpdater.on('update-not-available', (info) => {
-            console.log('[AUTO-UPDATER] Nenhuma atualização pendente:', info ? info.version : '');
+        autoUpdater.on('download-progress', (progressObj) => {
+            if (mainWindow && !mainWindow.isDestroyed()) {
+                mainWindow.webContents.send('bot-update-status', {
+                    status: 'downloading',
+                    progresso: Math.round(progressObj.percent || 0)
+                });
+            }
         });
 
         autoUpdater.on('update-downloaded', (info) => {
-            console.log('[AUTO-UPDATER] Download concluído com sucesso!');
             if (mainWindow && !mainWindow.isDestroyed()) {
                 mainWindow.webContents.send('bot-update-status', {
                     status: 'ready',
-                    versao: info ? info.version : ''
+                    versao: info ? info.version : '',
+                    progresso: 100
                 });
             }
         });
 
         autoUpdater.on('error', (err) => {
-            console.error('[AUTO-UPDATER ERRO]:', err ? (err.message || err) : 'Erro desconhecido');
+            console.error("[AUTO-UPDATE ERRO]:", err ? err.message : err);
         });
 
-        setTimeout(() => {
-            try {
-                autoUpdater.checkForUpdatesAndNotify().catch(e => {
-                    console.error('[AUTO-UPDATER FALHA AO BUSCAR]:', e.message);
-                });
-            } catch (errCheck) {}
-        }, 3000);
-    } catch (e) {
-        console.error('[AUTO-UPDATER EXCEPTION]:', e);
-    }
+        // Verifica ao abrir e depois a cada 30 minutos
+        autoUpdater.checkForUpdates().catch(() => {});
+        setInterval(() => {
+            if (!instalandoUpdate) {
+                autoUpdater.checkForUpdates().catch(() => {});
+            }
+        }, 30 * 60 * 1000);
+    } catch (e) {}
+}
+
+async function executarInstalacaoSilenciosaUpdate() {
+    if (!autoUpdater || instalandoUpdate) return false;
+    instalandoUpdate = true;
+
+    try {
+        if (client) {
+            try { await client.destroy(); } catch (e) {}
+            client = null;
+        }
+        limparLocksTravados();
+    } catch (e) {}
+
+    setTimeout(() => {
+        // isSilent = true (atualiza sem assistente de telas), isForceRunAfter = true (reabre o app atualizado sozinho)
+        autoUpdater.quitAndInstall(true, true);
+    }, 400);
+    return true;
 }
 
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1440,
         height: 900,
+        minWidth: 1100,
+        minHeight: 720,
+        title: 'Advocacia Studio Pro',
+        icon: obterCaminhoIcone(),
         backgroundColor: '#0b0f17',
-        icon: path.join(__dirname, 'icon.png'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
@@ -907,6 +725,12 @@ function createWindow() {
         },
         autoHideMenuBar: true
     });
+
+    // Impede que cliques acidentais abram janelas externas para o GitHub
+    mainWindow.webContents.setWindowOpenHandler(() => {
+        return { action: 'deny' };
+    });
+
     mainWindow.loadFile('index.html');
 }
 
@@ -984,16 +808,11 @@ async function iniciarWhatsApp(forcarReinicio = false) {
         reconectando = false;
         ultimoQrDataUrl = '';
         momentoConexao = Math.floor(Date.now() / 1000);
-        console.log("[BOT] WhatsApp Conectado e Pronto!");
         atualizarStatusUI('ready');
 
-        // SÓ executa se o usuário tiver deixado ligado nas configurações (desligado por padrão)
         const cfgAtual = carregarConfig();
         if (cfgAtual.varredura_automatica_inicio === true) {
-            console.log("[VARREDURA] Varredura no início ativada pelo usuário. Executando...");
             setTimeout(() => { varrerMensagensNaoLidas(); }, 4000);
-        } else {
-            console.log("[VARREDURA] Varredura no início está DESATIVADA por padrão.");
         }
     });
 
@@ -1002,7 +821,7 @@ async function iniciarWhatsApp(forcarReinicio = false) {
         ultimoQrDataUrl = '';
         atualizarStatusUI('disconnected');
 
-        if (!reconectando) {
+        if (!reconectando && !instalandoUpdate) {
             reconectando = true;
             setTimeout(() => {
                 reconectando = false;
@@ -1024,6 +843,8 @@ async function iniciarWhatsApp(forcarReinicio = false) {
 }
 
 ipcMain.handle('obter-config', () => carregarConfig());
+
+ipcMain.handle('obter-versao-app', () => app.getVersion());
 
 ipcMain.handle('obter-estado-conexao', () => {
     return {
@@ -1061,49 +882,18 @@ ipcMain.handle('forcar-varredura-nao-lidas', async () => {
     return await varrerMensagensNaoLidas();
 });
 
-ipcMain.handle('instalar-atualizacao-agora', () => {
-    let executou = false;
-
-    // 1. Se o instalador nativo foi baixado em disco, dispara em modo silencioso (/S) e reinicia
-    if (arquivoInstaladorBaixado && fs.existsSync(arquivoInstaladorBaixado)) {
-        console.log('[UPDATER NATIVO] Executando instalador silencioso e reiniciando app:', arquivoInstaladorBaixado);
-        try {
-            const { spawn } = require('child_process');
-            spawn(arquivoInstaladorBaixado, ['/S'], {
-                detached: true,
-                stdio: 'ignore'
-            }).unref();
-            setTimeout(() => {
-                app.quit();
-            }, 600);
-            return true;
-        } catch (errSpawn) {
-            console.error('[ERRO DISPARAR INSTALADOR]:', errSpawn);
-        }
+ipcMain.handle('verificar-atualizacao-manual', async () => {
+    if (!app.isPackaged || !autoUpdater) return { disponivel: false };
+    try {
+        const res = await autoUpdater.checkForUpdates();
+        return { disponivel: Boolean(res && res.updateInfo) };
+    } catch (e) {
+        return { disponivel: false };
     }
-
-    // 2. Se autoUpdater baixou
-    if (autoUpdater) {
-        try {
-            autoUpdater.quitAndInstall(false, true);
-            executou = true;
-        } catch (e) {}
-    }
-
-    // 3. Fallback final caso não haja instalador em disco
-    if (!executou && ultimaInfoUpdate && ultimaInfoUpdate.url) {
-        shell.openExternal(ultimaInfoUpdate.url);
-    }
-    return true;
 });
 
-ipcMain.handle('verificar-atualizacao', async () => {
-    console.log('[AUTO-UPDATER] Disparo manual de verificação pelo usuário...');
-    checarAtualizacaoGitHubDireta(true);
-    if (autoUpdater) {
-        try { autoUpdater.checkForUpdates().catch(() => {}); } catch (e) {}
-    }
-    return { sucesso: true };
+ipcMain.handle('instalar-atualizacao-agora', async () => {
+    return await executarInstalacaoSilenciosaUpdate();
 });
 
 ipcMain.handle('obter-pausados', () => contatosPausados);
