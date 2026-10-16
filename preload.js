@@ -17,6 +17,10 @@ contextBridge.exposeInMainWorld('api', {
     adicionarIgnorado: (item) => ipcRenderer.invoke('adicionar-ignorado', item),
     removerIgnorado: (num) => ipcRenderer.invoke('remover-ignorado', num),
 
+    getOfflineTriageList: () => ipcRenderer.invoke('triage:get-list'),
+    rescanOfflineTriage: () => ipcRenderer.invoke('triage:rescan'),
+    sendTriageDecision: (payload) => ipcRenderer.invoke('triage:decision', payload),
+
     aoReceberQR: (callback) => ipcRenderer.on('bot-qr', (_e, qr) => callback(qr)),
     aoMudarStatus: (callback) => ipcRenderer.on('bot-status', (_e, st) => callback(st)),
     aoReceberSubStatus: (callback) => ipcRenderer.on('bot-substatus', (_e, info) => callback(info)),
@@ -25,5 +29,6 @@ contextBridge.exposeInMainWorld('api', {
     aoAtualizarProcessos: (callback) => ipcRenderer.on('bot-processos-sync', (_e, cfg) => callback(cfg)),
     aoAtualizarIgnorados: (callback) => ipcRenderer.on('bot-ignorados-sync', (_e, lista) => callback(lista)),
     aoReceberProgressoVarredura: (callback) => ipcRenderer.on('bot-varredura-progresso', (_e, dados) => callback(dados)),
-    aoReceberEventoUpdate: (callback) => ipcRenderer.on('bot-update-status', (_e, dados) => callback(dados))
+    aoReceberEventoUpdate: (callback) => ipcRenderer.on('bot-update-status', (_e, dados) => callback(dados)),
+    onOfflineTriageUpdated: (callback) => ipcRenderer.on('offline-triage-updated', (_, list) => callback(list))
 });
