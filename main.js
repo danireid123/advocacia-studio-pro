@@ -38,6 +38,47 @@ let timerHeartbeatShutdown = null;
 // Estado em memória da Triagem Offline e controle de IDs já decididos pelo advogado
 let offlineTriageList = [];
 const handledOfflineMsgIds = new Set();
+let timersVarreduraPosReady = [];
+let intervaloVarreduraContinua = null;
+
+function sincronizarHandledIdsComConfig(cfg) {
+    try {
+        const c = cfg || carregarConfig();
+        if (Array.isArray(c.idsMensagensVarreduraRespondidas)) {
+            for (const id of c.idsMensagensVarreduraRespondidas) {
+                if (id) handledOfflineMsgIds.add(String(id));
+            }
+        }
+    } catch (e) {}
+}
+
+function registrarMsgIdOfflineProcessado(msgId, chatId = null, msgTimestampSec = null) {
+    try {
+        const cfg = carregarConfig();
+        if (!Array.isArray(cfg.idsMensagensVarreduraRespondidas)) {
+            cfg.idsMensagensVarreduraRespondidas = [];
+        }
+        if (msgId) {
+            const idStr = String(msgId);
+            handledOfflineMsgIds.add(idStr);
+            mensagensJaProcessadas.add(idStr);
+            if (!cfg.idsMensagensVarreduraRespondidas.includes(idStr)) {
+                cfg.idsMensagensVarreduraRespondidas.push(idStr);
+            }
+        }
+        if (chatId && msgTimestampSec) {
+            if (!cfg.ultimoTimestampTriadoPorChat) cfg.ultimoTimestampTriadoPorChat = {};
+            const atual = cfg.ultimoTimestampTriadoPorChat[chatId] || 0;
+            if (msgTimestampSec > atual) {
+                cfg.ultimoTimestampTriadoPorChat[chatId] = msgTimestampSec;
+            }
+        }
+        if (cfg.idsMensagensVarreduraRespondidas.length > 800) {
+            cfg.idsMensagensVarreduraRespondidas = cfg.idsMensagensVarreduraRespondidas.slice(-800);
+        }
+        salvarConfigDisco(cfg, false);
+    } catch (e) {}
+}
 
 const GITHUB_OWNER = 'danireid123';
 const GITHUB_REPO = 'advocacia-studio-pro';
@@ -167,11 +208,13 @@ function criarConfigPadrao() {
         versao_config: "Beta 0.8",
         iniciar_com_windows: true,
         varredura_automatica_inicio: true,
+        responder_offline_automaticamente: false,
         primeiraConexaoTimestamp: 0,
         ultimoDesligamentoTimestamp: 0,
         ultimoInicioTimestamp: 0,
         historicoVarreduras: [],
         idsMensagensVarreduraRespondidas: [],
+        ultimoTimestampTriadoPorChat: {},
         agenda: {
             "0": { nome: "Domingo", ativo: false, abertura: "08:00", fechamento: "18:00" },
             "1": { nome: "Segunda-feira", ativo: true, abertura: "08:00", fechamento: "18:00" },
@@ -247,9 +290,11 @@ function migrarTemplatesAntigosProcessos(cfg) {
 
     if (typeof cfg.iniciar_com_windows === 'undefined') cfg.iniciar_com_windows = true;
     if (typeof cfg.varredura_automatica_inicio === 'undefined') cfg.varredura_automatica_inicio = true;
+    if (typeof cfg.responder_offline_automaticamente === 'undefined') cfg.responder_offline_automaticamente = false;
     if (!cfg.mapaNomes) cfg.mapaNomes = {};
     if (!cfg.mapaTelefones) cfg.mapaTelefones = {};
     if (!cfg.pausadosPersistidos) cfg.pausadosPersistidos = {};
+    if (!cfg.ultimoTimestampTriadoPorChat || typeof cfg.ultimoTimestampTriadoPorChat !== 'object') cfg.ultimoTimestampTriadoPorChat = {};
     if (!Array.isArray(cfg.contatosIgnorados)) cfg.contatosIgnorados = [];
     if (!Array.isArray(cfg.historicoVarreduras)) cfg.historicoVarreduras = [];
     if (!Array.isArray(cfg.idsMensagensVarreduraRespondidas)) cfg.idsMensagensVarreduraRespondidas = [];
@@ -264,15 +309,18 @@ function carregarConfig(forcarDisco = false) {
             if (fs.existsSync(CONFIG_BACKUP_PATH)) {
                 const recuperado = JSON.parse(fs.readFileSync(CONFIG_BACKUP_PATH, 'utf-8'));
                 configEmMemoria = migrarTemplatesAntigosProcessos({ ...padrao, ...recuperado });
+                sincronizarHandledIdsComConfig(configEmMemoria);
                 salvarConfigDisco(configEmMemoria, true);
                 return configEmMemoria;
             }
             fs.writeFileSync(CONFIG_PATH, JSON.stringify(padrao, null, 2), 'utf-8');
             configEmMemoria = padrao;
+            sincronizarHandledIdsComConfig(configEmMemoria);
             return configEmMemoria;
         }
         const lido = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
         configEmMemoria = migrarTemplatesAntigosProcessos({ ...padrao, ...lido });
+        sincronizarHandledIdsComConfig(configEmMemoria);
         if (configEmMemoria.pausadosPersistidos) {
             contatosPausados = { ...configEmMemoria.pausadosPersistidos, ...contatosPausados };
         }
@@ -281,6 +329,7 @@ function carregarConfig(forcarDisco = false) {
         try {
             if (fs.existsSync(CONFIG_BACKUP_PATH)) {
                 configEmMemoria = migrarTemplatesAntigosProcessos(JSON.parse(fs.readFileSync(CONFIG_BACKUP_PATH, 'utf-8')));
+                sincronizarHandledIdsComConfig(configEmMemoria);
                 return configEmMemoria;
             }
         } catch (err2) {}
@@ -532,6 +581,77 @@ function formatarMensagemProcesso(config, proc, remetenteChave) {
         .replace(/\{ultima_consulta\}/g, ultimaConsulta || agoraTexto);
 }
 
+// Adiciona ou atualiza um item na lista de triagem offline a partir de um evento de mensagem tardia (ex: client.on('message') com timestamp anterior a momentoConexao)
+async function adicionarOuAtualizarItemTriagemDeMsg(msg, config) {
+    try {
+        if (!msg || msg.fromMe || msg.isStatus || msg.broadcast) return false;
+        const chatId = msg.from || '';
+        if (!chatId || chatId.includes('@g.us') || chatId.includes('@newsletter') || chatId.includes('@broadcast')) return false;
+
+        const listaIgnorados = carregarContatosIgnorados();
+        if (isContactIgnored(chatId, listaIgnorados) || (msg.author && isContactIgnored(msg.author, listaIgnorados))) {
+            return false;
+        }
+
+        const msgId = (msg.id && (msg.id._serialized || msg.id.id)) ? (msg.id._serialized || msg.id.id) : `${chatId}_${msg.timestamp || Math.floor(Date.now() / 1000)}`;
+        if (handledOfflineMsgIds.has(msgId) || mensagensJaProcessadas.has(msgId)) return false;
+        if (Array.isArray(config.idsMensagensVarreduraRespondidas) && config.idsMensagensVarreduraRespondidas.includes(msgId)) return false;
+
+        const msgTimestampSec = msg.timestamp || Math.floor(Date.now() / 1000);
+        const msgTimestampMs = msgTimestampSec * 1000;
+        if ((Date.now() - msgTimestampMs) > MAX_AGE_MS) return false;
+
+        const tsTriado = (config.ultimoTimestampTriadoPorChat && config.ultimoTimestampTriadoPorChat[chatId]) || 0;
+        if (tsTriado > 0 && msgTimestampSec <= tsTriado) return false;
+
+        // Se o advogado ativou a resposta automática imediata de mensagens offline:
+        if (config.responder_offline_automaticamente === true) {
+            return await processarMensagemEntrada(msg, true);
+        }
+
+        const identidade = await resolverIdentidadeCompleta(msg, config);
+        if (isContactIgnored(identidade.chaveCliente, listaIgnorados) || isContactIgnored(identidade.telefoneFormatado, listaIgnorados)) {
+            return false;
+        }
+
+        const rawUser = chatId.split('@')[0];
+        const contactName = identidade.nomeCliente || rawUser;
+        const phoneNumber = identidade.telefoneFormatado || rawUser;
+        const bodyPreview = String(msg.body || '').trim() || '[Mídia/Áudio/Documento]';
+
+        const idxExistente = offlineTriageList.findIndex(item => item.chatId === chatId);
+        const novoItem = {
+            chatId,
+            msgId,
+            contactName,
+            phoneNumber,
+            unreadCount: idxExistente >= 0 ? Math.max(1, (offlineTriageList[idxExistente].unreadCount || 1)) : 1,
+            messagePreview: bodyPreview,
+            rawBody: String(msg.body || '').trim() || 'Olá',
+            timestamp: msgTimestampMs,
+            timestampSec: msgTimestampSec,
+            timeFormatted: new Date(msgTimestampMs).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+            relativeTime: formatRelativeTime(msgTimestampMs)
+        };
+
+        if (idxExistente >= 0) {
+            if (msgTimestampMs >= offlineTriageList[idxExistente].timestamp) {
+                offlineTriageList[idxExistente] = novoItem;
+            }
+        } else {
+            offlineTriageList.push(novoItem);
+        }
+
+        offlineTriageList.sort((a, b) => b.timestamp - a.timestamp);
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('offline-triage-updated', offlineTriageList);
+        }
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
 async function processarMensagemEntrada(msg, origemVarreduraOffline = false) {
     try {
         if (!msg || msg.fromMe || msg.isStatus || msg.broadcast) return false;
@@ -543,15 +663,22 @@ async function processarMensagemEntrada(msg, origemVarreduraOffline = false) {
             return false;
         }
 
-        const msgId = (msg.id && msg.id._serialized) ? msg.id._serialized : `${msg.from}_${msg.timestamp}_${msg.body}`;
+        const msgId = (msg.id && (msg.id._serialized || msg.id.id)) ? (msg.id._serialized || msg.id.id) : `${msg.from}_${msg.timestamp}_${msg.body}`;
         if (!origemVarreduraOffline && mensagensJaProcessadas.has(msgId)) return false;
 
         const config = carregarConfig();
-        if (!origemVarreduraOffline && Array.isArray(config.idsMensagensVarreduraRespondidas) && config.idsMensagensVarreduraRespondidas.includes(msgId)) {
+        sincronizarHandledIdsComConfig(config);
+
+        if (!origemVarreduraOffline && (handledOfflineMsgIds.has(msgId) || (Array.isArray(config.idsMensagensVarreduraRespondidas) && config.idsMensagensVarreduraRespondidas.includes(msgId)))) {
             return false;
         }
 
-        if (!origemVarreduraOffline && msg.timestamp && momentoConexao > 0 && msg.timestamp < (momentoConexao - 15)) {
+        // CORREÇÃO CRÍTICA (CAUSA RAIZ 2):
+        // Se uma mensagem chega pelo evento client.on('message') após abrir o app, mas o timestamp dela é anterior
+        // ao momentoConexao (significa que foi enviada enquanto o bot estava fechado!), NÃO descartamos mais!
+        // Roteamos imediatamente para a Central de Triagem Offline (ou auto-respondemos se responder_offline_automaticamente estiver ativo).
+        if (!origemVarreduraOffline && msg.timestamp && momentoConexao > 0 && msg.timestamp < (momentoConexao - 10)) {
+            await adicionarOuAtualizarItemTriagemDeMsg(msg, config);
             return false;
         }
 
@@ -569,12 +696,10 @@ async function processarMensagemEntrada(msg, origemVarreduraOffline = false) {
             const primeiroItem = mensagensJaProcessadas.values().next().value;
             mensagensJaProcessadas.delete(primeiroItem);
         }
-        if (origemVarreduraOffline) {
-            config.idsMensagensVarreduraRespondidas.push(msgId);
-            if (config.idsMensagensVarreduraRespondidas.length > 500) {
-                config.idsMensagensVarreduraRespondidas = config.idsMensagensVarreduraRespondidas.slice(-500);
-            }
-        }
+
+        // Registra como processada tanto para mensagens ao vivo quanto de varredura offline,
+        // garantindo que não reapareça como pendente em futuras varreduras
+        registrarMsgIdOfflineProcessado(msgId, msg.from, msg.timestamp || Math.floor(Date.now() / 1000));
 
         const identidade = await resolverIdentidadeCompleta(msg, config);
         const remetenteChave = identidade.chaveCliente;
@@ -588,7 +713,7 @@ async function processarMensagemEntrada(msg, origemVarreduraOffline = false) {
 
         const registroPausa = contatosPausados[remetenteChave] || contatosPausados[msg.from];
         const tsPausa = typeof registroPausa === 'object' ? registroPausa.timestamp : registroPausa;
-        if (tsPausa && (Date.now() - tsPausa < 24 * 60 * 60 * 1000)) {
+        if (!origemVarreduraOffline && tsPausa && (Date.now() - tsPausa < 24 * 60 * 60 * 1000)) {
             return false;
         }
 
@@ -740,7 +865,140 @@ function formatRelativeTime(timestampMs) {
     return `há ${hours}h${mins > 0 ? ` ${mins}min` : ''}`;
 }
 
-// Varredura que popula a Lista de Triagem sem disparar mensagens sem permissão do advogado
+// Extrai diretamente do Store.Chat do WhatsApp Web (ou de cli.getChats() em ambiente de teste)
+// todas as conversas individuais com suas mensagens já carregadas em memória, SEM chamar WAWebChatLoadMessages.loadEarlierMsgs
+async function extrairCandidatosStoreDireto(cli) {
+    if (cli && cli.pupPage && typeof cli.pupPage.evaluate === 'function' && !cli._isMockClient) {
+        try {
+            const rawChats = await cli.pupPage.evaluate(() => {
+                try {
+                    const Store = window.Store;
+                    if (!Store || !Store.Chat) return null;
+                    const models = Store.Chat.getModelsArray ? Store.Chat.getModelsArray() : (Store.Chat.models || []);
+                    const result = [];
+
+                    for (const c of models) {
+                        try {
+                            const idObj = c.id || {};
+                            const chatId = idObj._serialized || (idObj.user ? `${idObj.user}@${idObj.server || 'c.us'}` : String(c.id || ''));
+                            if (!chatId || chatId.includes('@g.us') || chatId.includes('@newsletter') || chatId.includes('@broadcast') || chatId === 'status@broadcast') {
+                                continue;
+                            }
+                            const isGroup = Boolean(c.isGroup || chatId.includes('@g.us'));
+                            if (isGroup) continue;
+
+                            const unreadCount = typeof c.unreadCount === 'number' ? c.unreadCount : 0;
+                            const rawMsgs = (c.msgs && typeof c.msgs.getModelsArray === 'function')
+                                ? c.msgs.getModelsArray()
+                                : (c.msgs && Array.isArray(c.msgs.models) ? c.msgs.models : []);
+
+                            const serializedMsgs = [];
+                            const sliceStart = Math.max(0, rawMsgs.length - 15);
+                            for (let i = sliceStart; i < rawMsgs.length; i++) {
+                                const m = rawMsgs[i];
+                                if (!m) continue;
+                                const mId = (m.id && (m.id._serialized || m.id.id)) || '';
+                                const fromMe = Boolean(m.id?.fromMe ?? m.fromMe);
+                                const type = String(m.type || 'chat');
+                                // Se for ciphertext ainda aguardando descriptografia E2EE, sinalizamos
+                                const isCiphertext = (type === 'ciphertext');
+                                const body = isCiphertext
+                                    ? '[Sincronizando criptografia...]'
+                                    : String(m.body || m.caption || m.content || '');
+                                const timestamp = Number(m.t || m.timestamp || 0);
+                                serializedMsgs.push({
+                                    id: mId,
+                                    fromMe,
+                                    type,
+                                    isCiphertext,
+                                    body,
+                                    timestamp,
+                                    from: chatId
+                                });
+                            }
+
+                            // Fallback: se c.msgs estiver vazio mas existir c.lastReceivedKey ou c.t
+                            if (serializedMsgs.length === 0 && c.lastReceivedKey) {
+                                const lk = c.lastReceivedKey;
+                                const lkFromMe = Boolean(lk.fromMe);
+                                const lkId = lk._serialized || lk.id || `${chatId}_${c.t || 0}`;
+                                serializedMsgs.push({
+                                    id: lkId,
+                                    fromMe: lkFromMe,
+                                    type: 'chat',
+                                    isCiphertext: false,
+                                    body: '',
+                                    timestamp: Number(c.t || 0),
+                                    from: chatId
+                                });
+                            }
+
+                            const contactObj = c.contact || {};
+                            const contactName = c.formattedTitle || c.name || contactObj.name || contactObj.pushname || contactObj.shortName || '';
+                            const phoneNumber = (contactObj.id && contactObj.id.user) || (idObj && idObj.user) || chatId.split('@')[0];
+
+                            result.push({
+                                chatId,
+                                unreadCount,
+                                chatTimestamp: Number(c.t || 0),
+                                contactName,
+                                phoneNumber,
+                                messages: serializedMsgs
+                            });
+                        } catch (innerErr) {}
+                    }
+                    return result;
+                } catch (e) {
+                    return null;
+                }
+            });
+
+            if (Array.isArray(rawChats)) {
+                return rawChats;
+            }
+        } catch (errEval) {
+            console.error('[Triagem Offline] Fallback para getChats após erro em evaluate:', errEval.message);
+        }
+    }
+
+    // Fallback seguro (ou para ambiente de testes): usa cli.getChats() e chat.lastMessage sem travar em loadEarlierMsgs
+    const chats = await cli.getChats();
+    const fallbackList = [];
+    for (const chat of chats) {
+        if (!chat || chat.isGroup) continue;
+        const chatId = (chat.id && (chat.id._serialized || chat.id.user)) || String(chat.id || '');
+        if (!chatId || chatId.includes('@g.us') || chatId.includes('@newsletter') || chatId.includes('@broadcast')) continue;
+        const rawUser = (chat.id && chat.id.user) || chatId.split('@')[0];
+
+        let msgs = [];
+        if (Array.isArray(chat._mockMessages)) {
+            msgs = chat._mockMessages;
+        } else if (chat.lastMessage) {
+            const lm = chat.lastMessage;
+            msgs = [{
+                id: (lm.id && (lm.id._serialized || lm.id.id)) || `${chatId}_${lm.timestamp || chat.timestamp || 0}`,
+                fromMe: Boolean(lm.fromMe),
+                type: lm.type || 'chat',
+                isCiphertext: lm.type === 'ciphertext',
+                body: lm.body || '',
+                timestamp: Number(lm.timestamp || chat.timestamp || 0),
+                from: chatId
+            }];
+        }
+
+        fallbackList.push({
+            chatId,
+            unreadCount: typeof chat.unreadCount === 'number' ? chat.unreadCount : 0,
+            chatTimestamp: Number(chat.timestamp || 0),
+            contactName: chat.name || rawUser,
+            phoneNumber: rawUser,
+            messages: msgs
+        });
+    }
+    return fallbackList;
+}
+
+// Varredura que popula a Lista de Triagem sem disparar mensagens sem permissão do advogado (a menos que auto-resposta offline esteja ativa)
 async function scanOfflineMessagesToTriage(targetClient, win) {
     const cli = targetClient || client;
     const targetWin = win || mainWindow;
@@ -748,85 +1006,189 @@ async function scanOfflineMessagesToTriage(targetClient, win) {
         console.log('[Triagem Offline] WhatsApp ainda não está pronto para varredura.');
         return offlineTriageList;
     }
-    console.log('[Triagem Offline] Iniciando varredura de mensagens não lidas (24h)...');
+    if (varrendoNaoLidas) return offlineTriageList;
+    varrendoNaoLidas = true;
 
     try {
+        const config = carregarConfig();
+        sincronizarHandledIdsComConfig(config);
+
         // 1. Pressiona Escape na página do Puppeteer para fechar qualquer chat focado por engano
-        if (cli.pupPage) {
+        if (cli.pupPage && typeof cli.pupPage.keyboard?.press === 'function') {
             await cli.pupPage.keyboard.press('Escape').catch(() => {});
         }
 
-        const chats = await cli.getChats();
+        const rawChats = await extrairCandidatosStoreDireto(cli);
         const now = Date.now();
-        const newTriageItems = [];
+        const nowSec = Math.floor(now / 1000);
         const listaIgnorados = carregarContatosIgnorados();
+        const newTriageItems = [];
 
-        // 2. Filtra apenas conversas individuais com unreadCount > 0
-        const candidateChats = chats.filter(c => !c.isGroup && c.unreadCount > 0);
+        // Janela de desligamento: mensagens recebidas após o último desligamento (ou nas últimas 6h antes da conexão caso ultimoDesligamentoTimestamp seja 0)
+        // usada como Critério B quando unreadCount foi zerado pelo celular aberto mas o escritório ainda não respondeu!
+        const cutoffOfflineWindowSec = (config.ultimoDesligamentoTimestamp && config.ultimoDesligamentoTimestamp > 0)
+            ? (config.ultimoDesligamentoTimestamp - 180)
+            : ((momentoConexao > 0 ? momentoConexao : nowSec) - 6 * 3600);
 
-        for (const chat of candidateChats) {
+        for (const chatData of rawChats) {
             try {
-                const chatId = (chat.id && (chat.id._serialized || chat.id.user)) || String(chat.id || '');
-                const rawUser = (chat.id && chat.id.user) || chatId.split('@')[0];
+                const { chatId, unreadCount } = chatData;
+                const rawUser = chatId.split('@')[0];
 
-                // 3. Verifica Lista Negra (Contatos Ignorados)
-                if (typeof isContactIgnored === 'function' && isContactIgnored(chatId, listaIgnorados)) {
+                // Verifica Lista de Contatos Ignorados
+                if (isContactIgnored(chatId, listaIgnorados) || isContactIgnored(rawUser, listaIgnorados) || isContactIgnored(chatData.phoneNumber, listaIgnorados)) {
                     continue;
                 }
 
-                // 4. Busca as últimas mensagens para validar autoria e janela de 24h
-                const fetchLimit = Math.min(Math.max((chat.unreadCount || 1) + 2, 5), 20);
-                const messages = await chat.fetchMessages({ limit: fetchLimit });
-                if (!messages || messages.length === 0) continue;
+                // Verifica se o cliente já está pausado na Fila de Espera Humana
+                const cleanNum = apenasNumeros(chatId);
+                const regPausa = contatosPausados[chatId] || (cleanNum && contatosPausados[cleanNum]) || contatosPausados[rawUser];
+                const tsPausa = typeof regPausa === 'object' ? regPausa.timestamp : regPausa;
+                if (tsPausa && (now - tsPausa < MAX_AGE_MS)) {
+                    continue;
+                }
 
-                // Se a última mensagem da conversa foi enviada pelo próprio escritório, o advogado já respondeu
+                const messages = Array.isArray(chatData.messages) ? chatData.messages : [];
+                if (messages.length === 0) continue;
+
+                // Se a última mensagem da conversa foi enviada pelo próprio escritório (fromMe === true),
+                // significa que o advogado já respondeu pelo celular ou o bot já atendeu!
                 const lastMsg = messages[messages.length - 1];
-                if (lastMsg.fromMe) continue;
+                if (!lastMsg || lastMsg.fromMe) continue;
 
-                // Pega apenas as mensagens não lidas do cliente dentro das últimas 24h
-                const unreadIncoming = messages.slice(-(chat.unreadCount || 1)).filter(m => {
+                // DUPLO CRITÉRIO DE DETECÇÃO OFFLINE:
+                // Critério A: Conversa marcada como não lida no WhatsApp (unreadCount > 0 ou unreadCount === -1 para marcada manualmente como não lida)
+                // Critério B: Mesmo que unreadCount === 0 (ex: o advogado estava com o celular aberto ou a conversa estava focada ao fechar),
+                //             a última mensagem é do cliente (!lastMsg.fromMe) E foi enviada enquanto o bot estava desligado
+                //             (timestamp >= cutoffOfflineWindowSec e <= momentoConexao + 30) E ainda não foi respondida/triada!
+                const isUnreadFlagged = (unreadCount > 0 || unreadCount === -1);
+                const lastMsgTimeSec = Number(lastMsg.timestamp || chatData.chatTimestamp || 0);
+                const isUnansweredFromOfflineWindow = (
+                    unreadCount === 0 &&
+                    lastMsgTimeSec > 0 &&
+                    lastMsgTimeSec >= cutoffOfflineWindowSec &&
+                    (momentoConexao === 0 || lastMsgTimeSec <= (momentoConexao + 60))
+                );
+
+                if (!isUnreadFlagged && !isUnansweredFromOfflineWindow) {
+                    continue;
+                }
+
+                const tsTriadoChat = (config.ultimoTimestampTriadoPorChat && config.ultimoTimestampTriadoPorChat[chatId]) || 0;
+
+                // Coleta as últimas mensagens seguidas enviadas pelo cliente (de trás para frente até encontrar uma fromMe)
+                const trailingClientMsgs = [];
+                for (let i = messages.length - 1; i >= 0; i--) {
+                    const m = messages[i];
+                    if (!m || m.fromMe) break;
+                    trailingClientMsgs.unshift(m);
+                    if (isUnreadFlagged && unreadCount > 0 && trailingClientMsgs.length >= Math.max(unreadCount, 5)) {
+                        break;
+                    }
+                }
+
+                // Filtra pelas mensagens dentro de 24h e ainda não processadas/ignoradas
+                const unreadIncoming = trailingClientMsgs.filter(m => {
                     if (m.fromMe) return false;
-                    const msgId = (m.id && (m.id._serialized || m.id.id)) || `${m.from}_${m.timestamp}`;
-                    if (handledOfflineMsgIds.has(msgId)) return false;
-                    const msgTimeMs = (m.timestamp || 0) * 1000;
-                    return (now - msgTimeMs) <= MAX_AGE_MS;
+                    const msgId = m.id || `${chatId}_${m.timestamp}`;
+                    if (handledOfflineMsgIds.has(msgId) || mensagensJaProcessadas.has(msgId)) return false;
+                    if (Array.isArray(config.idsMensagensVarreduraRespondidas) && config.idsMensagensVarreduraRespondidas.includes(msgId)) return false;
+                    const msgTimeSec = Number(m.timestamp || chatData.chatTimestamp || 0);
+                    if (tsTriadoChat > 0 && msgTimeSec > 0 && msgTimeSec <= tsTriadoChat) return false;
+                    const msgTimeMs = msgTimeSec * 1000;
+                    return msgTimeMs > 0 && (now - msgTimeMs) <= MAX_AGE_MS;
                 });
 
                 if (unreadIncoming.length === 0) continue;
 
                 const latestUnread = unreadIncoming[unreadIncoming.length - 1];
-                const latestMsgId = (latestUnread.id && (latestUnread.id._serialized || latestUnread.id.id)) || `${latestUnread.from}_${latestUnread.timestamp}`;
-                const msgTimestampMs = (latestUnread.timestamp || Math.floor(Date.now() / 1000)) * 1000;
+                const latestMsgId = latestUnread.id || `${chatId}_${latestUnread.timestamp}`;
+                const msgTimestampSec = Number(latestUnread.timestamp || chatData.chatTimestamp || nowSec);
+                const msgTimestampMs = msgTimestampSec * 1000;
 
-                // 5. Resolve o nome real do contato salvo na agenda
-                let contactName = chat.name || rawUser;
-                let phoneNumber = rawUser;
-                try {
-                    const contact = await cli.getContactById(chatId);
-                    if (contact) {
-                        contactName = contact.name || contact.pushname || contactName;
-                        phoneNumber = contact.number || rawUser;
-                    }
-                } catch (e) {}
+                // Resolve o nome do contato salvo na agenda (com cache em config.mapaNomes)
+                let contactName = chatData.contactName || (config.mapaNomes && (config.mapaNomes[cleanNum] || config.mapaNomes[chatId])) || '';
+                let phoneNumber = chatData.phoneNumber || rawUser;
 
-                // Concatena o texto caso o cliente tenha enviado mais de uma mensagem seguida
+                if (!contactName || contactName === rawUser) {
+                    try {
+                        const contact = await cli.getContactById(chatId);
+                        if (contact) {
+                            contactName = contact.name || contact.pushname || contactName;
+                            phoneNumber = contact.number || phoneNumber;
+                        }
+                    } catch (e) {}
+                }
+
+                if (contactName && cleanNum) {
+                    config.mapaNomes[cleanNum] = contactName;
+                    config.mapaNomes[chatId] = contactName;
+                }
+                const formattedPhone = formatarTelefoneBrasil(phoneNumber || rawUser);
+                if (!contactName) contactName = formattedPhone;
+
+                if (isContactIgnored(phoneNumber, listaIgnorados) || isContactIgnored(formattedPhone, listaIgnorados)) {
+                    continue;
+                }
+
                 const combinedText = unreadIncoming
                     .map(m => m.body || '[Mídia/Áudio/Documento]')
                     .join(' | ');
+
+                const rawBodyForBot = String(latestUnread.body || '').trim() || 'Olá';
+
+                // Se o modo de resposta automática offline estiver ativo, responde imediatamente!
+                if (config.responder_offline_automaticamente === true && !latestUnread.isCiphertext) {
+                    const syntheticMsg = {
+                        id: { _serialized: latestMsgId },
+                        from: chatId,
+                        fromMe: false,
+                        body: rawBodyForBot,
+                        timestamp: msgTimestampSec,
+                        getContact: async () => ({
+                            number: apenasNumeros(phoneNumber || rawUser),
+                            name: contactName,
+                            pushname: contactName
+                        })
+                    };
+                    await processarMensagemEntrada(syntheticMsg, true);
+                    continue;
+                }
 
                 newTriageItems.push({
                     chatId,
                     msgId: latestMsgId,
                     contactName,
-                    phoneNumber,
-                    unreadCount: unreadIncoming.length,
+                    phoneNumber: formattedPhone,
+                    unreadCount: Math.max(unreadCount > 0 ? unreadCount : 1, unreadIncoming.length),
                     messagePreview: combinedText,
+                    rawBody: rawBodyForBot,
                     timestamp: msgTimestampMs,
+                    timestampSec: msgTimestampSec,
                     timeFormatted: new Date(msgTimestampMs).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
                     relativeTime: formatRelativeTime(msgTimestampMs)
                 });
             } catch (errItem) {
                 console.error('[Triagem Offline] Erro ao analisar chat:', errItem);
+            }
+        }
+
+        // Preserva itens que tenham chegado via evento client.on('message') e que ainda não foram decididos
+        for (const itemAntigo of offlineTriageList) {
+            if (!itemAntigo || !itemAntigo.chatId) continue;
+            if (handledOfflineMsgIds.has(itemAntigo.msgId)) continue;
+            const jaEstaNaNova = newTriageItems.some(n => n.chatId === itemAntigo.chatId);
+            if (!jaEstaNaNova && (now - itemAntigo.timestamp) <= MAX_AGE_MS) {
+                // Verifica se o escritório não respondeu esse chat recentemente
+                const chatCorrespondente = rawChats.find(rc => rc.chatId === itemAntigo.chatId);
+                const msgsChat = chatCorrespondente && Array.isArray(chatCorrespondente.messages) ? chatCorrespondente.messages : [];
+                const ultimaDoChat = msgsChat.length > 0 ? msgsChat[msgsChat.length - 1] : null;
+                if (!ultimaDoChat || !ultimaDoChat.fromMe) {
+                    newTriageItems.push({
+                        ...itemAntigo,
+                        relativeTime: formatRelativeTime(itemAntigo.timestamp)
+                    });
+                }
             }
         }
 
@@ -842,6 +1204,8 @@ async function scanOfflineMessagesToTriage(targetClient, win) {
     } catch (err) {
         console.error('[Triagem Offline Erro]', err);
         return offlineTriageList;
+    } finally {
+        varrendoNaoLidas = false;
     }
 }
 
@@ -1015,7 +1379,7 @@ function createWindow() {
         height: 900,
         minWidth: 1100,
         minHeight: 720,
-        title: 'Advocacia Studio Pro • Beta 0.8 (v1.8.3)',
+        title: 'Advocacia Studio Pro • Beta 0.8 (v1.8.4)',
         icon: obterIconeNativo(),
         backgroundColor: '#0b0f17',
         webPreferences: {
@@ -1062,6 +1426,8 @@ app.whenReady().then(() => {
 
 app.on('before-quit', async () => {
     clearInterval(timerHeartbeatShutdown);
+    clearInterval(intervaloVarreduraContinua);
+    for (const t of timersVarreduraPosReady) clearTimeout(t);
     try {
         const cfg = carregarConfig();
         cfg.ultimoDesligamentoTimestamp = Math.floor(Date.now() / 1000);
@@ -1090,10 +1456,20 @@ function agendarReconexaoBackoff() {
     }, delayAtual);
 }
 
+function limparTimersVarredura() {
+    for (const t of timersVarreduraPosReady) clearTimeout(t);
+    timersVarreduraPosReady = [];
+    if (intervaloVarreduraContinua) {
+        clearInterval(intervaloVarreduraContinua);
+        intervaloVarreduraContinua = null;
+    }
+}
+
 async function iniciarWhatsApp(forcarReinicio = false) {
     if (iniciandoBot && !forcarReinicio) return;
     iniciandoBot = true;
     clearTimeout(timerReconexao);
+    limparTimersVarredura();
 
     atualizarStatusUI('initializing', 'Iniciando motor Chromium em segundo plano...');
 
@@ -1146,22 +1522,23 @@ async function iniciarWhatsApp(forcarReinicio = false) {
     });
 
     let watchdog99Timer = null;
+    let readyJaDisparado = false;
 
     client.on('loading_screen', (percent, message) => {
         atualizarStatusUI('authenticated', `Carregando conversas (${percent || 0}%): ${message || 'Sincronizando WhatsApp...'}`);
 
-        // WATCHDOG ANTI-TRAVAMENTO 99%:
-        // Evita o congelamento no estágio final de carregamento avaliando se a tela principal já renderizou
-        if (percent >= 90) {
+        // WATCHDOG ANTI-TRAVAMENTO 99% SEGURO:
+        // Só atua se realmente ficar travado por mais de 10s no final E a lista de conversas (#pane-side) já estiver renderizada no DOM,
+        // evitando interromper prematuramente o download de mensagens offline!
+        if (percent >= 95) {
             clearTimeout(watchdog99Timer);
             watchdog99Timer = setTimeout(async () => {
-                if (statusAtualBot !== 'ready' && client && client.pupPage) {
+                if (!readyJaDisparado && statusAtualBot !== 'ready' && client && client.pupPage) {
                     try {
                         const synced = await client.pupPage.evaluate(() => {
                             try {
                                 const pane = document.querySelector('#pane-side') || document.querySelector('[data-testid="chat-list"]');
-                                const socket = window.require && window.require('WAWebSocketModel')?.Socket;
-                                if (pane || (socket && socket.state === 'CONNECTED')) {
+                                if (pane) {
                                     if (typeof window.onAppStateHasSyncedEvent === 'function') {
                                         window.onAppStateHasSyncedEvent();
                                         return true;
@@ -1175,7 +1552,7 @@ async function iniciarWhatsApp(forcarReinicio = false) {
                         }
                     } catch (e) {}
                 }
-            }, 3500);
+            }, 10000);
         }
     });
 
@@ -1206,11 +1583,17 @@ async function iniciarWhatsApp(forcarReinicio = false) {
     });
 
     client.on('ready', () => {
+        clearTimeout(watchdog99Timer);
+        if (readyJaDisparado) {
+            // Se o evento ready disparar uma segunda vez após o watchdog, apenas executa uma nova varredura sem resetar momentoConexao!
+            scanOfflineMessagesToTriage(client, mainWindow);
+            return;
+        }
+        readyJaDisparado = true;
         iniciandoBot = false;
         reconectando = false;
         tentativasReconexao = 0;
         ultimoQrDataUrl = '';
-        clearTimeout(watchdog99Timer);
         momentoConexao = Math.floor(Date.now() / 1000);
 
         const cfg = carregarConfig();
@@ -1221,15 +1604,40 @@ async function iniciarWhatsApp(forcarReinicio = false) {
 
         atualizarStatusUI('ready', 'Conectado e Operante ( Monitoramento em Tempo Real )');
 
-        // Central de Triagem Offline Sempre Ativa: aguarda 5 segundos para hidratação completa de Store.Chat
-        setTimeout(() => {
-            scanOfflineMessagesToTriage(client, mainWindow);
-        }, 5000);
+        // VARREDURA MULTI-ESTÁGIO PÓS-CONEXÃO (CAUSA RAIZ 3):
+        // O WhatsApp Web Multi-Device descriptografa mensagens offline (ciphertext -> chat) entre 1s e 25s após o 'ready'.
+        // Executamos ondas automáticas em 1.5s, 5s, 10s, 18s e 30s + monitoramento periódico a cada 25s!
+        limparTimersVarredura();
+        const etapasMs = [1500, 5000, 10000, 18000, 30000];
+        for (const delayMs of etapasMs) {
+            const t = setTimeout(() => {
+                if (statusAtualBot === 'ready') {
+                    scanOfflineMessagesToTriage(client, mainWindow);
+                }
+            }, delayMs);
+            timersVarreduraPosReady.push(t);
+        }
+
+        intervaloVarreduraContinua = setInterval(() => {
+            if (statusAtualBot === 'ready') {
+                scanOfflineMessagesToTriage(client, mainWindow);
+            }
+        }, 25000);
+    });
+
+    client.on('unread_count', () => {
+        if (statusAtualBot === 'ready') {
+            setTimeout(() => {
+                scanOfflineMessagesToTriage(client, mainWindow);
+            }, 1200);
+        }
     });
 
     client.on('disconnected', () => {
         iniciandoBot = false;
+        readyJaDisparado = false;
         ultimoQrDataUrl = '';
+        limparTimersVarredura();
         agendarReconexaoBackoff();
     });
 
@@ -1306,6 +1714,46 @@ ipcMain.handle('remover-ignorado', (e, identificador) => {
     return lista;
 });
 
+// Executa o atendimento do robô para um item da triagem de forma 100% segura (sem depender de loadEarlierMsgs)
+async function atenderItemTriagemComBot(itemAlvo, chatIdFallback, msgIdFallback) {
+    const cId = (itemAlvo && itemAlvo.chatId) || chatIdFallback;
+    const mId = (itemAlvo && itemAlvo.msgId) || msgIdFallback || `${cId}_${Math.floor(Date.now() / 1000)}`;
+    const tsSec = (itemAlvo && itemAlvo.timestampSec) || Math.floor(((itemAlvo && itemAlvo.timestamp) || Date.now()) / 1000);
+
+    registrarMsgIdOfflineProcessado(mId, cId, tsSec);
+
+    if (client) {
+        const textoParaProcessar = (itemAlvo && itemAlvo.rawBody) || (itemAlvo && itemAlvo.messagePreview && itemAlvo.messagePreview !== '[Mídia/Áudio/Documento]' ? itemAlvo.messagePreview.split(' | ').pop() : 'Olá') || 'Olá';
+        const syntheticMsg = {
+            id: { _serialized: mId },
+            from: cId,
+            fromMe: false,
+            body: textoParaProcessar,
+            timestamp: tsSec,
+            getContact: async () => {
+                try {
+                    const ct = await client.getContactById(cId);
+                    if (ct) return ct;
+                } catch (e) {}
+                return {
+                    number: apenasNumeros((itemAlvo && itemAlvo.phoneNumber) || cId),
+                    name: (itemAlvo && itemAlvo.contactName) || '',
+                    pushname: (itemAlvo && itemAlvo.contactName) || ''
+                };
+            }
+        };
+
+        await processarMensagemEntrada(syntheticMsg, true);
+
+        try {
+            const chat = await client.getChatById(cId);
+            if (chat && typeof chat.sendSeen === 'function') {
+                await chat.sendSeen();
+            }
+        } catch (eSeen) {}
+    }
+}
+
 // ==========================================
 // HANDLERS DA CENTRAL DE TRIAGEM OFFLINE (24H)
 // ==========================================
@@ -1315,26 +1763,27 @@ ipcMain.handle('triage:rescan', async () => await scanOfflineMessagesToTriage(cl
 
 ipcMain.handle('triage:decision', async (event, { chatId, msgId, action }) => {
     try {
+        if (action === 'bot-all') {
+            const copiaItens = [...offlineTriageList];
+            for (const item of copiaItens) {
+                await atenderItemTriagemComBot(item, item.chatId, item.msgId);
+            }
+            offlineTriageList = [];
+            if (mainWindow && !mainWindow.isDestroyed()) {
+                mainWindow.webContents.send('offline-triage-updated', offlineTriageList);
+            }
+            return { success: true, action: 'bot-all', list: offlineTriageList };
+        }
+
         if (!chatId) return { success: false, erro: 'ChatId não informado' };
 
-        if (msgId) handledOfflineMsgIds.add(msgId);
+        const item = offlineTriageList.find(i => i.chatId === chatId);
+        const tsSec = (item && item.timestampSec) || Math.floor(((item && item.timestamp) || Date.now()) / 1000);
+        registrarMsgIdOfflineProcessado(msgId || (item && item.msgId), chatId, tsSec);
 
         if (action === 'bot') {
-            if (client) {
-                try {
-                    const chat = await client.getChatById(chatId);
-                    const msgs = await chat.fetchMessages({ limit: 5 });
-                    const incoming = msgs.slice().reverse().find(m => !m.fromMe) || msgs[msgs.length - 1];
-                    if (incoming) {
-                        if (!incoming.body) incoming.body = 'Olá';
-                        await processarMensagemEntrada(incoming, true);
-                    }
-                    await chat.sendSeen();
-                } catch (eChat) {
-                    console.error('[Triagem Bot Erro]', eChat);
-                }
-            }
-            offlineTriageList = offlineTriageList.filter(item => item.chatId !== chatId);
+            await atenderItemTriagemComBot(item, chatId, msgId);
+            offlineTriageList = offlineTriageList.filter(i => i.chatId !== chatId);
             if (mainWindow && !mainWindow.isDestroyed()) {
                 mainWindow.webContents.send('offline-triage-updated', offlineTriageList);
             }
@@ -1342,7 +1791,6 @@ ipcMain.handle('triage:decision', async (event, { chatId, msgId, action }) => {
         }
 
         if (action === 'waitlist') {
-            const item = offlineTriageList.find(i => i.chatId === chatId);
             const cleanNum = String(chatId).replace(/\D/g, '');
             const rawUser = String(chatId).split('@')[0];
             const nomeContato = item ? item.contactName : (cleanNum || rawUser);
@@ -1369,11 +1817,11 @@ ipcMain.handle('triage:decision', async (event, { chatId, msgId, action }) => {
             if (client) {
                 try {
                     const chat = await client.getChatById(chatId);
-                    await chat.sendSeen();
+                    if (chat && typeof chat.sendSeen === 'function') await chat.sendSeen();
                 } catch (e) {}
             }
 
-            offlineTriageList = offlineTriageList.filter(item => item.chatId !== chatId);
+            offlineTriageList = offlineTriageList.filter(i => i.chatId !== chatId);
             if (mainWindow && !mainWindow.isDestroyed()) {
                 mainWindow.webContents.send('offline-triage-updated', offlineTriageList);
             }
@@ -1384,10 +1832,10 @@ ipcMain.handle('triage:decision', async (event, { chatId, msgId, action }) => {
             if (client) {
                 try {
                     const chat = await client.getChatById(chatId);
-                    await chat.sendSeen();
+                    if (chat && typeof chat.sendSeen === 'function') await chat.sendSeen();
                 } catch (e) {}
             }
-            offlineTriageList = offlineTriageList.filter(item => item.chatId !== chatId);
+            offlineTriageList = offlineTriageList.filter(i => i.chatId !== chatId);
             if (mainWindow && !mainWindow.isDestroyed()) {
                 mainWindow.webContents.send('offline-triage-updated', offlineTriageList);
             }
