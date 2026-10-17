@@ -6,7 +6,6 @@ contextBridge.exposeInMainWorld('api', {
     obterVersaoApp: () => ipcRenderer.invoke('obter-versao-app'),
     obterEstadoConexao: () => ipcRenderer.invoke('obter-estado-conexao'),
     reiniciarBot: () => ipcRenderer.invoke('reiniciar-bot'),
-    forcarVarreduraNaoLidas: () => ipcRenderer.invoke('forcar-varredura-nao-lidas'),
     obterStatusAutoStart: () => ipcRenderer.invoke('obter-status-autostart'),
     definirAutoStart: (ativo) => ipcRenderer.invoke('definir-autostart', ativo),
     verificarAtualizacaoManual: () => ipcRenderer.invoke('verificar-atualizacao-manual'),
@@ -17,13 +16,6 @@ contextBridge.exposeInMainWorld('api', {
     adicionarIgnorado: (item) => ipcRenderer.invoke('adicionar-ignorado', item),
     removerIgnorado: (num) => ipcRenderer.invoke('remover-ignorado', num),
 
-    getOfflineTriageList: () => ipcRenderer.invoke('triage:get-list'),
-    rescanOfflineTriage: () => ipcRenderer.invoke('triage:rescan'),
-    sendTriageDecision: (payload) => ipcRenderer.invoke('triage:decision', payload),
-    getTriageList: () => ipcRenderer.invoke('triage:get-list'),
-    executeTriageAction: (data) => ipcRenderer.invoke('triage:execute-action', data),
-    onTriageUpdated: (callback) => ipcRenderer.on('triage:updated', (_, data) => callback(data)),
-
     aoReceberQR: (callback) => ipcRenderer.on('bot-qr', (_e, qr) => callback(qr)),
     aoMudarStatus: (callback) => ipcRenderer.on('bot-status', (_e, st) => callback(st)),
     aoReceberSubStatus: (callback) => ipcRenderer.on('bot-substatus', (_e, info) => callback(info)),
@@ -31,7 +23,5 @@ contextBridge.exposeInMainWorld('api', {
     aoAtualizarPausados: (callback) => ipcRenderer.on('bot-pausados', (_e, mapa) => callback(mapa)),
     aoAtualizarProcessos: (callback) => ipcRenderer.on('bot-processos-sync', (_e, cfg) => callback(cfg)),
     aoAtualizarIgnorados: (callback) => ipcRenderer.on('bot-ignorados-sync', (_e, lista) => callback(lista)),
-    aoReceberProgressoVarredura: (callback) => ipcRenderer.on('bot-varredura-progresso', (_e, dados) => callback(dados)),
-    aoReceberEventoUpdate: (callback) => ipcRenderer.on('bot-update-status', (_e, dados) => callback(dados)),
-    onOfflineTriageUpdated: (callback) => ipcRenderer.on('offline-triage-updated', (_, list) => callback(list))
+    aoReceberEventoUpdate: (callback) => ipcRenderer.on('bot-update-status', (_e, dados) => callback(dados))
 });

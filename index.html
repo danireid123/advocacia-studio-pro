@@ -518,7 +518,7 @@
         </div>
         <div>
           <span class="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/30">Atualização Concluída</span>
-          <h2 class="font-serif-legal text-lg font-bold text-white mt-0.5">Novidades da Versão v1.8.5</h2>
+          <h2 class="font-serif-legal text-lg font-bold text-white mt-0.5">Novidades da Versão v1.8.6</h2>
         </div>
       </div>
 
@@ -528,29 +528,22 @@
           <div class="p-3 rounded-xl bg-black/25 border border-slate-800/80 flex items-start space-x-3">
             <span class="text-[#e5c158] font-bold text-sm">⚡</span>
             <div>
-              <strong class="text-white block font-semibold">Central de Triagem Universal de Não Lidas</strong>
-              <span class="text-slate-400 text-[11px]">Toda conversa com bolinha verde / marcada como não lida aparece na triagem, sem travas de horário.</span>
+              <strong class="text-white block font-semibold">Resposta Direta e Fluxo Limpo</strong>
+              <span class="text-slate-400 text-[11px]">Interface otimizada e simplificada, focada no atendimento automático fluido e de alta performance.</span>
             </div>
           </div>
           <div class="p-3 rounded-xl bg-black/25 border border-slate-800/80 flex items-start space-x-3">
-            <span class="text-emerald-400 font-bold text-sm">📡</span>
+            <span class="text-emerald-400 font-bold text-sm">🛡️</span>
             <div>
-              <strong class="text-white block font-semibold">Controle Manual com Triplo Direcionamento</strong>
-              <span class="text-slate-400 text-[11px]">Para cada conversa: Mandar Bot Atender, Lista de Espera ou Ignorar (limpa a bolinha verde).</span>
+              <strong class="text-white block font-semibold">Estabilidade Máxima de Conexão</strong>
+              <span class="text-slate-400 text-[11px]">Eliminação de loops de varredura redundantes, mantendo o WhatsApp Web leve e veloz.</span>
             </div>
           </div>
           <div class="p-3 rounded-xl bg-black/25 border border-slate-800/80 flex items-start space-x-3">
-            <span class="text-sky-400 font-bold text-sm">🔔</span>
+            <span class="text-sky-400 font-bold text-sm">👥</span>
             <div>
-              <strong class="text-white block font-semibold">Alerta Global de Mensagens Pendentes na Tela Inicial</strong>
-              <span class="text-slate-400 text-[11px]">Aviso imediato no topo do painel quando houver clientes aguardando resposta de quando o bot estava fechado.</span>
-            </div>
-          </div>
-          <div class="p-3 rounded-xl bg-black/25 border border-slate-800/80 flex items-start space-x-3">
-            <span class="text-amber-400 font-bold text-sm">🤖</span>
-            <div>
-              <strong class="text-white block font-semibold">Opção de Responder Automaticamente ou Sob Permissão</strong>
-              <span class="text-slate-400 text-[11px]">Escolha entre aprovar cada conversa na Triagem ou deixar o robô responder todas automaticamente ao abrir.</span>
+              <strong class="text-white block font-semibold">Fila de Espera & Contatos Ignorados Preservados</strong>
+              <span class="text-slate-400 text-[11px]">Controle total sobre quem fala com o advogado e quem nunca recebe mensagens automáticas.</span>
             </div>
           </div>
         </div>
@@ -558,7 +551,7 @@
 
       <div class="pt-2">
         <button type="button" id="btn-fechar-resumo-pos" class="w-full py-3.5 champagne-gradient font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center space-x-2">
-          <span>Começar a Usar a Versão v1.8.5 ➔</span>
+          <span>Começar a Usar a Versão v1.8.6 ➔</span>
         </button>
       </div>
     </div>
@@ -585,7 +578,7 @@
       <div class="space-y-2">
         <span class="text-[11px] font-extrabold uppercase tracking-widest px-3.5 py-1 rounded-full bg-[#d4af37]/20 text-[#f3e5ab] border border-[#d4af37]/40">Assistente Jurídico LexBot • Beta 0.8</span>
         <h3 class="font-serif-legal text-xl font-bold">Bem-vindo(a) à Versão Beta 0.8!</h3>
-        <p class="text-xs text-slate-300 leading-relaxed">Gostaria de fazer um tour rápido pelas novidades, incluindo a nova Varredura Pendente (Offline), opções pós-consulta (1 e 2) e inicialização automática?</p>
+        <p class="text-xs text-slate-300 leading-relaxed">Gostaria de fazer um tour rápido pelas novidades, incluindo opções pós-consulta (1 e 2), contatos ignorados e inicialização automática?</p>
       </div>
       <div class="flex space-x-3 pt-2">
         <button id="btn-centro-nao" class="flex-1 py-3 bg-slate-800/90 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition">Explorar sozinho</button>
@@ -750,10 +743,6 @@
             <button id="nav-btn-fluxo" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
               <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-flow"/></svg><span>Menu Automático do WhatsApp</span></div>
             </button>
-            <button id="nav-btn-varredura" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
-              <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-radar"/></svg><span>Central de Triagem</span></div>
-              <span id="badge-varredura" class="px-2 py-0.5 text-[9px] rounded-full bg-amber-500/20 text-amber-300 font-bold">0 pendente(s)</span>
-            </button>
             <button id="nav-btn-agenda" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white flex items-center justify-between transition">
               <div class="flex items-center space-x-3"><svg class="w-4 h-4"><use href="#icon-calendar"/></svg><span>Horários & Almoço</span></div>
             </button>
@@ -824,46 +813,18 @@
           </div>
         </div>
 
-        <!-- ALERTA GLOBAL DE MENSAGENS OFFLINE PENDENTES (VISÍVEL EM QUALQUER ABA, ESPECIALMENTE NA TELA INICIAL) -->
-        <div id="banner-global-triagem" class="hidden exec-card p-4 rounded-2xl border-2 border-[#d4af37]/70 bg-gradient-to-r from-[#d4af37]/15 via-[#111827] to-[#d4af37]/10 items-center justify-between shadow-xl">
-          <div class="flex items-center space-x-3.5">
-            <div class="w-10 h-10 rounded-xl champagne-gradient flex items-center justify-center text-slate-950 font-extrabold shadow-lg flex-shrink-0">
-              <svg class="w-5 h-5"><use href="#icon-radar"/></svg>
-            </div>
-            <div>
-              <div class="flex items-center space-x-2">
-                <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-                <h4 id="banner-global-triagem-titulo" class="text-xs font-extrabold text-white uppercase tracking-wide">Mensagens Recebidas com o Bot Desligado!</h4>
-              </div>
-              <p id="banner-global-triagem-desc" class="text-[11px] text-slate-300 mt-0.5">Detectamos cliente(s) aguardando resposta na Central de Triagem Offline.</p>
-            </div>
-          </div>
-          <div class="flex items-center space-x-2.5">
-            <button type="button" onclick="ativarAba('varredura')" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-[#e5c158] border border-[#d4af37]/40 rounded-xl text-xs font-bold transition">
-              Ver Conversas ➔
-            </button>
-            <button type="button" id="btn-banner-atender-todas" class="px-4 py-2 champagne-gradient rounded-xl text-xs font-bold shadow-lg transition">
-              🤖 Mandar Bot Responder Todas Agora
-            </button>
-          </div>
-        </div>
-
         <!-- ================= ABA 0: VISÃO GERAL ================= -->
         <div id="aba-inicio" class="space-y-6 tab-pane-anim">
           <div id="tour-home-banner" class="exec-card p-6 rounded-2xl border border-[#d4af37]/30 flex items-center justify-between">
             <div class="space-y-1.5">
               <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-[#d4af37]/15 text-[#e5c158]">Painel Executivo • Beta 0.8</span>
               <h2 id="home-welcome-title" class="font-serif-legal text-2xl font-bold">Olá! Bem-vindo ao seu Escritório Digital.</h2>
-              <p class="text-xs text-slate-400">Conexão rápida ativa, auto-salvamento blindado e varredura inteligente de mensagens offline.</p>
+              <p class="text-xs text-slate-400">Conexão rápida ativa, auto-salvamento blindado e atendimento automático em tempo real.</p>
             </div>
             <div class="flex space-x-3">
               <button onclick="irParaNovoProcessoDireto()" class="px-4 py-2.5 champagne-gradient rounded-xl text-xs font-bold shadow-lg flex items-center space-x-2 transition">
                 <svg class="w-4 h-4"><use href="#icon-plus"/></svg>
                 <span>Cadastrar Processo</span>
-              </button>
-              <button onclick="ativarAba('varredura')" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 rounded-xl text-xs font-semibold transition flex items-center space-x-2">
-                <svg class="w-4 h-4"><use href="#icon-radar"/></svg>
-                <span>Varredura Offline</span>
               </button>
             </div>
           </div>
@@ -1151,63 +1112,6 @@
           </div>
         </div>
 
-        <!-- ================= ABA CENTRAL DE TRIAGEM OFFLINE (24H) ================= -->
-        <div id="aba-varredura" class="hidden space-y-5 tab-pane-anim">
-          <div id="tour-varredura-card" class="exec-card p-6 rounded-2xl space-y-6">
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
-              <div>
-                <div class="flex items-center space-x-2.5">
-                  <h2 class="font-serif-legal text-lg font-bold">Central de Triagem - Mensagens Não Lidas</h2>
-                  <span id="badge-triagem-cont" class="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    0 pendente(s)
-                  </span>
-                </div>
-                <p class="text-xs text-slate-400 mt-1">Mensagens recebidas com o bot desligado. Você decide: mandar o bot atender, transferir para a fila de espera do advogado ou ignorar.</p>
-              </div>
-
-              <div class="flex items-center space-x-3">
-                <div class="flex items-center space-x-2.5 bg-black/25 border border-[#d4af37]/30 px-3.5 py-2 rounded-xl" title="Quando ativado, o robô responde automaticamente todas as mensagens offline ao abrir sem esperar clique manual">
-                  <div>
-                    <span class="text-xs font-bold text-[#e5c158] block">Auto-Responder ao Abrir</span>
-                    <span class="text-[10px] text-slate-400 block">Atender offline sem pedir permissão</span>
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="check-auto-responder-offline">
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-                <button id="btn-atender-todas-triagem" type="button" class="hidden px-4 py-2.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-bold shadow transition items-center space-x-1.5">
-                  <span>🤖 Atender Todas</span>
-                </button>
-
-                <button id="btn-revarrer-triagem" type="button" class="px-4 py-2.5 champagne-gradient rounded-xl text-xs font-bold shadow-lg flex items-center space-x-2 transition hover:opacity-95">
-                  <svg class="w-4 h-4"><use href="#icon-refresh"/></svg>
-                  <span id="label-revarrer-triagem">Varredura Manual</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Lista de Cartões de Triagem -->
-            <div class="space-y-3">
-              <div class="flex items-center justify-between">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-[#e5c158] flex items-center space-x-2">
-                  <span>Conversas Aguardando Decisão</span>
-                  <span id="triagem-subtitulo-contador" class="text-[11px] font-normal text-slate-400">(0 clientes aguardando)</span>
-                </h3>
-                <span class="text-[11px] text-slate-400">Exclui contatos ignorados, grupos e conversas já respondidas pelo celular</span>
-              </div>
-
-              <div id="lista-triagem-offline" class="space-y-3 min-h-[160px]">
-                <div class="exec-card p-12 rounded-2xl text-center space-y-2 border border-slate-800">
-                  <p class="text-sm font-semibold text-emerald-400">✓ Nenhuma conversa pendente no momento</p>
-                  <p class="text-xs text-slate-400">Todas as mensagens das últimas 24h estão em dia ou foram processadas.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- ================= ABA 3: HORÁRIOS & ALMOÇO ================= -->
         <div id="aba-agenda" class="hidden space-y-5 tab-pane-anim">
           <div id="tour-agenda-card" class="exec-card p-6 rounded-2xl space-y-5">
@@ -1401,12 +1305,9 @@
       return {
         versao_config: "Beta 0.8",
         iniciar_com_windows: true,
-        varredura_automatica_inicio: true,
         primeiraConexaoTimestamp: 0,
         ultimoDesligamentoTimestamp: 0,
         ultimoInicioTimestamp: 0,
-        historicoVarreduras: [],
-        idsMensagensVarreduraRespondidas: [],
         agenda: {
           "0": { nome: "Domingo", ativo: false, abertura: "08:00", fechamento: "18:00" },
           "1": { nome: "Segunda-feira", ativo: true, abertura: "08:00", fechamento: "18:00" },
@@ -1495,7 +1396,6 @@
           localStorage.setItem('adv_bot_ignored_contacts', JSON.stringify(l));
           return l;
         },
-        forcarVarreduraNaoLidas: async () => ({ respondidas: 0, analisadas: 0, itens: [] }),
         obterStatusAutoStart: async () => true,
         definirAutoStart: async () => true,
         instalarAtualizacaoAgora: async () => {},
@@ -1506,7 +1406,6 @@
         aoAtualizarPausados: () => {},
         aoAtualizarProcessos: () => {},
         aoAtualizarIgnorados: () => {},
-        aoReceberProgressoVarredura: () => {},
         aoReceberEventoUpdate: () => {}
       };
     }
@@ -1523,7 +1422,6 @@
         }
       });
       if (typeof configGlobal.iniciar_com_windows === 'undefined') configGlobal.iniciar_com_windows = true;
-      if (typeof configGlobal.varredura_automatica_inicio === 'undefined') configGlobal.varredura_automatica_inicio = true;
       if (typeof configGlobal.agenda.almoco_ativo === 'undefined') configGlobal.agenda.almoco_ativo = true;
       if (!configGlobal.agenda.almoco_inicio) configGlobal.agenda.almoco_inicio = "12:00";
       if (!configGlobal.agenda.almoco_fim) configGlobal.agenda.almoco_fim = "13:30";
@@ -1531,7 +1429,6 @@
       if (!configGlobal.agenda.msg_fora_expediente) configGlobal.agenda.msg_fora_expediente = padraoAgenda.msg_fora_expediente;
       if (!configGlobal.mapaNomes) configGlobal.mapaNomes = {};
       if (!configGlobal.mapaTelefones) configGlobal.mapaTelefones = {};
-      if (!Array.isArray(configGlobal.historicoVarreduras)) configGlobal.historicoVarreduras = [];
     }
 
     function garantirEstruturaProcessos() {
@@ -1812,14 +1709,6 @@
       const elMenus = document.getElementById('home-card-menus');
       if (elMenus) elMenus.innerText = String(qtdMenus);
 
-      const badgeVarredura = document.getElementById('badge-varredura');
-      if (badgeVarredura) {
-        badgeVarredura.innerText = configGlobal.varredura_automatica_inicio !== false ? 'Auto' : 'Manual';
-        badgeVarredura.className = configGlobal.varredura_automatica_inicio !== false
-          ? 'px-2 py-0.5 text-[9px] rounded-full bg-emerald-500/20 text-emerald-400 font-bold'
-          : 'px-2 py-0.5 text-[9px] rounded-full bg-slate-800 text-slate-400 font-bold';
-      }
-
       const badgeIgnorados = document.getElementById('badge-ignorados');
       if (badgeIgnorados) {
         badgeIgnorados.innerText = String((contatosIgnoradosCache || []).length);
@@ -1886,12 +1775,11 @@
       { titulo: "1. Visão Geral (Beta 0.8)", texto: "Bem-vindo à versão Beta 0.8! O sistema agora conta com auto-login de 30 dias, salvamento automático blindado e conexão ultra-rápida.", aba: "inicio", alvoId: "tour-home-banner" },
       { titulo: "2. Produtividade em Tempo Real", texto: "Acompanhe os clientes únicos atendidos, respostas automáticas enviadas e a fila de espera do advogado.", aba: "inicio", alvoId: "tour-metrics-bar" },
       { titulo: "3. Processos (Novas Opções 1 e 2)", texto: "Após o cliente digitar o CPF e receber o resumo do processo, ele pode digitar 1 para encerrar com mensagem de agradecimento ou 2 para chamar o advogado!", aba: "processos", alvoId: "tour-processos-card" },
-      { titulo: "4. Varredura Pendente (Offline)", texto: "NOVO! Esta página analisa apenas as mensagens não lidas enviadas enquanto o aplicativo estava fechado e que o bot ainda não respondeu. Use o Slider para deixar no automático!", aba: "varredura", alvoId: "tour-varredura-card" },
-      { titulo: "5. Menu Automático", texto: "Personalize as mensagens e submenus de atendimento. Tudo é salvo automaticamente a cada alteração.", aba: "fluxo", alvoId: "tour-seletor-etapa" },
-      { titulo: "6. Horários & Almoço", texto: "Configure o expediente semanal e o intervalo de almoço com chave seletora rápida.", aba: "agenda", alvoId: "tour-agenda-card" },
-      { titulo: "7. Fila de Espera com Nome Salvo", texto: "Quando o cliente pede para falar com o advogado, ele entra nesta fila exibindo o Nome salvo nos seus contatos do WhatsApp!", aba: "pausados", alvoId: "tour-pausados-card" },
-      { titulo: "8. Abrir com o PC", texto: "Com esta chave ativada no topo, o Advocacia Studio Pro inicia sozinho sempre que o computador é ligado.", aba: "inicio", alvoId: "tour-autostart-box" },
-      { titulo: "9. Status Detalhado & Auto-Reconexão", texto: "Acompanhe cada etapa do motor Chromium em tempo real. Se a internet oscilar de madrugada, o robô reconecta sozinho!", aba: "inicio", alvoId: "tour-qr-card" }
+      { titulo: "4. Menu Automático", texto: "Personalize as mensagens e submenus de atendimento. Tudo é salvo automaticamente a cada alteração.", aba: "fluxo", alvoId: "tour-seletor-etapa" },
+      { titulo: "5. Horários & Almoço", texto: "Configure o expediente semanal e o intervalo de almoço com chave seletora rápida.", aba: "agenda", alvoId: "tour-agenda-card" },
+      { titulo: "6. Fila de Espera com Nome Salvo", texto: "Quando o cliente pede para falar com o advogado, ele entra nesta fila exibindo o Nome salvo nos seus contatos do WhatsApp!", aba: "pausados", alvoId: "tour-pausados-card" },
+      { titulo: "7. Abrir com o PC", texto: "Com esta chave ativada no topo, o Advocacia Studio Pro inicia sozinho sempre que o computador é ligado.", aba: "inicio", alvoId: "tour-autostart-box" },
+      { titulo: "8. Status Detalhado & Auto-Reconexão", texto: "Acompanhe cada etapa do motor Chromium em tempo real. Se a internet oscilar de madrugada, o robô reconecta sozinho!", aba: "inicio", alvoId: "tour-qr-card" }
     ];
 
     let passoAtualTour = 0;
@@ -2040,7 +1928,7 @@
     }
 
     window.ativarAba = function(abaNome) {
-      ['inicio', 'processos', 'fluxo', 'varredura', 'agenda', 'pausados', 'ignorados', 'terminal', 'backup'].forEach(a => {
+      ['inicio', 'processos', 'fluxo', 'agenda', 'pausados', 'ignorados', 'terminal', 'backup'].forEach(a => {
         const d = document.getElementById('aba-' + a);
         const b = document.getElementById('nav-btn-' + a);
         if (d) {
@@ -2054,7 +1942,6 @@
       });
       if (abaNome === 'inicio') renderizarTelaInicial();
       if (abaNome === 'processos') renderizarModuloProcessos();
-      if (abaNome === 'varredura') renderizarPaginaVarredura();
       if (abaNome === 'agenda') renderizarAgendaSemanal();
       if (abaNome === 'ignorados') carregarERenderizarIgnorados();
     };
@@ -2062,7 +1949,6 @@
     document.getElementById('nav-btn-inicio').addEventListener('click', () => ativarAba('inicio'));
     document.getElementById('nav-btn-fluxo').addEventListener('click', () => ativarAba('fluxo'));
     document.getElementById('nav-btn-processos').addEventListener('click', () => ativarAba('processos'));
-    document.getElementById('nav-btn-varredura').addEventListener('click', () => ativarAba('varredura'));
     document.getElementById('nav-btn-agenda').addEventListener('click', () => ativarAba('agenda'));
     document.getElementById('nav-btn-pausados').addEventListener('click', async () => {
       ativarAba('pausados');
@@ -2182,255 +2068,6 @@
     function formatarTimestampLegivel(tsSegundos) {
       if (!tsSegundos || tsSegundos <= 0) return 'Aguardando 1ª conexão...';
       return new Date(tsSegundos * 1000).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'medium' });
-    }
-
-    async function carregarListaTriagem() {
-      if (window.api && window.api.getTriageList) {
-        try {
-          const lista = await window.api.getTriageList();
-          renderizarListaTriagem(lista);
-        } catch (e) {}
-      }
-    }
-
-    function renderizarPaginaVarredura() {
-      carregarListaTriagem();
-    }
-
-    function atualizarContadoresTriagem(total) {
-      const badgeNav = document.getElementById('badge-varredura');
-      const badgeTopo = document.getElementById('badge-triagem-cont');
-      const subtitulo = document.getElementById('triagem-subtitulo-contador');
-      const bannerGlobal = document.getElementById('banner-global-triagem');
-      const bannerDesc = document.getElementById('banner-global-triagem-desc');
-      const btnAtenderTodas = document.getElementById('btn-atender-todas-triagem');
-
-      const texto = `${total} pendente(s)`;
-      if (badgeNav) badgeNav.innerText = texto;
-      if (badgeTopo) badgeTopo.innerText = texto;
-      if (subtitulo) subtitulo.innerText = `(${total} cliente(s) aguardando decisão)`;
-
-      if (bannerGlobal) {
-        if (total > 0) {
-          bannerGlobal.classList.remove('hidden');
-          bannerGlobal.classList.add('flex');
-          if (bannerDesc) {
-            bannerDesc.innerText = `Você tem ${total} conversa(s) recebida(s) com o bot fechado aguardando sua permissão ou resposta.`;
-          }
-        } else {
-          bannerGlobal.classList.add('hidden');
-          bannerGlobal.classList.remove('flex');
-        }
-      }
-
-      if (btnAtenderTodas) {
-        if (total > 0) {
-          btnAtenderTodas.classList.remove('hidden');
-          btnAtenderTodas.classList.add('flex');
-        } else {
-          btnAtenderTodas.classList.add('hidden');
-          btnAtenderTodas.classList.remove('flex');
-        }
-      }
-    }
-
-    async function atenderTodasTriagemAgora() {
-      try {
-        mostrarToast('Acionando robô para responder todas as conversas pendentes...');
-        if (window.api && window.api.executeTriageAction) {
-          const res = await window.api.executeTriageAction({ action: 'bot-all' });
-          renderizarListaTriagem((res && res.list) || []);
-          mostrarToast('Todas as conversas pendentes foram respondidas pelo robô!');
-        }
-      } catch (e) {
-        mostrarToast('Erro ao responder todas: ' + e.message);
-      }
-    }
-
-    const btnBannerTodas = document.getElementById('btn-banner-atender-todas');
-    if (btnBannerTodas) btnBannerTodas.addEventListener('click', atenderTodasTriagemAgora);
-
-    const btnTriagemTodas = document.getElementById('btn-atender-todas-triagem');
-    if (btnTriagemTodas) btnTriagemTodas.addEventListener('click', atenderTodasTriagemAgora);
-
-    const checkAutoRespOffline = document.getElementById('check-auto-responder-offline');
-    if (checkAutoRespOffline) {
-      checkAutoRespOffline.addEventListener('change', async (e) => {
-        configGlobal.responder_offline_automaticamente = Boolean(e.target.checked);
-        await salvarConfiguracaoCompleta(true);
-        if (e.target.checked) {
-          mostrarToast('Auto-Resposta Offline ativada! Respondendo pendentes...');
-          await atenderTodasTriagemAgora();
-        } else {
-          mostrarToast('Modo Triagem Assistida ativado (pede permissão antes de responder).');
-        }
-      });
-    }
-
-    function renderizarListaTriagem(lista) {
-      const container = document.getElementById('lista-triagem-offline');
-      const itens = Array.isArray(lista) ? lista : [];
-      const total = itens.length;
-      atualizarContadoresTriagem(total);
-
-      if (!container) return;
-
-      if (total === 0) {
-        container.innerHTML = `
-          <div class="exec-card p-12 rounded-2xl text-center space-y-2 border border-slate-800">
-            <p class="text-sm font-semibold text-emerald-400">✓ Nenhuma conversa pendente no momento</p>
-            <p class="text-xs text-slate-400">Todas as mensagens das últimas 24h estão em dia ou foram processadas.</p>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = '';
-      itens.forEach(item => {
-        const card = document.createElement('div');
-        const cardId = 'card-triagem-' + String(item.chatId || '').replace(/\D/g, '');
-        card.id = cardId;
-        card.className = "exec-card p-5 rounded-2xl border border-slate-800/90 hover:border-[#d4af37]/40 transition space-y-3.5";
-
-        const inicial = (item.contactName || 'C').trim().charAt(0).toUpperCase() || 'C';
-
-        card.innerHTML = `
-          <div class="flex items-start justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 rounded-xl bg-[#d4af37]/15 border border-[#d4af37]/30 flex items-center justify-center text-[#e5c158] font-bold text-sm shadow">
-                ${inicial}
-              </div>
-              <div>
-                <div class="flex items-center space-x-2">
-                  <h4 class="font-bold text-sm text-white">${item.contactName || 'Cliente'}</h4>
-                  <span class="text-xs text-slate-400 font-mono">${item.phoneNumber || ''}</span>
-                </div>
-                <div class="flex items-center space-x-2 text-[11px] text-slate-400 mt-0.5">
-                  <span>Enviada às ${item.timeFormatted || ''} (${item.relativeTime || ''})</span>
-                  <span>•</span>
-                  <span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-semibold text-[10px] border border-amber-500/20">${item.unreadCount || 1} não lida(s)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="p-3.5 rounded-xl bg-black/40 border border-slate-800/80 text-xs text-slate-200 font-sans leading-relaxed">
-            <span class="text-slate-400 block text-[10px] uppercase font-bold tracking-wider mb-1">Última mensagem enviada pelo cliente:</span>
-            "${item.messagePreview || '[Sem texto]'}"
-          </div>
-
-          <div class="flex items-center justify-end space-x-2.5 pt-1">
-            <button type="button" class="btn-triagem-bot px-4 py-2 champagne-gradient font-bold text-xs rounded-xl shadow transition flex items-center space-x-1.5 hover:opacity-95 cursor-pointer">
-              <span>🤖 Mandar Bot Atender</span>
-            </button>
-            <button type="button" class="btn-triagem-waitlist px-4 py-2 bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 font-bold text-xs rounded-xl shadow transition flex items-center space-x-1.5 cursor-pointer">
-              <span>⏳ Lista de Espera</span>
-            </button>
-            <button type="button" class="btn-triagem-ignore px-3.5 py-2 bg-slate-800/80 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-slate-700/60 font-semibold text-xs rounded-xl transition flex items-center space-x-1.5 cursor-pointer">
-              <span>🚫 Ignorar</span>
-            </button>
-          </div>
-        `;
-
-        const btnBot = card.querySelector('.btn-triagem-bot');
-        const btnWaitlist = card.querySelector('.btn-triagem-waitlist');
-        const btnIgnore = card.querySelector('.btn-triagem-ignore');
-
-        const travarBotoes = () => {
-          btnBot.disabled = true;
-          btnWaitlist.disabled = true;
-          btnIgnore.disabled = true;
-        };
-
-        btnBot.addEventListener('click', async () => {
-          travarBotoes();
-          btnBot.innerHTML = '<span>Processando...</span>';
-          try {
-            if (window.api && window.api.executeTriageAction) {
-              await window.api.executeTriageAction({ chatId: item.chatId, msgId: item.msgId, action: 'bot' });
-            }
-            mostrarToast(`Bot acionado para atender ${item.contactName}!`);
-            card.remove();
-            verificarListaVaziaAposAcao();
-          } catch (e) {
-            btnBot.disabled = false; btnWaitlist.disabled = false; btnIgnore.disabled = false;
-            btnBot.innerHTML = '<span>🤖 Mandar Bot Atender</span>';
-            mostrarToast('Erro ao acionar bot: ' + e.message);
-          }
-        });
-
-        btnWaitlist.addEventListener('click', async () => {
-          travarBotoes();
-          btnWaitlist.innerHTML = '<span>Movendo...</span>';
-          try {
-            if (window.api && window.api.executeTriageAction) {
-              await window.api.executeTriageAction({ chatId: item.chatId, msgId: item.msgId, action: 'waitlist' });
-            }
-            mostrarToast(`${item.contactName} transferido para a Fila de Espera!`);
-            card.remove();
-            verificarListaVaziaAposAcao();
-          } catch (e) {
-            btnBot.disabled = false; btnWaitlist.disabled = false; btnIgnore.disabled = false;
-            btnWaitlist.innerHTML = '<span>⏳ Lista de Espera</span>';
-            mostrarToast('Erro ao transferir: ' + e.message);
-          }
-        });
-
-        btnIgnore.addEventListener('click', async () => {
-          travarBotoes();
-          btnIgnore.innerHTML = '<span>Ignorando...</span>';
-          try {
-            if (window.api && window.api.executeTriageAction) {
-              await window.api.executeTriageAction({ chatId: item.chatId, msgId: item.msgId, action: 'ignore' });
-            }
-            mostrarToast(`Mensagem de ${item.contactName} ignorada.`);
-            card.remove();
-            verificarListaVaziaAposAcao();
-          } catch (e) {
-            btnBot.disabled = false; btnWaitlist.disabled = false; btnIgnore.disabled = false;
-            btnIgnore.innerHTML = '<span>🚫 Ignorar</span>';
-            mostrarToast('Erro ao ignorar: ' + e.message);
-          }
-        });
-
-        container.appendChild(card);
-      });
-    }
-
-    function verificarListaVaziaAposAcao() {
-      const container = document.getElementById('lista-triagem-offline');
-      const restam = container ? container.querySelectorAll('[id^="card-triagem-"]').length : 0;
-      atualizarContadoresTriagem(restam);
-      if (restam === 0 && container) {
-        container.innerHTML = `
-          <div class="exec-card p-12 rounded-2xl text-center space-y-2 border border-slate-800">
-            <p class="text-sm font-semibold text-emerald-400">✓ Nenhuma conversa pendente no momento</p>
-            <p class="text-xs text-slate-400">Todas as mensagens das últimas 24h estão em dia ou foram processadas.</p>
-          </div>
-        `;
-      }
-    }
-
-    const btnRevarrer = document.getElementById('btn-revarrer-triagem');
-    if (btnRevarrer) {
-      btnRevarrer.addEventListener('click', async () => {
-        btnRevarrer.disabled = true;
-        const lbl = document.getElementById('label-revarrer-triagem');
-        if (lbl) lbl.innerText = 'Varrendo...';
-        mostrarToast('Varrendo conversas não lidas das últimas 24h...');
-        try {
-          if (window.api && window.api.rescanOfflineTriage) {
-            const list = await window.api.rescanOfflineTriage();
-            renderizarListaTriagem(list);
-            mostrarToast(`Varredura concluída! ${list.length} conversa(s) aguardando.`);
-          }
-        } catch (e) {
-          mostrarToast('Erro na varredura: ' + e.message);
-        } finally {
-          btnRevarrer.disabled = false;
-          if (lbl) lbl.innerText = 'Varredura Manual';
-        }
-      });
     }
 
     function obterObjetoEtapaAtual() {
@@ -2767,14 +2404,6 @@
       if (checkAutoStart) {
         checkAutoStart.checked = Boolean(configGlobal.iniciar_com_windows !== false);
       }
-      const sliderVarredura = document.getElementById('slider-varredura-auto');
-      if (sliderVarredura) {
-        sliderVarredura.checked = Boolean(configGlobal.varredura_automatica_inicio !== false);
-      }
-      const checkAutoResp = document.getElementById('check-auto-responder-offline');
-      if (checkAutoResp) {
-        checkAutoResp.checked = Boolean(configGlobal.responder_offline_automaticamente === true);
-      }
     }
 
     function renderizarAgendaSemanal() {
@@ -3013,7 +2642,6 @@
       carregarEtapaNoEditor('raiz');
       renderizarAgendaSemanal();
       renderizarModuloProcessos();
-      renderizarPaginaVarredura();
       carregarERenderizarIgnorados();
       renderizarTelaInicial();
 
@@ -3080,41 +2708,6 @@
           });
         }
 
-        if (window.api.aoReceberProgressoVarredura) {
-          window.api.aoReceberProgressoVarredura((dados) => {
-            if (!dados) return;
-            const elFase = document.getElementById('varredura-status-fase');
-            const elCont = document.getElementById('varredura-contadores');
-            const boxRes = document.getElementById('varredura-lista-resultados');
-
-            if (elFase) elFase.innerText = dados.fase || 'Processando...';
-            if (elCont) elCont.innerText = `${dados.analisadas || 0} conversa(s) analisada(s) • ${dados.respondidas || 0} respondida(s)`;
-
-            if (Array.isArray(dados.itens) && boxRes) {
-              if (dados.itens.length === 0 && !dados.emAndamento) {
-                boxRes.innerHTML = '<div class="text-xs text-slate-400 text-center py-16">✓ Nenhuma conversa não lida pendente do período offline estava sem resposta.</div>';
-              } else if (dados.itens.length > 0) {
-                boxRes.innerHTML = '';
-                dados.itens.forEach(item => {
-                  const div = document.createElement('div');
-                  div.className = "p-3.5 exec-card rounded-xl flex items-center justify-between text-xs border-l-4 border-emerald-400";
-                  div.innerHTML = `
-                    <div>
-                      <span class="font-bold text-[#e5c158] block">${item.exibicao}</span>
-                      <span class="text-slate-300 text-[11px]">"${item.msg}"</span>
-                    </div>
-                    <div class="text-right">
-                      <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-bold text-[10px] block">${item.status}</span>
-                      <span class="text-[10px] text-slate-500 mt-0.5 block">${item.horaMsg}</span>
-                    </div>
-                  `;
-                  boxRes.appendChild(div);
-                });
-              }
-            }
-          });
-        }
-
         if (window.api.aoReceberEventoUpdate) {
           window.api.aoReceberEventoUpdate((dados) => {
             const modalCenter = document.getElementById('modal-update-center');
@@ -3167,19 +2760,7 @@
           });
         }
 
-        if (window.api && window.api.onTriageUpdated) {
-          window.api.onTriageUpdated((list) => {
-            renderizarListaTriagem(list);
-          });
-        }
-
-        if (window.api && window.api.getTriageList) {
-          window.api.getTriageList().then(list => {
-            if (Array.isArray(list)) renderizarListaTriagem(list);
-          }).catch(() => {});
-        }
-
-        const VERSAO_APP_LOCAL = '1.8.5';
+        const VERSAO_APP_LOCAL = '1.8.6';
         const versaoSalva = localStorage.getItem('adv_bot_installed_version');
         if (versaoSalva !== VERSAO_APP_LOCAL) {
           setTimeout(() => {
@@ -3225,13 +2806,12 @@
           }
 
           const rotuloExibicao = log.nome ? `${log.nome} (${log.numero})` : (log.exibicao || log.numero);
-          const tagOffline = log.origemOffline ? '<span class="ml-2 px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-bold">Varredura Offline</span>' : '';
 
           const box = document.getElementById('logs-box');
           if (box.innerText.includes('Nenhuma') || box.innerText.includes('limpo')) box.innerHTML = '';
           const div = document.createElement('div');
           div.className = "p-3.5 exec-card rounded-xl flex items-center justify-between text-xs";
-          div.innerHTML = `<div class="flex items-center"><span class="text-[#e5c158] font-bold">${rotuloExibicao}</span>${tagOffline}</div><span class="truncate mx-3 flex-1 text-slate-200">${log.msg}</span><span class="text-slate-500">${log.hora}</span>`;
+          div.innerHTML = `<div class="flex items-center"><span class="text-[#e5c158] font-bold">${rotuloExibicao}</span></div><span class="truncate mx-3 flex-1 text-slate-200">${log.msg}</span><span class="text-slate-500">${log.hora}</span>`;
           box.prepend(div);
           while(box.children.length > 100) box.removeChild(box.lastElementChild);
 
