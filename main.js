@@ -988,34 +988,50 @@ async function iniciarWhatsApp(forcarReinicio = false) {
     let readyJaDisparado = false;
 
     client.on('loading_screen', (percent, message) => {
-        atualizarStatusUI('authenticated', `Carregando conversas (${percent || 0}%): ${message || 'Sincronizando WhatsApp...'}`);
+        const pct = percent || 0;
+        atualizarStatusUI('authenticated', `Carregando conversas (${pct}%): ${message || 'Sincronizando WhatsApp...'}`);
 
-        // WATCHDOG ANTI-TRAVAMENTO 99% SEGURO:
-        // Só atua se realmente ficar travado por mais de 10s no final E a lista de conversas (#pane-side) já estiver renderizada no DOM,
-        // evitando interromper prematuramente o download de mensagens offline!
-        if (percent >= 95) {
+        // WATCHDOG ATIVO ANTI-TRAVAMENTO 99%:
+        // Se passar de 90%, inicia monitoramento do DOM do WhatsApp.
+        // Assim que o container de chats estiver pronto, força a transição segura para READY!
+        if (pct >= 90) {
             clearTimeout(watchdog99Timer);
             watchdog99Timer = setTimeout(async () => {
                 if (!readyJaDisparado && statusAtualBot !== 'ready' && client && client.pupPage) {
                     try {
-                        const synced = await client.pupPage.evaluate(() => {
+                        const prontoNoDOM = await client.pupPage.evaluate(() => {
                             try {
-                                const pane = document.querySelector('#pane-side') || document.querySelector('[data-testid="chat-list"]');
-                                if (pane) {
+                                const chatList = document.querySelector('#pane-side') || 
+                                                 document.querySelector('[data-testid="chat-list"]') ||
+                                                 document.querySelector('div[aria-label="Lista de conversas"]') ||
+                                                 document.querySelector('div[aria-label="Chat list"]');
+                                if (chatList) {
                                     if (typeof window.onAppStateHasSyncedEvent === 'function') {
                                         window.onAppStateHasSyncedEvent();
-                                        return true;
                                     }
+                                    return true;
                                 }
-                            } catch (e) {}
+                            } catch (_) {}
                             return false;
                         });
-                        if (synced) {
-                            atualizarStatusUI('authenticated', 'Finalizando sincronização rápida...');
+
+                        if (prontoNoDOM) {
+                            atualizarStatusUI('ready', 'Conectado e Operante ( Monitoramento em Tempo Real )');
+                            if (!readyJaDisparado) {
+                                readyJaDisparado = true;
+                                iniciandoBot = false;
+                                reconectando = false;
+                                tentativasReconexao = 0;
+                                ultimoQrDataUrl = '';
+                                momentoConexao = Math.floor(Date.now() / 1000);
+                                try {
+                                    client.emit('ready');
+                                } catch (_) {}
+                            }
                         }
-                    } catch (e) {}
+                    } catch (_) {}
                 }
-            }, 10000);
+            }, 3000);
         }
     });
 

@@ -2539,7 +2539,10 @@
 
       if (st === 'ready') {
         txtEl.innerText = 'Conectado';
-        if (!subDetalhe && subEl) subEl.innerText = 'Monitoramento ativo em tempo real';
+        const txtSucesso = (subDetalhe && !subDetalhe.includes('%') && !subDetalhe.includes('Carregando')) 
+          ? subDetalhe 
+          : 'Monitoramento ativo em tempo real';
+        if (subEl) subEl.innerText = txtSucesso;
         if (qrSubEl) qrSubEl.innerText = 'Sessão blindada ativa';
         dotEl.className = 'w-2 h-2 rounded-full bg-emerald-400';
         qrBox.innerHTML = `<div class="text-emerald-400 text-xs font-bold text-center space-y-1"><svg class="w-8 h-8 mx-auto"><use href="#icon-shield"/></svg><span class="block">Aparelho Ativo</span></div>`;
